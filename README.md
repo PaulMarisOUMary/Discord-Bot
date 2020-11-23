@@ -1,3 +1,3 @@
 # Algosup-Discord
 
-![](server_icons/algosup_Iota.png)
+![](server icons/algosup.png)
