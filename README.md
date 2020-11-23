@@ -5,6 +5,7 @@
 
 ## ALPHA
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server%20icons/algosup%20alpha.png?raw=true)
+- Promotion 2020-2021 : `Aurélien` `Clément` `Eloi` `Eric` `Florent` `Jules` `Karine` `Laura-Lee` `Laurent` `Louis` `Martin` `Paul` `Robin` `Salahedine` `Théo` `Steevy`
 ## BETA
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server%20icons/algosup%20beta.png?raw=true)
 ## GAMMA
@@ -51,5 +52,5 @@
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server%20icons/algosup%20psi.png?raw=true)
 ## OMEGA
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server%20icons/algosup%20omega.png?raw=true)
-## Algosup (sample
+## Algosup (sample)
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server%20icons/algosup.png?raw=true)
