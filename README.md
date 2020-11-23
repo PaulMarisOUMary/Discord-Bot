@@ -77,4 +77,3 @@
 - Promotion 2043-2044 : 
 ## Algosup (sample)
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server%20icons/algosup.png?raw=true)
-- Promotion 2044-2045 : 
