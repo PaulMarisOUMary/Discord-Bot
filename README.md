@@ -1,2 +1,3 @@
 # Algosup-Discord
-[Alt text](server icons/algosup Iota.png)
+
+![](server icons/algosup Iota.png)
