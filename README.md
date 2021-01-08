@@ -5,7 +5,7 @@
 
 ## ALPHA
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server%20icons/algosup%20alpha.png?raw=true)
-- Promotion 2020-2021 : `Aurélien` `Clément` `Eloi` `Eric` `Florent` `Jules` `Karine` `Laura-Lee` `Laurent` `Louis` `Martin` `Paul` `Robin` `Salahedine` `Théo` `Steevy`
+- Promotion 2020-2021 : `Aurélien` `Clément` `Eloi` ~~`Eric`~~ `Florent` `Jules` `Karine` `Laura-Lee` `Laurent` `Louis` `Martin` `Paul` `Robin` `Salahedine` `Théo` `Steevy`
 ## BETA
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server%20icons/algosup%20beta.png?raw=true)
 - Promotion 2021-2022 : 
