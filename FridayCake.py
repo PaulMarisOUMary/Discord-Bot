@@ -7,8 +7,8 @@ from discord.ext import commands
 from discord.utils import get
 from datetime import datetime
 
-#https://discord.com/oauth2/authorize?client_id=764136604284878898&scope=bot&permissions=67422272 #add bot
-#https://docs.google.com/spreadsheets/d/1QeLrjctBVl1tW7tNf_WMvE1E9jj8q-70zZER4U8DyBI/edit#gid=0 #excel
+#https://discord.com/oauth2/authorize?client_id=764136604284878898&scope=bot&permissions=67422272
+#https://docs.google.com/spreadsheets/d/1QeLrjctBVl1tW7tNf_WMvE1E9jj8q-70zZER4U8DyBI/edit#gid=0
 
 data = [datetime(2020, 10, 16), datetime(2020, 10, 23), datetime(2020, 11, 6), datetime(2020, 11, 13), datetime(2020, 11, 20), datetime(2020, 11, 27), datetime(2020, 12, 4)]
 participents = ["Théo", "Jules", "Paul", "Steevy", "Salah", "Karine", "Laura-lee", "Clément", "Louis", "Florent", "Martin", "Laurent", "Aurélien", "Eric"]
@@ -48,13 +48,11 @@ def wheniamlisted(ctx):
 
 def wheniam(ctx):
 	name = ctx.message.author.display_name
-	data_participents = [datetime(2020, 10, 16), datetime(2020, 10, 16),
-						datetime(2020, 10, 23), datetime(2020, 10, 23),
-						datetime(2020, 11, 6), datetime(2020, 11, 6),
-						datetime(2020, 11, 13), datetime(2020, 11, 13),
-						datetime(2020, 11, 20), datetime(2020, 11, 20),
-						datetime(2020, 11, 27), datetime(2020, 11, 27),
-						datetime(2020, 12, 4), datetime(2020, 12, 4)]
+	data_participents = []
+	for c in data:
+		data_participents.append(c)
+		data_participents.append(c)
+
 	status = False
 	counter = 0
 	for g in participents:
@@ -108,18 +106,10 @@ async def if_connected():
 async def my_background_task():
 	await bot.wait_until_ready()
 	while not bot.is_closed():
-		await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.streaming, name="Corona is near..", url='https://www.twitch.tv/warriormachine_'), status=discord.Status.dnd, afk=False)
+		await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.streaming, name="en confinement..", url='https://www.twitch.tv/warriormachine_'), status=discord.Status.dnd, afk=False)
 		await asyncio.sleep(10)
 		await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.streaming, name="?help", url='https://www.twitch.tv/warriormachine_'), status=discord.Status.dnd, afk=False)
 		await asyncio.sleep(10)
-		"""await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.streaming, name='?help', url='https://www.twitch.tv/warriormachine_'), status=discord.Status.dnd, afk=False)
-		await asyncio.sleep(10)
-		await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.streaming, name="?next", url='https://www.twitch.tv/warriormachine_'), status=discord.Status.dnd, afk=False)
-		await asyncio.sleep(10)
-		await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.streaming, name="?when", url='https://www.twitch.tv/warriormachine_'), status=discord.Status.dnd, afk=False)
-		await asyncio.sleep(10)
-		await bot.change_presence(activity=discord.Activity(type=discord.ActivityType.streaming, name="?all", url='https://www.twitch.tv/warriormachine_'), status=discord.Status.dnd, afk=False)
-		await asyncio.sleep(10)"""
 
 class Usefull(commands.Cog):
 	def __init__(self, bot):
@@ -186,5 +176,5 @@ async def on_ready():
 bot.add_cog(Usefull(bot))
 bot.loop.create_task(my_background_task())
 bot.loop.create_task(if_connected())
-token_file = "XXXXXXXXXXX.XXXXX.XXXXX" # replace me
+token_file = open("token.dat", "r").read() # path of your token file
 bot.run(token_file)
