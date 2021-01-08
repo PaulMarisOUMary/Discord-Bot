@@ -68,40 +68,40 @@ def wheniam(ctx):
 async def if_connected():
 	await bot.wait_until_ready()
 	guild = discord.utils.get(bot.guilds, name="Serveur de test")
+	category = discord.utils.get(guild.categories, name="Salons vocaux")
 	channel = discord.utils.get(guild.channels, name="Général")
 	channels = [channel]
 
-	while not bot.is_closed():
-
-		is_member = 0
+	def channelInfos():
+		emptyChannels, usedChannels = len(channels), 0
 		for ch in channels:
 			if ch.members:
-				is_member += 1
+				usedChannels += 1
+		emptyChannels -= usedChannels
 
-		if is_member >= len(channels):
-			named = "Vocal "+str(len(channels))
+		return emptyChannels, usedChannels
+
+	while not bot.is_closed():
+		emptyChannels, usedChannels = channelInfos()
+
+		if usedChannels == len(channels):
+			named = "Vocal #"+str(len(channels))
 			exist_channel = discord.utils.get(guild.channels, name=named)
 			if not exist_channel:
-				category = discord.utils.get(guild.categories, name="Salons vocaux")
 				a = await guild.create_voice_channel(name=named, category=category)
 				channels.append(a)
-			else :
-				await exist_channel.delete()
-		elif is_member+1 < len(channels):
-			if len(channels) > 1:
-				count = 1
-				for ch in channels:
-					if not ch.members:
-						if len(channels) > 2:
-							await channels[count+1].delete()
-							del channels[count+1]
-						else:
-							await channels[count].delete()
-							del channels[count]
-						count += 1
+			#else : await exist_channel.delete()
 
-		await asyncio.sleep(0.5)
+		elif emptyChannels > 1:
+			count, lock = 0, False
+			for ch in channels:
+				if not ch.members and not ch.name == "Général" and not lock:
+					await ch.delete()
+					del channels[count]
+					lock = True
+				count += 1
 
+		await asyncio.sleep(0.1)
 
 async def my_background_task():
 	await bot.wait_until_ready()
@@ -176,5 +176,5 @@ async def on_ready():
 bot.add_cog(Usefull(bot))
 bot.loop.create_task(my_background_task())
 bot.loop.create_task(if_connected())
-token_file = open("token.dat", "r").read() # path of your token file
+token_file = open("token.dat", "r").read() # path of your tken file
 bot.run(token_file)
