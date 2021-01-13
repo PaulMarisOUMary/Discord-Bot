@@ -72,6 +72,27 @@ async def if_connected():
 	channel = discord.utils.get(guild.channels, name="Général")
 	channels = [channel]
 
+	def getMissingChannel():
+		actual, missing, normal = [], [], []
+		for ch in channels:
+			num = ch.name.partition(' ')
+			if num[-1].isdigit():
+				actual.append(int(num[-1]))
+		actual = sorted(actual)
+		if len(actual) < 1: missing.append(1)
+		else : [normal.append(x) for x in range(1, actual[-1]+1)]
+
+		for i, no in enumerate(normal):
+			if i < len(actual):
+				if no != actual[i] and no not in actual:
+					missing.append(no)
+			elif no not in actual:
+				missing.append(no)
+
+		if len(missing) < 1: missing.append(actual[-1]+1)
+
+		return missing[0]
+
 	def channelInfos():
 		emptyChannels, usedChannels = len(channels), 0
 		for ch in channels:
@@ -85,12 +106,10 @@ async def if_connected():
 		emptyChannels, usedChannels = channelInfos()
 
 		if usedChannels == len(channels):
-			named = "Vocal #"+str(len(channels))
-			exist_channel = discord.utils.get(guild.channels, name=named)
-			if not exist_channel:
-				a = await guild.create_voice_channel(name=named, category=category)
-				channels.append(a)
-			#else : await exist_channel.delete()
+			getMissingChannel()
+			named = "Vocal "+str(getMissingChannel())
+			a = await guild.create_voice_channel(name=named, category=category)
+			channels.append(a)
 
 		elif emptyChannels > 1:
 			count, lock = 0, False
