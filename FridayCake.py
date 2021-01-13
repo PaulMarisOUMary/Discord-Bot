@@ -28,7 +28,7 @@ def numMembers():
 
 def whoisnext():
 	now = datetime.now()
-	guys = ["Théo Jules", "Paul Steevy", "Salah Karine", "Laura-lee Clément", "Louis Florent", "Martin Laurent", "Aurélien Eric"]
+	groups = ["Théo Jules", "Paul Steevy", "Salah Karine", "Laura-lee Clément", "Louis Florent", "Martin Laurent", "Aurélien Eric"]
 	daysresult = []
 
 	for i in data:
@@ -36,7 +36,7 @@ def whoisnext():
 		if not difference.days < 0:
 			daysresult.append(difference.days)
 	num = len(data)-len(daysresult)
-	return guys[num], data[num]
+	return groups[num], data[num]
 
 def wheniamlisted(ctx):
 	name = ctx.message.author.display_name
@@ -66,13 +66,14 @@ def wheniam(ctx):
 	return name, counter
 		
 async def if_connected():
+	GUILD, CATEGORY, MAIN_CHANNEL = "Serveur de test", "Voice rooms", "General"
 	await bot.wait_until_ready()
-	guild = discord.utils.get(bot.guilds, name="Serveur de test")
-	category = discord.utils.get(guild.categories, name="Salons vocaux")
-	channel = discord.utils.get(guild.channels, name="Général")
+	guild = discord.utils.get(bot.guilds, name=GUILD)
+	category = discord.utils.get(guild.categories, name=CATEGORY)
+	channel = discord.utils.get(guild.channels, name=MAIN_CHANNEL)
 	channels = [channel]
 
-	def getMissingChannel():
+	def getMissingChannel(): #old function to get which channel is missing #useless..
 		actual, missing, normal = [], [], []
 		for ch in channels:
 			num = ch.name.partition(' ')
@@ -104,21 +105,27 @@ async def if_connected():
 
 	while not bot.is_closed():
 		emptyChannels, usedChannels = channelInfos()
+		is_change = False
 
 		if usedChannels == len(channels):
-			getMissingChannel()
-			named = "Vocal "+str(getMissingChannel())
-			a = await guild.create_voice_channel(name=named, category=category)
+			a = await guild.create_voice_channel(name="Vocal", category=category, sync_permissions=True)
 			channels.append(a)
+			is_change = True
 
 		elif emptyChannels > 1:
 			count, lock = 0, False
 			for ch in channels:
-				if not ch.members and not ch.name == "Général" and not lock:
+				if not ch.members and not ch.name == MAIN_CHANNEL and not lock:
 					await ch.delete()
 					del channels[count]
 					lock = True
 				count += 1
+			is_change = True
+
+		if is_change:
+			for i, ch in enumerate(channels):
+				if not ch.name == MAIN_CHANNEL:
+					await ch.edit(name="Vocal "+str(i))
 
 		await asyncio.sleep(0.1)
 
@@ -195,5 +202,5 @@ async def on_ready():
 bot.add_cog(Usefull(bot))
 bot.loop.create_task(my_background_task())
 bot.loop.create_task(if_connected())
-token_file = open("token.dat", "r").read() # path of your tken file
+token_file = open("token.dat", "r").read() # path of your token file
 bot.run(token_file)
