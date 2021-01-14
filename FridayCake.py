@@ -12,6 +12,8 @@ from datetime import datetime
 
 data = [datetime(2020, 10, 16), datetime(2020, 10, 23), datetime(2020, 11, 6), datetime(2020, 11, 13), datetime(2020, 11, 20), datetime(2020, 11, 27), datetime(2020, 12, 4)]
 participents = ["Théo", "Jules", "Paul", "Steevy", "Salah", "Karine", "Laura-lee", "Clément", "Louis", "Florent", "Martin", "Laurent", "Aurélien", "Eric"]
+text_channels = []
+text_roles = []
 
 def numServers():
 	servers = 0
@@ -73,7 +75,7 @@ async def if_connected():
 	channel = discord.utils.get(guild.channels, name=MAIN_CHANNEL)
 	channels = [channel]
 
-	def getMissingChannel(): #old function to get which channel is missing #useless..
+	def getMissingChannel(): #old function to get which channel is missing #useless now..
 		actual, missing, normal = [], [], []
 		for ch in channels:
 			num = ch.name.partition(' ')
@@ -148,6 +150,8 @@ class Usefull(commands.Cog):
 		embed.add_field(name="?next", value="ou ?n \n```fix\naffiche qui est le prochain à préparer un dessert```", inline=False)
 		embed.add_field(name="?when", value="ou ?w \n```fix\naffiche quand est-ce que tu dois préparer ton dessert```", inline=False)
 		embed.add_field(name="?all", value="ou ?a \n```fix\naffiche la liste complete des cuistots et de leurs date de préparation```", inline=False)
+		embed.add_field(name="?pv @user1 @user2", value="ou ?> \n```fix\ncréer un salon textuel privé```", inline=False)
+		embed.add_field(name="?dpv", value="ou ?< \n```fix\nsuprime votre salon textuel privé```", inline=False)
 		embed.set_footer(text="Requête de : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(embed=embed)
 
@@ -190,6 +194,67 @@ class Usefull(commands.Cog):
 			embed.add_field(name="Voyons voir..", value="je ne trouve pas ton nom sur la liste, sorry !", inline=False)
 			embed.set_footer(text="Requête de : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 			await ctx.send(embed=embed)
+
+	@commands.command(name='pv', aliases=['>'], require_var_positional=True)
+	@commands.cooldown(1, 10, commands.BucketType.user)
+	async def private_channels(self, ctx, *guys : discord.Member):
+		text_category, users, mentions, you_in, down_role = discord.utils.get(ctx.guild.categories, name="Text rooms"), [], "", False, discord.utils.get(ctx.guild.roles, name="🎓Élève")
+
+		for g in guys:
+			if g.bot: raise commands.CommandError("bot.notAllowed")
+			else: users.append(g)
+			if g.id == ctx.message.author.id: you_in = True
+		if not you_in: raise commands.CommandError("author.requestedIn")
+		elif len(guys) <= 1: raise commands.CommandError("author.isAlone")
+
+		role = await ctx.guild.create_role(name="tr_"+str(len(text_roles)+1))
+		a = await ctx.guild.create_text_channel(name="team_text_"+str(len(text_channels)+1), category=text_category, sync_permissions=False)
+		await a.set_permissions(ctx.guild.default_role, send_messages=False, view_channel=False)
+		await a.set_permissions(role, send_messages=True, view_channel=True)
+		await a.set_permissions(down_role, send_messages=False, view_channel=False)
+		text_channels.append(a)
+		text_roles.append(role)
+
+		for m in users:
+			await m.add_roles(role)
+			mentions += " "+m.mention
+		
+		await a.send("The text_team_"+str(len(text_channels))+" was created by "+str(ctx.message.author.mention)+".")
+		await a.send(mentions)
+	
+	@commands.command(name='dpv', aliases=['<'])
+	async def delete_private_channels(self, ctx):
+		channel_name, is_error, deleted = ctx.channel.name, True, False
+		for i, ch in enumerate(text_channels):
+			if ch.name == channel_name:
+				await ch.delete()
+				del text_channels[i]
+				await text_roles[i].delete()
+				del text_roles[i]
+				is_error, deleted = False, True
+
+		if not deleted and channel_name[0:10] == "team_text_":
+			await ctx.channel.delete()
+			is_error = False
+		
+		if is_error:
+			await ctx.send("Error, you can't delete this channel")
+
+	### ERRORS ###
+	@private_channels.error
+	async def pv_command_error(self, ctx, error):
+		if isinstance(error, commands.MissingRequiredArgument):
+			await ctx.send('Please specify users which you want to add : `?pv @user1 @user2`')
+		elif isinstance(error, commands.CommandOnCooldown):
+			await ctx.send('Command is on cooldown, wait `'+str(error)[-6:-4]+'s` !')
+		elif str(error) == 'bot.notAllowed':
+			await ctx.send("Error, you can't invite bots in your team !")
+		elif str(error) == 'author.requestedIn':
+			await ctx.send("Error, you are not in the group !")
+		elif str(error) == 'author.isAlone':
+			await ctx.send("Error, you can't create a team alone.")
+		else:
+			await ctx.send('Error, check the arguments provided')
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"),description='FridayCake',case_insensitive=True)
 bot.remove_command('help')
