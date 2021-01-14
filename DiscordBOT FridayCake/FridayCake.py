@@ -266,7 +266,5 @@ async def on_ready():
 bot.add_cog(Usefull(bot))
 bot.loop.create_task(my_background_task())
 bot.loop.create_task(if_connected())
-#token_file = "NzY0MTM2NjA0Mjg0ODc4ODk4.X4B3qw.XIsLE7C5jFfq2G18AHzzfRBOWto"
-#token_file = "NzAwMzYzNjc0MTQwOTM0MTk0.Xph2gA.0I_iCQgS1UQ5TYjQqt2nzDOuvfY"
 token_file = open("token.dat", "r").read() # path of your token file
 bot.run(token_file)
