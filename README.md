@@ -1,3 +1,5 @@
+![GitHub last commit](https://img.shields.io/github/last-commit/PaulMarisOUMary/Algosup-Discord)
+
 # Algosup-Discord
 
 ## Algosup (students)
