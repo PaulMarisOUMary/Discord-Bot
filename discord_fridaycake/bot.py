@@ -2,6 +2,7 @@ import time
 import asyncio
 import discord
 
+from googletrans import Translator
 from discord.ext.commands import CommandNotFound
 from discord.ext import commands
 from discord.utils import get
@@ -17,7 +18,7 @@ def get_created_roles(cont):
 	return wrong_roles
 
 async def loop_if_connected():
-	GUILD, MAIN_CHANNEL = "Serveur de test", "General"
+	GUILD, MAIN_CHANNEL = "Algosup Alpha", "General"
 	await bot.wait_until_ready()
 	guild = discord.utils.get(bot.guilds, name=GUILD)
 	channel = discord.utils.get(guild.channels, name=MAIN_CHANNEL)
@@ -148,9 +149,32 @@ class Usefull(commands.Cog):
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"),description='FridayCake',case_insensitive=True)
 bot.remove_command('help')
 
+@bot.listen('on_message')
+async def on_receive_message(message):
+	convert_emoji = '🔀'
+	def check(reaction, user):
+		return str(reaction.emoji) == convert_emoji and not user.bot
+
+	content = message.content
+	if not message.author.bot:
+		analysis = Translator().detect(content).lang
+
+		if not analysis == 'en':
+			translated, flag_emoji = Translator().translate(content, dest='en', src=analysis).text, str(chr(127365 + (ord(analysis[0]))))+str(chr(127365 + (ord(analysis[1]))))
+			await message.add_reaction(emoji=flag_emoji)
+			await message.add_reaction(emoji=convert_emoji)
+			try:
+				reaction, user = await bot.wait_for('reaction_add', timeout=60, check=check)
+			except: await message.clear_reaction(convert_emoji)
+			mess, reactions = await message.channel.history(limit=1).flatten(), discord.utils.get(message.reactions, emoji=convert_emoji)
+			if mess[0].content == content and reactions:
+				await message.reply(content=flag_emoji+" `Translated :` "+translated, mention_author=False)
+			else:
+				await message.clear_reaction(convert_emoji)
+
 @bot.event
 async def on_ready():
-	print("ID : "+str(bot.user.id)+"\n"+str(bot.user))
+	print("ID: "+str(bot.user.id)+"\n"+str(bot.user)+"\nv"+str(discord.__version__))
 
 bot.add_cog(Usefull(bot))
 bot.loop.create_task(loop_change_status())
