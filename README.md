@@ -79,3 +79,5 @@
 - Promotion 2043-2044 : 
 ## Algosup (sample)
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server%20icons/algosup.png?raw=true)
+## Discord bot logo (sample)
+![](https://github.com/PaulMarisOUMary/Algosup-Discord/blob/main/server%20icons/bot%20logo.png?raw=true)
