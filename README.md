@@ -2,12 +2,15 @@
 
 # Algosup-Discord
 
+#### Bot [alpha_server](https://github.com/PaulMarisOUMary/Algosup-Discord/tree/main/alpha_server) for discord
+
+# Icons:
 ## Algosup (students)
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server_icons/algosup_base.png?raw=true)
 
 ## ALPHA
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server_icons/algosup_alpha.png?raw=true)
-- Promotion 2020-2021 : `Aurélien` `Clément` `Eloi` ~~`Eric`~~ `Florent` `Jules` `Karine` `Laura-Lee` `Laurent` `Louis` `Martin` `Paul` `Robin` `Salahedine` `Théo` `Steevy`
+- Promotion 2020-2021 : `Aurélien` `Brendon` `Clément` `Clémentine` `Eloi` ~~`Eric`~~ `Florent` `Jules` `Karine` `Laura-Lee` `Laurent` `Louis` `Martin` `Paul` `Robin` `Romain` `Salahedine` `Théo` `Steevy`
 ## BETA
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server_icons/algosup_beta.png?raw=true)
 - Promotion 2021-2022 : 
