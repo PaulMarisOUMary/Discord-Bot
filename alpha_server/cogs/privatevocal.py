@@ -5,10 +5,13 @@ from discord.ext import commands
 from googletrans import Translator
 
 
-class Loop(commands.Cog, name="Loop"):
+class PrivateVocal(commands.Cog, name="privatevocal"):
 	def __init__(self, bot):
 		self.bot = bot
-		self.bot.loop.create_task(self.loop_if_connected())
+		self.task_if_connected = self.bot.loop.create_task(self.loop_if_connected())
+
+	def return_loop_task(self):
+		return self.task_if_connected
 
 	async def loop_if_connected(self):
 		GUILD, MAIN_CHANNEL = "Algosup Alpha", "General"
@@ -54,4 +57,4 @@ class Loop(commands.Cog, name="Loop"):
 			await asyncio.sleep(0.1)
 
 def setup(bot):
-	bot.add_cog(Loop(bot))
+	bot.add_cog(PrivateVocal(bot))
