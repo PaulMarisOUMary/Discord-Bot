@@ -3,7 +3,7 @@ import discord
 
 from discord.ext import commands
 
-class Basic(commands.Cog, name="Basic"):
+class Basic(commands.Cog, name="basic"):
 	def __init__(self, bot):
 		self.bot = bot
 	@commands.command(name='help', aliases=['?','h','commands'])
