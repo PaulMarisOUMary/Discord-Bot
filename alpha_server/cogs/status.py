@@ -5,10 +5,13 @@ from discord.ext import commands
 from googletrans import Translator
 
 
-class Loop(commands.Cog, name="Loop"):
+class Status(commands.Cog, name="status"):
 	def __init__(self, bot):
 		self.bot = bot
-		self.bot.loop.create_task(self.loop_change_status())
+		self.task_change_status = self.bot.loop.create_task(self.loop_change_status())
+
+	def return_loop_task(self):
+		return self.task_change_status
 
 	async def loop_change_status(self):
 		await self.bot.wait_until_ready()
@@ -20,4 +23,4 @@ class Loop(commands.Cog, name="Loop"):
 			else: reset += 1
 
 def setup(bot):
-	bot.add_cog(Loop(bot))
+	bot.add_cog(Status(bot))
