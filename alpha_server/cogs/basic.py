@@ -15,7 +15,8 @@ class Basic(commands.Cog, name="basic"):
 
 	@commands.Cog.listener('on_command_error')
 	async def get_command_error(self, ctx, error):
-		await ctx.send(error)
+		if isinstance(error, commands.CommandNotFound):
+			await ctx.send(error)
 
 def setup(bot):
 	bot.add_cog(Basic(bot))
