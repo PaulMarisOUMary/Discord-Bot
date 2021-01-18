@@ -11,7 +11,7 @@ def get_created_roles(cont):
 
 	return wrong_roles
 
-class PrivateTextual(commands.Cog, name="PrivateTextual"):
+class PrivateTextual(commands.Cog, name="privatetextual"):
 	def __init__(self, bot):
 		self.bot = bot
 
