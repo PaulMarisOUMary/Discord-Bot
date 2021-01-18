@@ -2,7 +2,7 @@ import discord
 
 from discord.ext import commands
 
-class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
+class FridayCake(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -11,4 +11,4 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 		await ctx.send(':cake::fish_cake::moon_cake::cupcake::pancakes:')
 
 def setup(bot):
-	bot.add_cog(Admin(bot))
+	bot.add_cog(FridayCake(bot))
