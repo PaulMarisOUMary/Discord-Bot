@@ -53,7 +53,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True
 			if not date.today() >= f and not pin: pin = [p, f]
 		embed = discord.Embed(title="Next ·", colour=0xf7346b)
 		embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
-		embed.add_field(name="The next cooks are :", value="`{}` for `Friday {}`".format(pin[0].replace(' ', '` et `'), pin[1].strftime("%d %B")), inline=False)
+		embed.add_field(name="The next cooks are :", value="`{}` for `Friday {}`".format(pin[0].replace(' ', '` & `'), pin[1].strftime("%d %B")), inline=False)
 		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(embed=embed)
 
