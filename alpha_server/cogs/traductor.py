@@ -4,13 +4,9 @@ from discord.ext import commands
 from googletrans import Translator #pip install googletrans==4.0.0-rc1
 
 
-class Traductor(commands.Cog, name="Traductor"):
+class Traductor(commands.Cog, name="traductor"):
 	def __init__(self, bot):
 		self.bot = bot
-
-	@commands.command(name='test', aliases=['t'])
-	async def test(self, ctx):
-		pass
 
 	@commands.Cog.listener('on_message')
 	async def on_receive_message(self, message):
