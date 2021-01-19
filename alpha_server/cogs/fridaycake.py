@@ -5,7 +5,7 @@ import discord
 from datetime import date, timedelta
 from discord.ext import commands
 
-groups = ["Karine Aurélien", "Eloi Louis", "Brendon Laura-Lee"] #, "Jules Martin", "Théo Paul"
+groups = ["Karine Aurélien", "Eloi Louis", "Brendon Laura-Lee", "Martin Romain", "Laurent Salaheddine", "Clément Clémentine", "Jules ?Steevy?", "Théo Paul"]
 start = date(2021, 2, 5)
 
 def getFriday(date, count):
