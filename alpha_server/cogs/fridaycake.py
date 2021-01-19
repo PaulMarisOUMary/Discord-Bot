@@ -6,13 +6,21 @@ from datetime import date, timedelta
 from discord.ext import commands
 
 groups = ["Karine Aurélien", "Eloi Louis", "Brendon Laura-Lee", "Martin Romain", "Laurent Salaheddine", "Clément Clémentine", "Jules ?Steevy?", "Théo Paul"]
-start = date(2021, 2, 5)
+holidays = [(date(2021, 2, 27), date(2021, 3, 7)), (date(2021, 4, 24), date(2021, 5, 9))]
+start = date(2021, 2, 5) #year #month #day
 
-def getFriday(date, count):
+def getFriday(date, holiday, count):
+    holes, i = [], 0
     date += timedelta(days = 4 - date.weekday())
-    for i in range(count):
-        yield date
+    for h in holidays:
+        hole = h[0]+timedelta(days = 4 - h[0].weekday())
+        for d in range(h[0].toordinal(), h[1].toordinal()+1):
+            hole += timedelta(days = 1)
+            holes.append(hole)
+    while i < count:
+        if not date in holes: yield date
         date += timedelta(days = 7)
+        i += 1
 
 class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
@@ -27,7 +35,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True
 	async def all_cake(self, ctx):
 		embed = discord.Embed(title="All ·", colour=0xf7346b)
 		embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
-		for f, p in zip(getFriday(start, len(groups)), groups):
+		for f, p in zip(getFriday(start, holidays, len(groups)), groups):
 			p = "~~`"+p+"`~~" if date.today() >= f else "`"+p+"`"
 			embed.add_field(name="Friday "+f.strftime("%d %B, %Y"), value=p.replace(' ', '` & `'), inline=False)
 		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
@@ -36,7 +44,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True
 	@commands.command(name='when', aliases=['w'])
 	async def when_cake(self, ctx):
 		name, status, pin = ctx.message.author.display_name.lower().replace('é', 'e').replace('-', ''), False, []
-		for i, (f, p) in enumerate(zip(getFriday(start, len(groups)), groups)):
+		for i, (f, p) in enumerate(zip(getFriday(start, holidays, len(groups)), groups)):
 			if name in p.lower().replace('é', 'e').replace('-', '') and not pin: pin = [p, f]
 		if not pin: raise commands.CommandError("member.isblacklisted")
 
@@ -49,7 +57,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True
 	@commands.command(name='next', aliases=['n'])
 	async def next_cake(self, ctx):
 		pin = []
-		for i, (f, p) in enumerate(zip(getFriday(start, len(groups)), groups)):
+		for i, (f, p) in enumerate(zip(getFriday(start, holidays, len(groups)), groups)):
 			if not date.today() >= f and not pin: pin = [p, f]
 		embed = discord.Embed(title="Next ·", colour=0xf7346b)
 		embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
