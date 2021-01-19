@@ -17,7 +17,7 @@ def getFriday(date, holiday, count):
         for d in range(h[0].toordinal(), h[1].toordinal()+1):
             hole += timedelta(days = 1)
             holes.append(hole)
-    while i < count:
+    while i <= count:
         if not date in holes: yield date
         date += timedelta(days = 7)
         i += 1
