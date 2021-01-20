@@ -2,6 +2,16 @@ import discord
 
 from discord.ext import commands
 
+def text_to_allowed(input):
+	out, forbidden, line = "", [], input.lower()
+	for char in line:
+		if not char in "abcdefghijklmnopqrstuvwxyz-éèà¤£€µù§_0123456789":
+			forbidden.append(char)
+			char = char.replace(char,'')
+		out += char.lower()
+
+	return out, forbidden
+
 def get_created_roles(cont):
 	wrong_roles = []
 	for role in cont.guild.roles:
@@ -18,7 +28,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 	@commands.command(name='addprivate', aliases=['create', 'add', '+', '>'], require_var_positional=True)
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def create_private_channel(self, ctx, *guys : discord.Member):
-		users, mentions, down_role = [ctx.message.author], "", discord.utils.get(ctx.guild.roles, name="🎓Élève")
+		users, mentions, down_role = [ctx.message.author], "", discord.utils.get(ctx.guild.roles, name="🎓Student")
 
 		for g in guys:
 			if g.bot: raise commands.CommandError("bot.notAllowed")
@@ -52,12 +62,14 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 	@commands.command(name='renprivate', aliases=['rename', 'ren', 'r', '_'], require_var_positional=True)
 	async def rename_private_channel(self, ctx, custom_name : str):
 		channel, roles = ctx.channel, get_created_roles(ctx)
-		if '_' in channel.name and roles and custom_name:
-			await channel.edit(name='_'+custom_name)
-			await ctx.message.add_reaction(emoji='✅')
-		else:
+		normalize_cn, forbidden = text_to_allowed(custom_name)
+		if '_' in channel.name and roles and normalize_cn:
+				await channel.edit(name='_'+normalize_cn)
+				await ctx.message.add_reaction(emoji='✅')
+		elif not '_' in channel.name:
 			await ctx.send("Error, you can't rename a non-team channel.")
 			await ctx.message.add_reaction(emoji='❌')
+		if forbidden: await ctx.send(":warning: you can't use `"+str(forbidden)+"` to rename a channel.")
 
 	### ERRORS ###
 	@create_private_channel.error
@@ -83,4 +95,4 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 		await ctx.message.add_reaction(emoji='❌')
 
 def setup(bot):
-    bot.add_cog(PrivateTextual(bot))
+	bot.add_cog(PrivateTextual(bot))
