@@ -31,12 +31,12 @@ def add_task_img(events):
             if ev != event:
                 if int(ev[2][0:2])+int(ev[4].seconds/60/60) <= start+duration and start <= int(ev[2][0:2]):
                     duplicate = True
-                    draw.rectangle((20+420/2*(i-1), 50+(start-9)*50+start-9, 420/2*i, 50+(duration+start-9)*50+duration), fill="#4a4a4a")
+                    draw.rectangle((20+420/2*(i-1), 50+(start-9)*50+start-9, 420/2*i, 50+(duration+start-9)*50+duration), fill="#424242")
                     draw.text((20+420/2*(i-1), 50+(start-9)*50+start-9), clas, font=ImageFont.truetype("arial.ttf", 20), fill=(255,255,255,128))
 
                 else: duplicate = False
         if not duplicate:
-            draw.rectangle((20, 50+(start-9)*50+start-9, 420, 50+(duration+start-9)*50+start), fill="#4a4a4a")
+            draw.rectangle((20, 50+(start-9)*50+start-9, 420, 50+(duration+start-9)*50+start), fill="#424242")
             draw.text((25, 50+(start-9)*50+start-9), clas, font=ImageFont.truetype("arial.ttf", 20), fill=(255,255,255,128))
 
     image.save("calendar.png")
@@ -96,7 +96,21 @@ class Schedule(commands.Cog, name="schedule"):
 
 	@commands.command(name='nextcalendar', aliases=['nc'])
 	async def next_calendar(self, ctx):
-		await ctx.send("next")
+		today, events, final = datetime.today(), [], []
+		start = datetime(today.year, today.month, today.day) + timedelta(1)
+		end = start + timedelta(1) + timedelta(1)
+		new_img()
+		for event in self.extract_calendar(start, end):
+			events.append(str(event))
+		for str_event in events:
+			final.append(self.extract_infos(str_event))
+		
+		add_task_img(final)
+
+		embed = discord.Embed(colour=0x474747)
+		embed.set_image(url='attachment://stat.png')
+		embed.set_footer(text="Requête de : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		await ctx.send(file=discord.File("calendar.png", 'stat.png'), embed=embed)
 
 def setup(bot):
 	bot.add_cog(Schedule(bot))
