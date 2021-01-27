@@ -15,7 +15,7 @@ class Traductor(commands.Cog, name="traductor"):
 			return str(reaction.emoji) == convert_emoji and not user.bot
 
 		content = message.content
-		if not message.author.bot:
+		if not message.author.bot and content != None:
 			analysis = Translator().detect(content).lang
 
 			if not analysis == 'en' and len(content.split(' ')) >= 3:
