@@ -21,6 +21,26 @@ def new_img():
 		draw.text((0,50+50*i+i), t, font=ImageFont.truetype("arial.ttf", 11), fill=(255,255,255,128))
 	image.save("calendar.png")
 
+def add_task_img(events):
+    image = Image.open("calendar.png")
+    draw = ImageDraw.Draw(image)
+    duplicate = bool
+    for i, event in enumerate(events):
+        clas, date, start, duration = event[0], event[1], int(event[2][0:2]), int(event[4].seconds/60/60)
+        for ev in events: 
+            if ev != event:
+                if int(ev[2][0:2])+int(ev[4].seconds/60/60) <= start+duration and start <= int(ev[2][0:2]):
+                    duplicate = True
+                    draw.rectangle((20+420/2*(i-1), 50+(start-9)*50+start-9, 420/2*i, 50+(duration+start-9)*50+duration), fill="#4a4a4a")
+                    draw.text((20+420/2*(i-1), 50+(start-9)*50+start-9), clas, font=ImageFont.truetype("arial.ttf", 20), fill=(255,255,255,128))
+
+                else: duplicate = False
+        if not duplicate:
+            draw.rectangle((20, 50+(start-9)*50+start-9, 420, 50+(duration+start-9)*50+start), fill="#4a4a4a")
+            draw.text((25, 50+(start-9)*50+start-9), clas, font=ImageFont.truetype("arial.ttf", 20), fill=(255,255,255,128))
+
+    image.save("calendar.png")
+
 class Schedule(commands.Cog, name="schedule"):
 	def __init__(self, bot):
 		self.bot = bot
@@ -32,7 +52,7 @@ class Schedule(commands.Cog, name="schedule"):
 		SECRET_ID = open(end+"secret.dat", "r").read()
 		TENANT_ID = open(end+"tenant_id.dat", "r").read()
 		account = Account((CLIENT_ID, SECRET_ID), protocol=MSGraphProtocol(default_resource='planning@algosup.com'), auth_flow_type='credentials', tenant_id=TENANT_ID)
-		#if account.authenticate(scope=['Calendars.Read.Shared', 'Calendars.Read']): print('Authenticated!')
+		if account.authenticate(scope=['Calendars.Read.Shared', 'Calendars.Read']): print('Authenticated!')
 		schedule = account.schedule()
 		self.calendar = schedule.get_default_calendar()
 
@@ -54,16 +74,16 @@ class Schedule(commands.Cog, name="schedule"):
 
 	@commands.command(name='actualcalendar', aliases=['ac'])
 	async def actual_calendar(self, ctx):
-		today, events = datetime.today(), []
+		today, events, final = datetime.today(), [], []
 		start = datetime(today.year, today.month, today.day)
 		end = start + timedelta(1)
 		new_img()
 		for event in self.extract_calendar(start, end):
 			events.append(str(event))
 		for str_event in events:
-			print(self.extract_infos(str_event))
-			#append la matière dans l'image
-		#faire le rendu de l'image
+			final.append(self.extract_infos(str_event))
+		
+		add_task_img(final)
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://stat.png')
