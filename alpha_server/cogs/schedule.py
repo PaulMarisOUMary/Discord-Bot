@@ -57,7 +57,7 @@ class Schedule(commands.Cog, name="schedule"):
 		SECRET_ID = open(end+"secret.dat", "r").read()
 		TENANT_ID = open(end+"tenant_id.dat", "r").read()
 		account = Account((CLIENT_ID, SECRET_ID), protocol=MSGraphProtocol(default_resource='planning@algosup.com'), auth_flow_type='credentials', tenant_id=TENANT_ID)
-		#if account.authenticate(scope=['Calendars.Read.Shared', 'Calendars.Read']): pass#print('Authenticated!')
+		if account.authenticate(scope=['Calendars.Read.Shared', 'Calendars.Read']): pass#print('Authenticated!')
 		schedule = account.schedule()
 		self.calendar = schedule.get_default_calendar()
 
