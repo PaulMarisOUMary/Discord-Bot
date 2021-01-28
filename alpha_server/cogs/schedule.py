@@ -10,21 +10,31 @@ from discord.ext import commands
 def add_task_img(events):
 	image = Image.new(mode="RGBA", size=(420,509), color=(47, 47, 47))
 	draw = ImageDraw.Draw(image)
-	duplicate = bool
-	for i, event in enumerate(events):
-		clas, date, start, duration = event[0], event[1], int(event[2][0:2]), int(event[4].seconds/60/60)
-		if event[3][3:5] == '30': duration += 0.5
-		for ev in events: 
-			if ev != event:
-				if int(ev[2][0:2])+int(ev[4].seconds/60/60) <= start+duration and start <= int(ev[2][0:2]):
-					duplicate = True
-					draw.rectangle((20+420/2*(i-1), 50+(start-9)*50+start-9, 420/2*i-1, 50+(duration+start-9)*50+duration), fill=(255,255,255,127))
-					draw.text((30+420/2*(i-1)+(i-1)*10, 50+(start-9)*50+(start-9)+duration*50/2-25/2), clas, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
+	memory = []
 
-				else: duplicate = False
+	def is_duplicate(event, duplicate = False, point = 0):
+		for ev in events:
+			if ev != event and int(ev[2][0:2])+int(ev[4].seconds/60/60) <= start+duration and start <= int(ev[2][0:2]):
+				duplicate = True
+				memory.append(ev)
+		return duplicate
+
+	for i, event in enumerate(events):
+		clas, start, duration = event[0], int(event[2][0:2]), int(event[4].seconds/60/60)
+		if event[3][3:5] == '30': duration += 0.5
+		duplicate = is_duplicate(event)
 		if not duplicate:
-			draw.rectangle((20, 50+(start-9)*50+(start-9), 420-1, 50+(start-9)*50+(start-9)+50*duration+duration), fill=(255,255,255,127))
-			draw.text((20+400/2-len(clas)*12/2, 50+(start-9)*50+(start-9)+duration*50/2-25/2), clas, font=ImageFont.truetype("arial.ttf", 25), fill=(0,0,0,127))
+			draw.rectangle((20, 50+(start-9)*50+start-9, 420-1, 50+(start-9)*50+(start-9)+50*duration+duration), fill=(255,255,255,127))
+			draw.text((20+400/2-len(clas)*11/2, 50+(start-9)*50+(start-9)+duration*50/2-25/2), clas, font=ImageFont.truetype("arial.ttf", 25), fill=(0,0,0,127))
+		else :
+			if len(clas) <= 20: text = clas
+			else: text = clas[0:20]
+			if event in memory:
+				draw.rectangle((20, 50+(start-9)*50+start-9, (420-20-20)/2, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
+				draw.text((5+20, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
+			else:
+				draw.rectangle((20+(420-20-20)/2+20, 50+(start-9)*50+start-9, 20+(420-20-20)/2+20+(420-20-20)/2, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
+				draw.text((5+20+(420-20-20)/2+20, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
 
 	draw.rectangle((0, 0, 420, 50), fill="#1a1a1a")
 	draw.rectangle((0, 0, 20, 509), fill="#1a1a1a")
@@ -41,10 +51,8 @@ def add_task_img(events):
 class Schedule(commands.Cog, name="schedule"):
 	def __init__(self, bot):
 		self.bot = bot
-		if os.name == 'nt':
-			end = os.getcwd()+'\\auth\\'
-		elif os.name == 'posix':
-			end = os.getcwd()+'/auth/'
+		if os.name == 'nt': end = os.getcwd()+'\\auth\\'
+		elif os.name == 'posix': end = os.getcwd()+'/auth/'
 		CLIENT_ID = open(end+"client.dat", "r").read()
 		SECRET_ID = open(end+"secret.dat", "r").read()
 		TENANT_ID = open(end+"tenant_id.dat", "r").read()
@@ -66,7 +74,7 @@ class Schedule(commands.Cog, name="schedule"):
 		start_timetable = info[info.find('from:')+6:info.find('to:')-1]
 		end_timetable = info[info.find('to:')+4:-1]
 		duration = datetime.strptime(end_timetable, '%H:%M:%S')-datetime.strptime(start_timetable, '%H:%M:%S')
-	
+
 		return heading, date, start_timetable, end_timetable, duration
 
 	@commands.command(name='actualcalendar', aliases=['ac'])
@@ -78,6 +86,7 @@ class Schedule(commands.Cog, name="schedule"):
 			events.append(str(event))
 		for str_event in events:
 			final.append(self.extract_infos(str_event))
+		print(final)
 		add_task_img(final)
 
 		embed = discord.Embed(colour=0x474747)
@@ -93,11 +102,12 @@ class Schedule(commands.Cog, name="schedule"):
 	async def next_calendar(self, ctx):
 		today, events, final = datetime.today(), [], []
 		start = datetime(today.year, today.month, today.day) + timedelta(1)
-		end = start + timedelta(1) + timedelta(1)
+		end = start + timedelta(2)
 		for event in self.extract_calendar(start, end):
 			events.append(str(event))
 		for str_event in events:
 			final.append(self.extract_infos(str_event))
+		print(final)
 		add_task_img(final)
 
 		embed = discord.Embed(colour=0x474747)
