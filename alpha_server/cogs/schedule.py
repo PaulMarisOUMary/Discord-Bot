@@ -57,7 +57,7 @@ class Schedule(commands.Cog, name="schedule"):
 		SECRET_ID = open(end+"secret.dat", "r").read()
 		TENANT_ID = open(end+"tenant_id.dat", "r").read()
 		account = Account((CLIENT_ID, SECRET_ID), protocol=MSGraphProtocol(default_resource='planning@algosup.com'), auth_flow_type='credentials', tenant_id=TENANT_ID)
-		if account.authenticate(scope=['Calendars.Read.Shared', 'Calendars.Read']): print('Authenticated!')
+		#if account.authenticate(scope=['Calendars.Read.Shared', 'Calendars.Read']): pass#print('Authenticated!')
 		schedule = account.schedule()
 		self.calendar = schedule.get_default_calendar()
 
@@ -86,17 +86,12 @@ class Schedule(commands.Cog, name="schedule"):
 			events.append(str(event))
 		for str_event in events:
 			final.append(self.extract_infos(str_event))
-		print(final)
 		add_task_img(final)
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://stat.png')
 		embed.set_footer(text="Requête de : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(file=discord.File("calendar.png", 'stat.png'), embed=embed)
-
-	@commands.command(name='weekcalendar', aliases=['wc'])
-	async def week_calendar(self, ctx):
-		await ctx.send("week")
 
 	@commands.command(name='nextcalendar', aliases=['nc'])
 	async def next_calendar(self, ctx):
@@ -107,7 +102,6 @@ class Schedule(commands.Cog, name="schedule"):
 			events.append(str(event))
 		for str_event in events:
 			final.append(self.extract_infos(str_event))
-		print(final)
 		add_task_img(final)
 
 		embed = discord.Embed(colour=0x474747)
