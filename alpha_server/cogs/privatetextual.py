@@ -38,7 +38,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 
 		role = await ctx.guild.create_role(name="team")
 		team_channel = await ctx.guild.create_text_channel(name="_team_text", category=discord.utils.get(ctx.guild.categories, id=ctx.channel.category_id), sync_permissions=False)
-		await team_channel.set_permissions(role, send_messages=True, view_channel=True)
+		await team_channel.set_permissions(role, send_messages=True, view_channel=True, read_message_history=True, add_reactions=True, external_emojis=True)
 		await team_channel.set_permissions(down_role, send_messages=False, view_channel=False)
 
 		for user in users:
