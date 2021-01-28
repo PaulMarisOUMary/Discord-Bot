@@ -61,7 +61,7 @@ class Schedule(commands.Cog, name="schedule"):
 		schedule = account.schedule()
 		self.calendar = schedule.get_default_calendar()
 
-	def extract_calendar(self, start, end):
+	async def extract_calendar(self, start, end):
 		query = self.calendar.new_query('start').greater_equal(start)
 		query.chain('and').on_attribute('end').less_equal(end)
 		events = self.calendar.get_events(query=query, include_recurring=True)
@@ -82,7 +82,7 @@ class Schedule(commands.Cog, name="schedule"):
 		today, events, final = datetime.today(), [], []
 		start = datetime(today.year, today.month, today.day)
 		end = start + timedelta(1)
-		for event in self.extract_calendar(start, end):
+		for event in await self.extract_calendar(start, end):
 			events.append(str(event))
 		for str_event in events:
 			final.append(self.extract_infos(str_event))
@@ -98,7 +98,7 @@ class Schedule(commands.Cog, name="schedule"):
 		today, events, final = datetime.today(), [], []
 		start = datetime(today.year, today.month, today.day) + timedelta(1)
 		end = start + timedelta(2)
-		for event in self.extract_calendar(start, end):
+		for event in await self.extract_calendar(start, end):
 			events.append(str(event))
 		for str_event in events:
 			final.append(self.extract_infos(str_event))
