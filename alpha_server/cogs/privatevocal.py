@@ -2,7 +2,6 @@ import asyncio
 import discord
 
 from discord.ext import commands
-from googletrans import Translator
 
 
 class PrivateVocal(commands.Cog, name="privatevocal"):
