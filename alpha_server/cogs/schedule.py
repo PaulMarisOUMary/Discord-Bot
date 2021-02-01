@@ -99,7 +99,7 @@ class Schedule(commands.Cog, name="schedule"):
 	async def next_calendar(self, ctx):
 		today, events, final = datetime.today(), [], []
 		start = datetime(today.year, today.month, today.day) + timedelta(1)
-		end = start + timedelta(2)
+		end = start + timedelta(1)
 		for event in await self.extract_calendar(start, end):
 			events.append(str(event))
 		for str_event in events:
