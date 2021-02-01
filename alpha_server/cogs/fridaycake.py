@@ -38,7 +38,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True
 		for f, p in zip(getFriday(start, holidays, len(groups)), groups):
 			p = "~~`"+p+"`~~" if date.today() >= f else "`"+p+"`"
 			embed.add_field(name="Friday "+f.strftime("%d %B, %Y"), value=p.replace(' ', '` & `'), inline=False)
-		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(embed=embed)
 
 	@commands.command(name='when', aliases=['w'])
@@ -51,7 +51,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True
 		embed = discord.Embed(title="When ·", colour=0xf7346b)
 		embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
 		embed.add_field(name="`{}` be ready for the ".format(ctx.message.author.display_name), value="Friday "+pin[1].strftime("%d %B, %Y"), inline=False)
-		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(embed=embed)
 
 	@commands.command(name='next', aliases=['n'])
@@ -62,7 +62,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True
 		embed = discord.Embed(title="Next ·", colour=0xf7346b)
 		embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
 		embed.add_field(name="The next cooks are :", value="`{}` for `Friday {}`".format(pin[0].replace(' ', '` & `'), pin[1].strftime("%d %B")), inline=False)
-		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(embed=embed)
 
 	@when_cake.error
