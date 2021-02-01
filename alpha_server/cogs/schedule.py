@@ -1,16 +1,16 @@
 import discord
 import time
+import io
 import os
 
-from O365 import Account, Connection, MSGraphProtocol
+from O365 import Account, MSGraphProtocol
 from datetime import date, datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
 from discord.ext import commands
 
 def add_task_img(events):
 	image = Image.new(mode="RGBA", size=(420,509), color=(47, 47, 47))
-	draw = ImageDraw.Draw(image)
-	memory = []
+	draw, memory = ImageDraw.Draw(image), []
 
 	def is_duplicate(event, duplicate = False, point = 0):
 		for ev in events:
@@ -22,31 +22,32 @@ def add_task_img(events):
 	for i, event in enumerate(events):
 		clas, start, duration = event[0], int(event[2][0:2]), int(event[4].seconds/60/60)
 		if event[3][3:5] == '30': duration += 0.5
-		duplicate = is_duplicate(event)
-		if not duplicate:
+		if not is_duplicate(event):
 			draw.rectangle((20, 50+(start-9)*50+start-9, 420-1, 50+(start-9)*50+(start-9)+50*duration+duration), fill=(255,255,255,127))
 			draw.text((20+400/2-len(clas)*11/2, 50+(start-9)*50+(start-9)+duration*50/2-25/2), clas, font=ImageFont.truetype("arial.ttf", 25), fill=(0,0,0,127))
 		else :
 			if len(clas) <= 20: text = clas
 			else: text = clas[0:20]
 			if event in memory:
-				draw.rectangle((20, 50+(start-9)*50+start-9, (420-20-20)/2, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
+				draw.rectangle((20, 50+(start-9)*50+start-9, (420-20-20)/2+10, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
 				draw.text((5+20, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
 			else:
-				draw.rectangle((20+(420-20-20)/2+20, 50+(start-9)*50+start-9, 20+(420-20-20)/2+20+(420-20-20)/2, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
-				draw.text((5+20+(420-20-20)/2+20, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
+				draw.rectangle((30+(420-20-20)/2+20, 50+(start-9)*50+start-9, 20+(420-20-20)/2+20+(420-20-20)/2, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
+				draw.text((15+20+(420-20-20)/2+20, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
 
 	draw.rectangle((0, 0, 420, 50), fill="#1a1a1a")
 	draw.rectangle((0, 0, 20, 509), fill="#1a1a1a")
-	for i in range(9):
+	for i in range(10):
 		if i+9 < 10: t = "0"+str(i+9)+"h"
 		else : t = str(i+9)+"h"
 		draw.text((0,50+50*i+i), t, font=ImageFont.truetype("arial.ttf", 11), fill=(255,255,255,127))
-	for i in range(10):
 		draw.line((20, 50+50*i+i, 420, 50+50*i+i), fill=(127,127,127,127))
 	draw.text((140,10), "PLANNING", font=ImageFont.truetype("arial.ttf", 30), fill=(255,255,255,127))
 
-	image.save("calendar.png")
+	image_binary = io.BytesIO()
+	image.save(image_binary, "PNG")
+	image_binary.seek(0)
+	return image_binary
 
 class Schedule(commands.Cog, name="schedule"):
 	def __init__(self, bot):
@@ -86,12 +87,13 @@ class Schedule(commands.Cog, name="schedule"):
 			events.append(str(event))
 		for str_event in events:
 			final.append(self.extract_infos(str_event))
-		add_task_img(final)
+		image = add_task_img(final)
 
 		embed = discord.Embed(colour=0x474747)
-		embed.set_image(url='attachment://stat.png')
-		embed.set_footer(text="Requête de : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
-		await ctx.send(file=discord.File("calendar.png", 'stat.png'), embed=embed)
+		embed.set_image(url='attachment://schedule.png')
+		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		await ctx.send(file=discord.File(fp=image, filename='schedule.png'), embed=embed)
+		image.close()
 
 	@commands.command(name='nextcalendar', aliases=['nc'])
 	async def next_calendar(self, ctx):
@@ -102,12 +104,13 @@ class Schedule(commands.Cog, name="schedule"):
 			events.append(str(event))
 		for str_event in events:
 			final.append(self.extract_infos(str_event))
-		add_task_img(final)
+		image = add_task_img(final)
 
 		embed = discord.Embed(colour=0x474747)
-		embed.set_image(url='attachment://stat.png')
-		embed.set_footer(text="Requête de : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
-		await ctx.send(file=discord.File("calendar.png", 'stat.png'), embed=embed)
+		embed.set_image(url='attachment://schedule.png')
+		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		await ctx.send(file=discord.File(fp=image, filename='schedule.png'), embed=embed)
+		image.close()
 
 def setup(bot):
 	bot.add_cog(Schedule(bot))

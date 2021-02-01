@@ -13,10 +13,10 @@ class Basic(commands.Cog, name="basic"):
 		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(embed=embed)
 
-	"""@commands.Cog.listener('on_command_error')
+	@commands.Cog.listener('on_command_error')
 	async def get_command_error(self, ctx, error):
 		if isinstance(error, commands.CommandNotFound):
-			await ctx.send(error)"""
+			await ctx.send(error)
 
 def setup(bot):
 	bot.add_cog(Basic(bot))
