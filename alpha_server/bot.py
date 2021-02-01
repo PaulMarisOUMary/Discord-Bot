@@ -3,7 +3,11 @@ import discord
 
 from discord.ext import commands
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"), description='FridayCake', case_insensitive=True)
+intents = discord.Intents.default()
+intents.presences = True
+intents.members = True
+
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"), description='Algobot', intents=intents)
 bot.remove_command('help')
 
 if __name__ == '__main__':
