@@ -91,7 +91,7 @@ class Schedule(commands.Cog, name="schedule"):
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
-		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(file=discord.File(fp=image, filename='schedule.png'), embed=embed)
 		image.close()
 
@@ -108,7 +108,7 @@ class Schedule(commands.Cog, name="schedule"):
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
-		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(file=discord.File(fp=image, filename='schedule.png'), embed=embed)
 		image.close()
 
