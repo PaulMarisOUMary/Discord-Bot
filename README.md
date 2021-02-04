@@ -4,6 +4,61 @@
 
 #### Bot [alpha_server](https://github.com/PaulMarisOUMary/Algosup-Discord/tree/main/alpha_server) for discord
 
+<details>
+  <summary>Available commands ([smth,smthelse] are aliases) :</summary>
+
+- ADMIN:
+```c#
+?killloop {cog}
+["kill"]
+
+?reload {cog}
+["rel"]
+
+?reloadall
+["rell", "relall"]
+```
+
+- BASIC:
+```c#
+?help
+["h", "?", "commands"]
+```
+
+- FRIDAYCAKE:
+```c#
+?cake
+["fc"]
+
+?all
+["a"]
+
+?next
+["n"]
+
+?when
+["w"]
+```
+
+- PRIVATETEXTUAL:
+```c#
+?addprivate
+["create", "add", "+", ">"]
+
+?delprivate
+["delete", "del", "-", "<"]
+
+?renprivate
+["rename", "ren", "r", "_"]
+```
+
+- SPOTIFY:
+```c#
+?spotify {user}
+["sp", "sy", "spy", "spot"]
+```
+</details>
+
 # Icons:
 ## Algosup (students)
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server_icons/algosup_base.png?raw=true)
