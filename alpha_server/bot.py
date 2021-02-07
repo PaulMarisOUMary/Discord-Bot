@@ -11,12 +11,7 @@ bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"), description='
 bot.remove_command('help')
 
 if __name__ == '__main__':
-	if os.name == 'nt':
-		end = '\\cogs'
-	elif os.name == 'posix':
-		end = '/cogs'
-	files = os.listdir(os.getcwd()+end)
-	for cog in files:
+	for cog in os.listdir(os.getcwd()+"/cogs"):
 		if cog[-3:len(cog)] == '.py':
 			bot.load_extension('cogs.'+cog[:-3])
 
