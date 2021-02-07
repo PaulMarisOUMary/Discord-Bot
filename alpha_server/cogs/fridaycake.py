@@ -5,7 +5,7 @@ import discord
 from datetime import date, timedelta
 from discord.ext import commands
 
-groups = ["Karine Aurélien", "Eloi Louis", "Brendon Laura-Lee", "Martin Romain", "Laurent Salaheddine", "Clément Clémentine", "Jules ?Steevy?", "Théo Paul"]
+groups = ["Karine Aurélien", "Eloi Louis", "Brendon Laura-Lee", "Martin Romain", "Laurent Salaheddine", "Clément Clémentine", "Jules", "Théo Paul"]
 holidays = [(date(2021, 2, 27), date(2021, 3, 7)), (date(2021, 4, 24), date(2021, 5, 9))]
 start = date(2021, 2, 5) #year #month #day
 
