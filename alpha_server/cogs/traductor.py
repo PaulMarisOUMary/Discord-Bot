@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 from googletrans import Translator #pip install googletrans==4.0.0-rc1
 
-
 class Traductor(commands.Cog, name="traductor"):
 	def __init__(self, bot):
 		self.bot = bot
@@ -27,7 +26,7 @@ class Traductor(commands.Cog, name="traductor"):
 				except: await message.clear_reaction(convert_emoji)
 				mess, reactions = await message.channel.history(limit=1).flatten(), discord.utils.get(message.reactions, emoji=convert_emoji)
 				if mess[0].content == content and reactions:
-					await message.reply(content=flag_emoji+" `Translated :` "+translated, mention_author=False)
+					await message.reply(content="**`Translated from` "+flag_emoji+" `by` <:Gtranslate:807986736663101440> `:`** "+translated, mention_author=False)
 				else:
 					await message.clear_reaction(convert_emoji)
 
