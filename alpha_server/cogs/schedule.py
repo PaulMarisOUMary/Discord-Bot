@@ -8,41 +8,44 @@ from datetime import date, datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
 from discord.ext import commands
 
-def add_task_img(events):
-	image = Image.new(mode="RGBA", size=(420,509), color=(47, 47, 47))
-	draw, memory = ImageDraw.Draw(image), []
+def add_task_img(final):
+	image = Image.new(mode="RGBA", size=(20+400*len(final),509), color=(47, 47, 47))
+	draw = ImageDraw.Draw(image)
 
-	def is_duplicate(event, duplicate = False, point = 0):
+	def is_duplicate(event, events, duplicate = False, point = 0):
 		for ev in events:
 			if ev != event and int(ev[2][0:2])+int(ev[4].seconds/60/60) <= start+duration and start <= int(ev[2][0:2]):
 				duplicate = True
 				memory.append(ev)
 		return duplicate
 
-	for i, event in enumerate(events):
-		clas, start, duration = event[0], int(event[2][0:2]), int(event[4].seconds/60/60)
-		if event[3][3:5] == '30': duration += 0.5
-		if not is_duplicate(event):
-			draw.rectangle((20, 50+(start-9)*50+start-9, 420-1, 50+(start-9)*50+(start-9)+50*duration+duration), fill=(255,255,255,127))
-			draw.text((20+400/2-len(clas)*11/2, 50+(start-9)*50+(start-9)+duration*50/2-25/2), clas, font=ImageFont.truetype("arial.ttf", 25), fill=(0,0,0,127))
-		else :
-			if len(clas) <= 20: text = clas
-			else: text = clas[0:20]
-			if event in memory:
-				draw.rectangle((20, 50+(start-9)*50+start-9, (420-20-20)/2+10, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
-				draw.text((5+20, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
-			else:
-				draw.rectangle((30+(420-20-20)/2+20, 50+(start-9)*50+start-9, 20+(420-20-20)/2+20+(420-20-20)/2, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
-				draw.text((15+20+(420-20-20)/2+20, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
+	for j, events in enumerate(final):
+		memory = []
+		for i, event in enumerate(events):
+			clas, start, duration = event[0], int(event[2][0:2]), int(event[4].seconds/60/60)
+			if event[3][3:5] == '30': duration += 0.5
+			if not is_duplicate(event, events):
+				draw.rectangle((20+400*j, 50+(start-9)*50+start-9, 420-1+400*j, 50+(start-9)*50+(start-9)+50*duration+duration), fill=(255,255,255,127))
+				draw.text((20+400/2-len(clas)*11/2+400*j, 50+(start-9)*50+(start-9)+duration*50/2-25/2), clas, font=ImageFont.truetype("arial.ttf", 25), fill=(0,0,0,127))
+			else :
+				if len(clas) <= 20: text = clas
+				else: text = clas[0:20]
+				if event in memory:
+					draw.rectangle((20+400*j, 50+(start-9)*50+start-9, (420-20-20)/2+10+400*j, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
+					draw.text((5+20+400*j, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
+				else:
+					draw.rectangle((30+(420-20-20)/2+20+400*j, 50+(start-9)*50+start-9, 20+(420-20-20)/2+20+(420-20-20)/2+400*j, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
+					draw.text((15+20+(420-20-20)/2+20+400*j, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
+		draw.line((20+400*j, 50, 20+400*j, 509), fill=(127,127,127,127))
 
-	draw.rectangle((0, 0, 420, 50), fill="#1a1a1a")
+	draw.rectangle((0, 0, 20+400*len(final), 50), fill="#1a1a1a")
 	draw.rectangle((0, 0, 20, 509), fill="#1a1a1a")
 	for i in range(10):
 		if i+9 < 10: t = "0"+str(i+9)+"h"
 		else : t = str(i+9)+"h"
 		draw.text((0,50+50*i+i), t, font=ImageFont.truetype("arial.ttf", 11), fill=(255,255,255,127))
-		draw.line((20, 50+50*i+i, 420, 50+50*i+i), fill=(127,127,127,127))
-	draw.text((140,10), "PLANNING", font=ImageFont.truetype("arial.ttf", 30), fill=(255,255,255,127))
+		draw.line((20, 50+50*i+i, 20+400*len(final), 50+50*i+i), fill=(127,127,127,127))
+	draw.text(((20+400*len(final))/2-150/2,10), "PLANNING", font=ImageFont.truetype("arial.ttf", 30), fill=(255,255,255,127))
 
 	image_binary = io.BytesIO()
 	image.save(image_binary, "PNG")
@@ -84,7 +87,7 @@ class Schedule(commands.Cog, name="schedule"):
 		end = start + timedelta(1)
 		for event in await self.extract_calendar(start, end):
 			events.append(self.extract_infos(str(event)))
-		image = add_task_img(events)
+		image = add_task_img([events])
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
@@ -99,7 +102,7 @@ class Schedule(commands.Cog, name="schedule"):
 		end = start + timedelta(1)
 		for event in await self.extract_calendar(start, end):
 			events.append(self.extract_infos(str(event)))
-		image = add_task_img(events)
+		image = add_task_img([events])
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
@@ -109,13 +112,22 @@ class Schedule(commands.Cog, name="schedule"):
 
 	@commands.command(name='weekcalendar', aliases=['wc'])
 	async def week_calendar(self, ctx):
-		today, events = datetime.now().date(), []
+		today, events, stock, final = datetime.now().date(), [], [], []
 		start = today - timedelta(days=today.weekday())
-		end = start + timedelta(days=4)
+		end = start + timedelta(days=5)
 		for event in await self.extract_calendar(start, end):
 			events.append(self.extract_infos(str(event)))
+		for i in range(0, len(events)):
+			for j in range(0, len(events)-i-1):
+				if events[j][1] > events[j+1][1]:
+					events[j], events[j+1] = events[j+1], events[j]
+		for i in range(0, len(events)):
+			stock.append(events[i])
+			if i == len(events)-1 or events[i][1] != events[i+1][1]:
+				final.append(stock)
+				stock = []
 		
-		image = add_task_img(events) ##in progress
+		image = add_task_img(final)
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
