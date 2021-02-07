@@ -52,11 +52,10 @@ def add_task_img(events):
 class Schedule(commands.Cog, name="schedule"):
 	def __init__(self, bot):
 		self.bot = bot
-		if os.name == 'nt': end = os.getcwd()+'\\auth\\'
-		elif os.name == 'posix': end = os.getcwd()+'/auth/'
-		CLIENT_ID = open(end+"client.dat", "r").read()
-		SECRET_ID = open(end+"secret.dat", "r").read()
-		TENANT_ID = open(end+"tenant_id.dat", "r").read()
+		end = os.getcwd()
+		CLIENT_ID = open(end+"/auth/client.dat", "r").read()
+		SECRET_ID = open(end+"/auth/secret.dat", "r").read()
+		TENANT_ID = open(end+"/auth/tenant_id.dat", "r").read()
 		account = Account((CLIENT_ID, SECRET_ID), protocol=MSGraphProtocol(default_resource='planning@algosup.com'), auth_flow_type='credentials', tenant_id=TENANT_ID)
 		if account.authenticate(scope=['Calendars.Read.Shared', 'Calendars.Read']): pass#print('Authenticated!')
 		schedule = account.schedule()
@@ -80,14 +79,12 @@ class Schedule(commands.Cog, name="schedule"):
 
 	@commands.command(name='actualcalendar', aliases=['ac'])
 	async def actual_calendar(self, ctx):
-		today, events, final = datetime.today(), [], []
-		start = datetime(today.year, today.month, today.day)
+		today, events = datetime.now().date(), []
+		start = today
 		end = start + timedelta(1)
 		for event in await self.extract_calendar(start, end):
-			events.append(str(event))
-		for str_event in events:
-			final.append(self.extract_infos(str_event))
-		image = add_task_img(final)
+			events.append(self.extract_infos(str(event)))
+		image = add_task_img(events)
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
@@ -97,14 +94,28 @@ class Schedule(commands.Cog, name="schedule"):
 
 	@commands.command(name='nextcalendar', aliases=['nc'])
 	async def next_calendar(self, ctx):
-		today, events, final = datetime.today(), [], []
-		start = datetime(today.year, today.month, today.day) + timedelta(1)
+		today, events = datetime.now().date(), []
+		start = today + timedelta(1)
 		end = start + timedelta(1)
 		for event in await self.extract_calendar(start, end):
-			events.append(str(event))
-		for str_event in events:
-			final.append(self.extract_infos(str_event))
-		image = add_task_img(final)
+			events.append(self.extract_infos(str(event)))
+		image = add_task_img(events)
+
+		embed = discord.Embed(colour=0x474747)
+		embed.set_image(url='attachment://schedule.png')
+		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		await ctx.send(file=discord.File(fp=image, filename='schedule.png'), embed=embed)
+		image.close()
+
+	@commands.command(name='weekcalendar', aliases=['wc'])
+	async def week_calendar(self, ctx):
+		today, events = datetime.now().date(), []
+		start = today - timedelta(days=today.weekday())
+		end = start + timedelta(days=4)
+		for event in await self.extract_calendar(start, end):
+			events.append(self.extract_infos(str(event)))
+		
+		image = add_task_img(events) ##in progress
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
