@@ -52,6 +52,18 @@
 ["rename", "ren", "r", "_"]
 ```
 
+- SCHEDULE
+```c#
+?actualcalendar
+["ac"]
+
+?nextcalendar
+["nc"]
+
+?weekcalendar
+["wc"]
+```
+
 - SPOTIFY:
 ```c#
 ?spotify {user}
