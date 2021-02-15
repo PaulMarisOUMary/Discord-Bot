@@ -1,40 +1,60 @@
-from pystray import MenuItem as item #pip install pystray
+from pystray import Icon as icon, Menu as menu, MenuItem as item #pip install pystray
 from pypresence import Presence #pip install pypresence
 from PIL import Image #pip install pillow
-import pystray
+import asyncio, time, threading, pystray, os
+
+Running, State, Stop = False, True, False
+
+checked = True
+def on_clicked(icon, item):
+	global checked, State
+	checked = not item.checked
+	State = checked
 
 def quit_all():
-    RPC.clear()
-    icon.stop()
+	global Stop
+	icon.stop()
+	Stop = True
 
-def enable_presence():
-    """RPC.update(large_image="algosup_base_dark", large_text="Algosup",
-            small_image="dark_vscode", small_text="Visual Studio Code",
-            details="Working in", state="Go workspace",
-            buttons=[{"label": "Website", "url": "https://www.algosup.com/"}])"""
-    RPC.update(large_image="algosup_base_dark", large_text="Algosup",
-            details="Working",
-            buttons=[{"label": "Website", "url": "https://www.algosup.com/"}])
-    
-    icon.notify(message='Presence Enabled !', title="Discord Algosup Presence")
+class Checker(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+	
+	def isRunning(self):
+		output = os.popen('wmic process get description, processid').read()
+		return "discord.exe" in output.lower()
 
-def disable_presence():
-    RPC.clear()
-    icon.notify(message='Presence Disabled !', title="Discord Algosup Presence")
+	def run(self):
+		global Running, Stop
+		while not Stop:
+			Running = self.isRunning()
+			time.sleep(10)
 
-state = True
-def switch_presence(icon, item):
-    global state
-    state = not item.checked
-    if state : enable_presence()
-    else : disable_presence()
-    
+class Discord(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+
+	def run(self):
+		try:
+			asyncio.set_event_loop(asyncio.new_event_loop())
+			global Running, Stop, State
+			while not Stop:
+				if Running:
+					if State:
+						RPC.connect()
+						RPC.update(large_image="algosup_base_dark", large_text="Algosup",
+							details="Working",
+							buttons=[{"label": "Website", "url": "https://www.algosup.com/"}])
+					else: RPC.close()
+				time.sleep(15)
+		except: pass
 
 RPC = Presence(client_id='809116041892462612', pipe=0)
-RPC.connect()
+
+Checker().start()
+Discord().start()
 
 image = Image.open("algosup_taskbar.png")
-menu = (item('Discord presence', switch_presence, checked=lambda item: state),item('Quit', lambda : quit_all(), checked=lambda item: False))
+menu = menu(item('Presence', on_clicked, checked=lambda item: checked), item('Quit', quit_all))
 icon = pystray.Icon("name", image, "Algosup", menu)
-enable_presence()
 icon.run()
