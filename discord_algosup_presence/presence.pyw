@@ -1,60 +1,60 @@
 from pystray import Icon as icon, Menu as menu, MenuItem as item #pip install pystray
 from pypresence import Presence #pip install pypresence
-from PIL import Image #pip install pillow
+from PIL import Image, ImageDraw, ImageFont #pip install pillow
 import asyncio, time, threading, pystray, os
 
-Running, State, Stop = False, True, False
+State, Stop, sett = True, False, False
 
 checked = True
 def on_clicked(icon, item):
-	global checked, State
+	global checked, State, sett
 	checked = not item.checked
 	State = checked
+	if not State:
+		sett = False
 
 def quit_all():
 	global Stop
 	icon.stop()
 	Stop = True
+	asyncio.close()
 
-class Checker(threading.Thread):
+def create_image():
+	image = Image.new('RGB', (512, 512), (15, 17, 20))
+	draw = ImageDraw.Draw(image)
+	for i, color in enumerate([(195,195,195), (127,127,127), (169,16,28)]):
+		draw.text((50+150*i, 10), "}", font=ImageFont.truetype("arial.ttf", 375), fill=color)
+		draw.ellipse((40+150*i, 160, 90+150*i, 210), fill=color)
+
+	return image
+
+class SetPresence(threading.Thread):
 	def __init__(self):
 		threading.Thread.__init__(self)
-	
+
 	def isRunning(self):
 		output = os.popen('wmic process get description, processid').read()
 		return "discord.exe" in output.lower()
 
 	def run(self):
-		global Running, Stop
+		asyncio.set_event_loop(asyncio.new_event_loop())
+		global Stop, State, sett
 		while not Stop:
-			Running = self.isRunning()
-			time.sleep(10)
+			if self.isRunning():
+				RPC.connect()
+				if State and not sett:
+					RPC.update(large_image="algosup_base_dark", large_text="Algosup",
+						details="Working",
+						buttons=[{"label": "Website", "url": "https://www.algosup.com/"}])
+					sett = True
+				if not State and sett:
+					RPC.clear()
+			print("0")
 
-class Discord(threading.Thread):
-	def __init__(self):
-		threading.Thread.__init__(self)
+if __name__ == "__main__":
+	RPC = Presence(client_id='809116041892462612', pipe=0)
+	SetPresence().start()
 
-	def run(self):
-		try:
-			asyncio.set_event_loop(asyncio.new_event_loop())
-			global Running, Stop, State
-			while not Stop:
-				if Running:
-					if State:
-						RPC.connect()
-						RPC.update(large_image="algosup_base_dark", large_text="Algosup",
-							details="Working",
-							buttons=[{"label": "Website", "url": "https://www.algosup.com/"}])
-					else: RPC.close()
-				time.sleep(15)
-		except: pass
-
-RPC = Presence(client_id='809116041892462612', pipe=0)
-
-Checker().start()
-Discord().start()
-
-image = Image.open("algosup_taskbar.png")
-menu = menu(item('Presence', on_clicked, checked=lambda item: checked), item('Quit', quit_all))
-icon = pystray.Icon("name", image, "Algosup", menu)
-icon.run()
+	menu = menu(item('Presence', on_clicked, checked=lambda item: checked), item('Quit', quit_all))
+	icon = pystray.Icon("name", create_image(), "Algosup", menu)
+	icon.run()
