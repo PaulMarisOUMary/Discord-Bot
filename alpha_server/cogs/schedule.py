@@ -42,14 +42,14 @@ def task_in_img(final):
 					draw.rectangle(to_place(x=(400-20)/2+40+410*j,y=50+(start-9)*50+start-9,width=(400-20)/2,height=50*duration+duration), fill=(255,255,255))
 					draw.text(((400-20)/2+40+410*j,50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0))
 
-	draw.rectangle((0, 0, 20+400*len(final), 50), fill="#1a1a1a")
+	draw.rectangle((0, 0, 20+410*len(final), 50), fill="#1a1a1a")
 	draw.rectangle((0, 0, 20, 509), fill="#1a1a1a")
 	for i in range(10):
 		if i+9 < 10: t = "0"+str(i+9)+"h"
 		else : t = str(i+9)+"h"
 		draw.text((0,50+50*i+i), t, font=ImageFont.truetype("arial.ttf", 11), fill=(255,255,255))
 		draw.line(to_place(20, 50+50*i+i, 410*len(final), 0), fill=(127,127,127))
-	draw.text(((20+400*len(final))/2-150/2,10), "PLANNING", font=ImageFont.truetype("arial.ttf", 30), fill=(255,255,255,127))
+	draw.text(((20+410*len(final))/2-150/2,10), "PLANNING", font=ImageFont.truetype("arial.ttf", 30), fill=(255,255,255,127))
 	
 	image_binary = io.BytesIO()
 	image.save(image_binary, "PNG")
