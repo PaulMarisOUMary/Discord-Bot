@@ -8,9 +8,12 @@ from datetime import date, datetime, timedelta
 from PIL import Image, ImageDraw, ImageFont
 from discord.ext import commands
 
-def add_task_img(final):
-	image = Image.new(mode="RGBA", size=(20+400*len(final),509), color=(47, 47, 47))
+def task_in_img(final):
+	image = Image.new(mode="RGB", size=(20+410*len(final), 509), color=(47,47,47))
 	draw = ImageDraw.Draw(image)
+
+	def to_place(x,y,width,height):
+		return (x,y,x+width,y+height)
 
 	def is_duplicate(event, events, duplicate = False, point = 0):
 		for ev in events:
@@ -23,30 +26,31 @@ def add_task_img(final):
 		memory = []
 		for i, event in enumerate(events):
 			clas, start, duration = event[0], int(event[2][0:2]), int(event[4].seconds/60/60)
-			if event[3][3:5] == '30': duration += 0.5
+			duration += int(event[3][3:5])/60
 			if not is_duplicate(event, events):
-				draw.rectangle((20+400*j, 50+(start-9)*50+start-9, 420-1+400*j, 50+(start-9)*50+(start-9)+50*duration+duration), fill=(255,255,255,127))
-				draw.text((20+400/2-len(clas)*11/2+400*j, 50+(start-9)*50+(start-9)+duration*50/2-25/2), clas, font=ImageFont.truetype("arial.ttf", 25), fill=(0,0,0,127))
-			else :
-				if len(clas) <= 20: text = clas
-				else: text = clas[0:20]
+				if len(clas) <= 45: text = clas
+				else: text = clas[0:45]
+				draw.rectangle(to_place(x=20+410*j,y=50+(start-9)*50+start-9,width=400,height=50*duration+duration), fill=(255,255,255))
+				draw.text((20+410*j,50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0))
+			else:
+				if len(clas) <= 25: text = clas
+				else: text = clas[0:25]
 				if event in memory:
-					draw.rectangle((20+400*j, 50+(start-9)*50+start-9, (420-20-20)/2+10+400*j, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
-					draw.text((5+20+400*j, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
+					draw.rectangle(to_place(x=20+410*j,y=50+(start-9)*50+start-9,width=(400-20)/2,height=50*duration+duration), fill=(255,255,255))
+					draw.text((20+410*j,50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0))
 				else:
-					draw.rectangle((30+(420-20-20)/2+20+400*j, 50+(start-9)*50+start-9, 20+(420-20-20)/2+20+(420-20-20)/2+400*j, 50+(start-9)*50+start-9+50*duration+duration), fill=(255,255,255,127))
-					draw.text((15+20+(420-20-20)/2+20+400*j, 50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0,127))
-		draw.line((20+400*j, 50, 20+400*j, 509), fill=(127,127,127,127))
+					draw.rectangle(to_place(x=(400-20)/2+40+410*j,y=50+(start-9)*50+start-9,width=(400-20)/2,height=50*duration+duration), fill=(255,255,255))
+					draw.text(((400-20)/2+40+410*j,50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0))
 
 	draw.rectangle((0, 0, 20+400*len(final), 50), fill="#1a1a1a")
 	draw.rectangle((0, 0, 20, 509), fill="#1a1a1a")
 	for i in range(10):
 		if i+9 < 10: t = "0"+str(i+9)+"h"
 		else : t = str(i+9)+"h"
-		draw.text((0,50+50*i+i), t, font=ImageFont.truetype("arial.ttf", 11), fill=(255,255,255,127))
-		draw.line((20, 50+50*i+i, 20+400*len(final), 50+50*i+i), fill=(127,127,127,127))
+		draw.text((0,50+50*i+i), t, font=ImageFont.truetype("arial.ttf", 11), fill=(255,255,255))
+		draw.line(to_place(20, 50+50*i+i, 410*len(final), 0), fill=(127,127,127))
 	draw.text(((20+400*len(final))/2-150/2,10), "PLANNING", font=ImageFont.truetype("arial.ttf", 30), fill=(255,255,255,127))
-
+	
 	image_binary = io.BytesIO()
 	image.save(image_binary, "PNG")
 	image_binary.seek(0)
@@ -80,14 +84,14 @@ class Schedule(commands.Cog, name="schedule"):
 
 		return heading, date, start_timetable, end_timetable, duration
 
-	@commands.command(name='actualcalendar', aliases=['ac'])
+	@commands.command(name='currentcalendar', aliases=['cc', 'ac'])
 	async def actual_calendar(self, ctx):
 		today, events = datetime.now().date(), []
 		start = today
 		end = start + timedelta(1)
 		for event in await self.extract_calendar(start, end):
 			events.append(self.extract_infos(str(event)))
-		image = add_task_img([events])
+		image = task_in_img([events])
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
@@ -102,7 +106,7 @@ class Schedule(commands.Cog, name="schedule"):
 		end = start + timedelta(1)
 		for event in await self.extract_calendar(start, end):
 			events.append(self.extract_infos(str(event)))
-		image = add_task_img([events])
+		image = task_in_img([events])
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
@@ -127,7 +131,7 @@ class Schedule(commands.Cog, name="schedule"):
 				final.append(stock)
 				stock = []
 		
-		image = add_task_img(final)
+		image = task_in_img(final)
 
 		embed = discord.Embed(colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
