@@ -54,8 +54,8 @@
 
 - SCHEDULE
 ```c#
-?actualcalendar
-["ac"]
+?currentcalendar
+["cc", "ac"]
 
 ?nextcalendar
 ["nc"]
