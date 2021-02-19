@@ -45,8 +45,17 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			cogs.return_loop_task().cancel()
 		await ctx.send("Task successfully killed")
 
+	@commands.command(name='deletechannel', aliases=['dc'], require_var_positional=True)
+	@commands.check(is_owner)
+	async def delete_channel(self, ctx, channel_name):
+		channel = discord.utils.get(ctx.guild.channels, name=channel_name)
+		while channel:
+			await channel.delete()
+			channel = discord.utils.get(ctx.guild.channels, name=channel_name)
+		await ctx.send("All channels named `"+str(channel_name)+"` as been succesfuly deleted")
+
 	@reload_all_cogs.error
-	async def reload_cogs_error(self, ctx, error):
+	async def reload_all_cogs_error(self, ctx, error):
 		if isinstance(error, commands.CheckFailure):
 			await ctx.send('Error, you are not authorized to type that !')
 		else:
