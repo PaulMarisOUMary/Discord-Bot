@@ -9,6 +9,9 @@
 
 - ADMIN:
 ```c#
+?deletechannel {name}
+["dc"]
+
 ?killloop {cog}
 ["kill"]
 
