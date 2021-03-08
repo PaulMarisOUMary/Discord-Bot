@@ -80,7 +80,7 @@
 
 ## ALPHA
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server_icons/algosup_alpha.png?raw=true)
-- Promotion 2020-2021 : `Aurélien` `Brendon` `Clément` `Clémentine` `Eloi` ~~`Eric`~~ `Florent` `Jules` `Karine` `Laura-Lee` `Laurent` `Louis` `Martin` `Paul` ~~`Robin`~~ `Romain` `Salahedine` ~~`Steevy`~~ `Théo`
+- Promotion 2020-2021 : `Aurélien` `Brendon` `Clément` `Clémentine` `Eloi` ~~`Eric`~~ `Florent` `Ivan` `Jules` `Karine` `Laura-Lee` `Laurent` `Louis` `Martin` `Max` `Paul` ~~`Robin`~~ `Romain` `Salahedine` ~~`Steevy`~~ `Théo`
 ## BETA
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server_icons/algosup_beta.png?raw=true)
 - Promotion 2021-2022 : 
