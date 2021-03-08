@@ -74,7 +74,9 @@
 ```
 </details>
 
-# Icons:
+# Images:
+<details>
+  <summary>Show images/icons</summary>
 ## Algosup (students)
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server_icons/algosup_base.png?raw=true)
 
@@ -154,3 +156,4 @@
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/server_icons/algosup.png?raw=true)
 ## Discord bot logo (sample)
 ![](https://github.com/PaulMarisOUMary/Algosup-Discord/blob/main/server_icons/bot_logo.png?raw=true)
+</details>
