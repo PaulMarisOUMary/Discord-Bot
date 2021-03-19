@@ -43,7 +43,8 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 		cogs = self.bot.get_cog(cog)
 		if "return_loop_task" in dir(cogs):
 			cogs.return_loop_task().cancel()
-		await ctx.send("Task successfully killed")
+			await ctx.send("Task successfully killed")
+		else: await ctx.send("Task not found")
 
 	@commands.command(name='deletechannel', aliases=['dc'], require_var_positional=True)
 	@commands.check(is_owner)
