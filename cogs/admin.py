@@ -13,29 +13,40 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	@commands.command(name='reloadall', aliases=['rell', 'relall'])
 	@commands.check(is_owner)
 	async def reload_all_cogs(self, ctx):
-		botCogs, safeCogs = self.bot.extensions, []
+		victim, victim_list, botCogs, safeCogs = 0, [], self.bot.extensions, []
 		try:
 			for cog in botCogs:
 				safeCogs.append(cog)
 			for cog in safeCogs:
 				g_cog = self.bot.get_cog(cog[5:len(cog)])
-				if "return_loop_task" in dir(g_cog): g_cog.return_loop_task().cancel()
+				if "return_loop_task" in dir(g_cog): 
+					g_cog.return_loop_task().cancel()
+					victim += 1
+					victim_list.append(cog)
 				self.bot.reload_extension(cog)
 		except commands.ExtensionError as e:
 			await ctx.send(f'{e.__class__.__name__}: {e}')
 		else:
-			await ctx.send(':muscle:  All cogs reloaded !')
+			succes_text = ':muscle:  All cogs reloaded ! | __`' + str(victim) + ' task killed`__ : '
+			for victims in victim_list:
+				succes_text += "`"+str(victims).replace('cogs.', '')+"` "
+			await ctx.send(succes_text)
 
 	@commands.command(name='reload', aliases=['rel'], require_var_positional=True)
 	@commands.check(is_owner)
 	async def reload_cogs(self, ctx, cog):
+		victim = 0
+		g_cog = self.bot.get_cog(cog[5:len(cog)])
 		cog = 'cogs.'+cog
 		try:
+			if "return_loop_task" in dir(g_cog): 
+				g_cog.return_loop_task().cancel()
+				victim += 1
 			self.bot.reload_extension(cog)
 		except commands.ExtensionError as e:
 			await ctx.send(f'{e.__class__.__name__}: {e}')
 		else:
-			await ctx.send(':metal: '+cog+' reloaded !')
+			await ctx.send(':metal: '+cog+' reloaded ! : __`' + str(victim) + ' task killed`__')
 
 	@commands.command(name='killloop', aliases=['kill'], require_var_positional=True)
 	@commands.check(is_owner)
@@ -44,7 +55,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 		if "return_loop_task" in dir(cogs):
 			cogs.return_loop_task().cancel()
 			await ctx.send("Task successfully killed")
-		else: await ctx.send("Task not found")
+		else : await ctx.send("Task not found..")
 
 	@commands.command(name='deletechannel', aliases=['dc'], require_var_positional=True)
 	@commands.check(is_owner)
