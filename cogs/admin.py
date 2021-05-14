@@ -19,6 +19,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 				safeCogs.append(cog)
 			for cog in safeCogs:
 				g_cog = self.bot.get_cog(cog[5:len(cog)])
+				print(g_cog, cog)
 				if "return_loop_task" in dir(g_cog): 
 					g_cog.return_loop_task().cancel()
 					victim += 1
@@ -35,11 +36,9 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	@commands.command(name='reload', aliases=['rel'], require_var_positional=True)
 	@commands.check(is_owner)
 	async def reload_cogs(self, ctx, cog):
-		victim = 0
-		g_cog = self.bot.get_cog(cog[5:len(cog)])
-		cog = 'cogs.'+cog
+		victim, cog, g_cog = 0, 'cogs.'+cog, self.bot.get_cog(cog)
 		try:
-			if "return_loop_task" in dir(g_cog): 
+			if "return_loop_task" in dir(g_cog):
 				g_cog.return_loop_task().cancel()
 				victim += 1
 			self.bot.reload_extension(cog)
