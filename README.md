@@ -72,6 +72,15 @@
 ?spotify {user}
 ["sp", "sy", "spy", "spot"]
 ```
+
+- USEFULL:
+```c#
+?emojilist
+["ce", "el"]
+
+?strawpoll
+["stp", "straw", "sondage"]
+```
 </details>
 
 # Images:
