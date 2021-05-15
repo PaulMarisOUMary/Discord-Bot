@@ -13,9 +13,9 @@ start = date(2021, 5, 14) #year #month #day
 def getFriday(date, holiday, count):
     holes, i = [], 0
     date += timedelta(days=4 - date.weekday())
-    for h in holidays:
+    for h in holiday:
         hole = h[0]+timedelta(days=1 - h[0].weekday())
-        for d in range(h[0].toordinal(), h[1].toordinal()+1):
+        for _ in range(h[0].toordinal(), h[1].toordinal()+1):
             hole += timedelta(days=1)
             holes.append(hole)
     while i <= count:
