@@ -7,7 +7,7 @@ intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("$"), description='_Clan-of-Ghosts_', intents=intents)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"), description='Algobot', intents=intents)
 bot.remove_command('help')
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
