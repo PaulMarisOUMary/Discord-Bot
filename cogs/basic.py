@@ -13,6 +13,13 @@ class Basic(commands.Cog, name="basic"):
 		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(embed=embed)
 
+	@commands.command(name='ping', pass_context=True)
+	async def ping(self, ctx):
+		before = time.monotonic()
+		message = await ctx.message.reply(":ping_pong: Pong !")
+		ping = (time.monotonic() - before) * 1000
+		await message.edit(content=f":ping_pong: Pong ! in `{float(round(ping/1000.0,3))}s` ||{int(ping)}ms||")
+
 	@commands.Cog.listener('on_command_error')
 	async def get_command_error(self, ctx, error):
 		if isinstance(error, commands.CommandNotFound):
