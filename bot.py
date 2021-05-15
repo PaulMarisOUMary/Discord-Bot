@@ -13,13 +13,15 @@ bot.remove_command('help')
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
 if __name__ == '__main__':
-	for cog in os.listdir(current_directory+"\\cogs"):
-		if cog[-3:len(cog)] == '.py':
-			bot.load_extension('cogs.'+cog[:-3])
+	cogs_directory = os.path.join(current_directory, "cogs")
+	for cog in os.listdir(cogs_directory):
+		actual = os.path.splitext(cog)
+		if actual[1] == '.py':
+			bot.load_extension('cogs.'+actual[0])
 
 @bot.event
 async def on_ready():
 	print("Logged in as: "+str(bot.user)+"\nVersion: "+str(discord.__version__))
 
-token_file = open(current_directory+"\\auth\\token.dat", "r").read()
+token_file = open(os.path.join(current_directory, "auth", "token.dat"), "r").read()
 bot.run(token_file, bot=True, reconnect=True)
