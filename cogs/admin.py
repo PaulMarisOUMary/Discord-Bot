@@ -19,7 +19,6 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 				safeCogs.append(cog)
 			for cog in safeCogs:
 				g_cog = self.bot.get_cog(cog[5:len(cog)])
-				print(g_cog, cog)
 				if "return_loop_task" in dir(g_cog): 
 					g_cog.return_loop_task().cancel()
 					victim += 1
