@@ -1,6 +1,31 @@
+
 ![GitHub last commit](https://img.shields.io/github/last-commit/PaulMarisOUMary/Algosup-Discord)
 
 # Algobot
+
+# Setting up the bot
+
+<details>
+  <summary>Get started</summary>
+  
+  - Paste your token  BOT in `auth/token.dat`.
+  - Please make sure you have activated the `Privileged Gateway Intents` in [Discord Developpers](https://discord.com/developers/applications) for your application.
+	  - [x] PRESENCE INTENT
+	  - [x] SERVER MEMBERS INTENT
+  - Install with `pip` all dependencies :
+	  - [x] `python3 -m pip install -U discord.py`
+	  - [x] `python3 -m pip install -U DateTime`
+	  - [x] `python3 -m pip install -U matplotlib`
+	  - [x] `python3 -m pip install -U O365`
+	  - [x] `python3 -m pip install -U Pillow`
+	  - [x] `python3 -m pip install -U googletrans==4.0.0-rc1`
+	  - [x] `python3 -m pip install -U `
+  - Delete `auth/client.dat`, `auth/secret.dat`, `auth/tenant_id.dat` & `cogs/schedule.py` if you don't use O365 services.
+  - Edit line `10` on `bot.py` to change the bot prefix : `command_prefix=commands.when_mentioned_or("PREFIX_HERE")`.
+  
+</details>
+
+# Available commands
 
 <details>
   <summary>Show available commands</summary>
