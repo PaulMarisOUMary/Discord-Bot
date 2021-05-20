@@ -12,7 +12,7 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 	async def help(self, ctx, *input):
 		"""Show help command"""
 		if not input:
-			embed = discord.Embed(title="Help · commands", url="https://github.com/PaulMarisOUMary/Algosup-Discord", description= "**Remind** : Hooks such as [] or {} must not be used when executing commands.\nType `?help {CATEGORY}`", colour=discord.Color.blue())
+			embed = discord.Embed(title="Help · commands", url="https://github.com/PaulMarisOUMary/Algosup-Discord", description= "**Remind** : Hooks such as {} must not be used when executing commands.\nType `?help {CATEGORY}`", colour=discord.Color.blue())
 			category_list = ''
 			for cog in self.bot.cogs:
 				cog_settings = self.bot.get_cog(cog).__cog_settings__
@@ -23,9 +23,11 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 		elif len(input) == 1:
 			for cog in self.bot.cogs:
 				if cog.lower() == input[0].lower():
-					embed = discord.Embed(title="Help · " + str(cog), url="https://github.com/PaulMarisOUMary/Algosup-Discord", description="**Description** : "+str(self.bot.cogs[cog].__doc__)+"\n**Remind** : Hooks such as [] or {} must not be used when executing commands.", color=discord.Color.green())
+					embed = discord.Embed(title="Help · " + str(cog), url="https://github.com/PaulMarisOUMary/Algosup-Discord", description="**Description** : "+str(self.bot.cogs[cog].__doc__)+"\n**Remind** : Hooks such as {} must not be used when executing commands.", color=discord.Color.green())
 					for command in self.bot.get_cog(cog).get_commands():
-						embed.add_field(name="?"+str(command.name), value="__Aliases__ : "+str(command.aliases)+"\n"+str(command.help), inline=False)
+						aliases = ''
+						if command.aliases: aliases = "__Aliases__ : "+str(command.aliases)+"\n"
+						embed.add_field(name="?"+str(command.name), value=aliases+str(command.help), inline=False)
 					break
 
 				else:
@@ -45,11 +47,11 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 		ping = (time.monotonic() - before) * 1000
 		await message.edit(content=f":ping_pong: Pong ! in `{float(round(ping/1000.0,3))}s` ||{int(ping)}ms||")
 
-	"""@commands.Cog.listener('on_command_error')
+	@commands.Cog.listener('on_command_error')
 	async def get_command_error(self, ctx, error):
 		if isinstance(error, commands.CommandNotFound):
 			await ctx.send(error)
-		#else : await ctx.send("`C0DE 3RR0R` : " + error)"""
+		else : await ctx.send("`C0DE 3RR0R` : " + error)
 
 def setup(bot):
 	bot.add_cog(Basic(bot))
