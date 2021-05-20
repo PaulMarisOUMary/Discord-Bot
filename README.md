@@ -21,6 +21,7 @@
 	  - [x] `python3 -m pip install -U googletrans==4.0.0-rc1`
   - Delete `auth/client.dat`, `auth/secret.dat`, `auth/tenant_id.dat` & `cogs/schedule.py` if you don't use O365 services.
   - Edit line `10` on `bot.py` to change the bot prefix : `command_prefix=commands.when_mentioned_or("PREFIX_HERE")`.
+  - If you want to use admin commands edit the line `7` on `cogs/admin.py`and paste your user ID (more informations [here](https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID-))
   
 </details>
 
