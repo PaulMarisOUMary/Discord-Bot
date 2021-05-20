@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 
 class Status(commands.Cog, name="status"):
+	"""Status description"""
 	def __init__(self, bot):
 		self.bot = bot
 		self.task_change_status = self.bot.loop.create_task(self.loop_change_status())

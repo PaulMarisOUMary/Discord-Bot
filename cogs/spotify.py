@@ -4,6 +4,7 @@ import discord
 from discord.ext import commands
 
 class Spotify(commands.Cog, name="spotify"):
+	"""Spotify description"""
 	def __init__(self, bot):
 		self.bot = bot
 

@@ -57,6 +57,7 @@ def task_in_img(final):
 	return image_binary
 
 class Schedule(commands.Cog, name="schedule"):
+	"""Schedule description"""
 	def __init__(self, bot):
 		self.bot = bot
 		source_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

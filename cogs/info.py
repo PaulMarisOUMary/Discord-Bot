@@ -23,6 +23,7 @@ def statServer(guild):
 	return status
 
 class Info(commands.Cog, name="info"):
+	"""Info description"""
 	def __init__(self, bot):
 		self.bot = bot
 

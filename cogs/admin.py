@@ -7,6 +7,7 @@ async def is_owner(ctx):
 	return ctx.author.id == 265148938091233293
 
 class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
+	"""Admin description"""
 	def __init__(self, bot):
 		self.bot = bot
 

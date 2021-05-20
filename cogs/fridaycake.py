@@ -26,6 +26,7 @@ def getFriday(date, holiday, count):
 
 
 class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True)):
+    """FridayCake description"""
     def __init__(self, bot):
         self.bot = bot
 

@@ -5,6 +5,7 @@ from discord.ext import commands
 
 
 class PrivateVocal(commands.Cog, name="privatevocal"):
+	"""Vocal description"""
 	def __init__(self, bot):
 		self.bot = bot
 		self.task_if_connected = self.bot.loop.create_task(self.loop_if_connected())

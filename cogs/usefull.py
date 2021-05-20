@@ -5,6 +5,7 @@ from discord.ext import commands
 
 
 class Usefull(commands.Cog, name="usefull"):
+	"""Usefull description"""
 	def __init__(self, bot):
 		self.bot = bot
 
