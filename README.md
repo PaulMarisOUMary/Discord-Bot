@@ -19,7 +19,6 @@
 	  - [x] `python3 -m pip install -U O365`
 	  - [x] `python3 -m pip install -U Pillow`
 	  - [x] `python3 -m pip install -U googletrans==4.0.0-rc1`
-	  - [x] `python3 -m pip install -U `
   - Delete `auth/client.dat`, `auth/secret.dat`, `auth/tenant_id.dat` & `cogs/schedule.py` if you don't use O365 services.
   - Edit line `10` on `bot.py` to change the bot prefix : `command_prefix=commands.when_mentioned_or("PREFIX_HERE")`.
   
