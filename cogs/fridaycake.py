@@ -25,22 +25,25 @@ def getFriday(date, holiday, count):
         date += timedelta(days=7)
 
 
-class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True)):
-    """FridayCake description"""
+class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=False)):
+    """FridayCake's commands"""
     def __init__(self, bot):
         self.bot = bot
 
     @commands.command(name='cake', aliases=['fc'])
     async def cake(self, ctx):
+        """Show a random emoji of cake :)"""
         emoji_choices = [":cake:", ":moon_cake:", ":cupcake:", ":pancakes:"]
         await ctx.send(random.choice(emoji_choices))
 
     @commands.command(name='fridaycakeinfo', aliases=['fci'])
     async def cake(self, ctx):
+        """Explain how the order of participants is made"""
         await ctx.send("FridayCake : *The order of the participants on the list has been generated randomly, your date is resulted of chaos.*")
 
     @commands.command(name='all', aliases=['a'])
     async def all_cake(self, ctx):
+        """Show the complete order list for the FridayCake event"""
         embed = discord.Embed(title="All ·", colour=0xf7346b)
         embed.set_thumbnail(
             url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
@@ -54,9 +57,10 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True
 
     @commands.command(name='when', aliases=['w'])
     async def when_cake(self, ctx):
-        name, status, pin = ctx.message.author.display_name.lower().replace(
-            'é', 'e').replace('-', ''), False, []
-        for i, (f, p) in enumerate(zip(getFriday(start, holidays, len(groups)), groups)):
+        """Show your specific date about the FridayCake event"""
+        name, pin = ctx.message.author.display_name.lower().replace(
+            'é', 'e').replace('-', ''), []
+        for _, (f, p) in enumerate(zip(getFriday(start, holidays, len(groups)), groups)):
             if name in p.lower().replace('é', 'e').replace('-', '') and not pin:
                 pin = [p, f]
         if not pin:
@@ -73,6 +77,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=True
 
     @commands.command(name='next', aliases=['n'])
     async def next_cake(self, ctx):
+        """Show who are the next to make a cake for the FridayCake event"""
         pin = []
         for i, (f, p) in enumerate(zip(getFriday(start, holidays, len(groups)), groups)):
             if not date.today() >= f and not pin:

@@ -56,8 +56,8 @@ def task_in_img(final):
 	image_binary.seek(0)
 	return image_binary
 
-class Schedule(commands.Cog, name="schedule"):
-	"""Schedule description"""
+class Schedule(commands.Cog, name="schedule", command_attrs=dict(hidden=False)):
+	"""Show your scolar schedule"""
 	def __init__(self, bot):
 		self.bot = bot
 		source_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -87,6 +87,7 @@ class Schedule(commands.Cog, name="schedule"):
 
 	@commands.command(name='currentcalendar', aliases=['cc', 'ac'])
 	async def actual_calendar(self, ctx):
+		"""Get the schedule of the day"""
 		today, events = datetime.now().date(), []
 		start = today
 		end = start + timedelta(1)
@@ -103,6 +104,7 @@ class Schedule(commands.Cog, name="schedule"):
 
 	@commands.command(name='nextcalendar', aliases=['nc'])
 	async def next_calendar(self, ctx, more = 1):
+		"""Get the schedule of the next day, use : nextcalendar {NUMBER}"""
 		today, events = datetime.now().date(), []
 		start = today + timedelta(more)
 		end = start + timedelta(1)
@@ -119,6 +121,7 @@ class Schedule(commands.Cog, name="schedule"):
 
 	@commands.command(name='weekcalendar', aliases=['wc'])
 	async def week_calendar(self, ctx):
+		"""Get the schedule of the actual scolar week"""
 		today, events, stock, final = datetime.now().date(), [], [], []
 		start = today - timedelta(days=today.weekday())
 		end = start + timedelta(days=5)
@@ -145,6 +148,7 @@ class Schedule(commands.Cog, name="schedule"):
 
 	@commands.command(name='nextweekcalendar', aliases=['nwc'])
 	async def next_week_calendar(self, ctx, more = 1):
+		"""Get the schedule of the next scolar week, use : nextweekcalendar {NUMBER}"""
 		today, events, stock, final = datetime.now().date(), [], [], []
 		start = today - timedelta(days=today.weekday()+(more*7))
 		end = start + timedelta(days=5)

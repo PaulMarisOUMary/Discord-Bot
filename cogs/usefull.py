@@ -4,13 +4,14 @@ import discord
 from discord.ext import commands
 
 
-class Usefull(commands.Cog, name="usefull"):
-	"""Usefull description"""
+class Usefull(commands.Cog, name="usefull", command_attrs=dict(hidden=False)):
+	"""Usefull commands for Devs & more"""
 	def __init__(self, bot):
 		self.bot = bot
 
 	@commands.command(name='strawpoll', aliases=['straw', 'stp', 'sond', 'sondage'], pass_context=True)
-	async def ping(self, ctx, *, context):
+	async def strawpool(self, ctx, *, context):
+		"""Ask a sondage, with 2 reactions, use : strawpoll {QUESTION}"""
 		crossmark, checkmark = self.bot.get_emoji(842800737221607474), self.bot.get_emoji(842800730049871892)
 		await ctx.message.delete()
 		message = await ctx.send("__*" + ctx.message.author.mention + "*__ : " + context)
@@ -20,6 +21,7 @@ class Usefull(commands.Cog, name="usefull"):
 
 	@commands.command(name='emojilist', aliases=['ce', 'el'], pass_context=True)
 	async def getcustomemojis(self, ctx):
+		"""Return a list of each cutom emojis of the server"""
 		embed_list, embed = [], discord.Embed(title="Custom Emojis List ("+str(len(ctx.guild.emojis))+") :")
 		for i, emoji in enumerate(ctx.guild.emojis, start=1):
 			if i == 0 : i += 1

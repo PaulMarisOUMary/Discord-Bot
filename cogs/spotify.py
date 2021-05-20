@@ -3,15 +3,16 @@ import discord
 
 from discord.ext import commands
 
-class Spotify(commands.Cog, name="spotify"):
-	"""Spotify description"""
+class Spotify(commands.Cog, name="spotify", command_attrs=dict(hidden=False)):
+	"""Show Spotify songs"""
 	def __init__(self, bot):
 		self.bot = bot
 
 	@commands.command(name='spotify', aliases=['sy', 'sp', 'spy', 'spot'])
 	async def actual_calendar(self, ctx, user: discord.Member = None):
+		"""Show the current Spotify song, or use : spotify {@USERNAME}"""
 		keeper = True
-		if user == None: user = ctx.author
+		if not user: user = ctx.author
 		for activity in user.activities:
 			if str(activity) == "Spotify":
 				embed, keeper = discord.Embed(colour=activity.colour), False

@@ -4,8 +4,8 @@ import discord
 from discord.ext import commands
 
 
-class PrivateVocal(commands.Cog, name="privatevocal"):
-	"""Vocal description"""
+class PrivateVocal(commands.Cog, name="privatevocal", command_attrs=dict(hidden=True)):
+	"""Create a voice channel when all are taken, initial channel : 'General'"""
 	def __init__(self, bot):
 		self.bot = bot
 		self.task_if_connected = self.bot.loop.create_task(self.loop_if_connected())
