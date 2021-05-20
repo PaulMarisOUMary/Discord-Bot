@@ -19,7 +19,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 
 		def enumServers(servers=[]):
 			for guild in self.bot.guilds:
-				if discord.utils.get(guild.channels, name=MAIN_CHANNEL): servers.append(guild)
+				servers.append(guild)
 			return servers
 
 		def channelInfos(channels):
