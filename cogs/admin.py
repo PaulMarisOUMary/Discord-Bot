@@ -86,8 +86,6 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 		else:
 			await ctx.send('Error, check the argument(s) provided')
 		await ctx.message.add_reaction(emoji='❌')
-	
-	
 
 def setup(bot):
 	bot.add_cog(Admin(bot))
