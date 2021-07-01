@@ -1,172 +1,109 @@
 import discord
 import time
-import io
-import os
 
-from O365 import Account, MSGraphProtocol
 from datetime import date, datetime, timedelta
-from PIL import Image, ImageDraw, ImageFont
 from discord.ext import commands
+from classes.processimage import ProcessImage
+from classes.microsofto365 import MicrosoftO365
 
-def task_in_img(final):
-	image = Image.new(mode="RGB", size=(20+410*len(final), 509), color=(47,47,47))
-	draw = ImageDraw.Draw(image)
-
-	def to_place(x,y,width,height):
-		return (x,y,x+width,y+height)
-
-	def is_duplicate(event, events, duplicate = False, point = 0):
-		for ev in events:
-			if ev != event and int(ev[2][0:2])+int(ev[4].seconds/60/60) <= start+duration and start <= int(ev[2][0:2]):
-				duplicate = True
-				memory.append(ev)
-		return duplicate
-
-	for j, events in enumerate(final):
-		memory = []
-		for i, event in enumerate(events):
-			clas, start, duration = event[0], int(event[2][0:2]), int(event[4].seconds/60/60)
-			duration += int(event[3][3:5])/60
-			if not is_duplicate(event, events):
-				if len(clas) <= 45: text = clas
-				else: text = clas[0:45]
-				draw.rectangle(to_place(x=20+410*j,y=50+(start-9)*50+start-9,width=400,height=50*duration+duration), fill=(255,255,255))
-				draw.text((20+410*j,50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0))
-			else:
-				if len(clas) <= 25: text = clas
-				else: text = clas[0:25]
-				if event in memory:
-					draw.rectangle(to_place(x=20+410*j,y=50+(start-9)*50+start-9,width=(400-20)/2,height=50*duration+duration), fill=(255,255,255))
-					draw.text((20+410*j,50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0))
-				else:
-					draw.rectangle(to_place(x=(400-20)/2+40+410*j,y=50+(start-9)*50+start-9,width=(400-20)/2,height=50*duration+duration), fill=(255,255,255))
-					draw.text(((400-20)/2+40+410*j,50+(start-9)*50+(start-9)+duration*50/2-25/2), text, font=ImageFont.truetype("arial.ttf", 20), fill=(0,0,0))
-
-	draw.rectangle((0, 0, 20+410*len(final), 50), fill="#1a1a1a")
-	draw.rectangle((0, 0, 20, 509), fill="#1a1a1a")
-	for i in range(10):
-		if i+9 < 10: t = "0"+str(i+9)+"h"
-		else : t = str(i+9)+"h"
-		draw.text((0,50+50*i+i), t, font=ImageFont.truetype("arial.ttf", 11), fill=(255,255,255))
-		draw.line(to_place(20, 50+50*i+i, 410*len(final), 0), fill=(127,127,127))
-	draw.text(((20+410*len(final))/2-150/2,10), "PLANNING", font=ImageFont.truetype("arial.ttf", 30), fill=(255,255,255,127))
-	
-	image_binary = io.BytesIO()
-	image.save(image_binary, "PNG")
-	image_binary.seek(0)
-	return image_binary
+startat, endat = 9, 17
 
 class Schedule(commands.Cog, name="schedule", command_attrs=dict(hidden=False)):
 	"""Show your scolar schedule"""
 	def __init__(self, bot):
 		self.bot = bot
-		source_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-		CLIENT_ID = open(os.path.join(source_directory, "auth", "client.dat"), "r").read()
-		SECRET_ID = open(os.path.join(source_directory, "auth", "secret.dat"), "r").read()
-		TENANT_ID = open(os.path.join(source_directory, "auth", "tenant_id.dat"), "r").read()
-		account = Account((CLIENT_ID, SECRET_ID), protocol=MSGraphProtocol(default_resource='planning@algosup.com'), auth_flow_type='credentials', tenant_id=TENANT_ID)
-		if account.authenticate(scope=['Calendars.Read.Shared', 'Calendars.Read']): pass#print('Authenticated!')
-		schedule = account.schedule()
-		self.calendar = schedule.get_default_calendar()
+		self.microsoft = MicrosoftO365('planning@algosup.com')
+		self.microsoft.readToken()
+		self.microsoft.login()
 
-	async def extract_calendar(self, start, end):
-		query = self.calendar.new_query('start').greater_equal(start)
-		query.chain('and').on_attribute('end').less_equal(end)
-		events = self.calendar.get_events(query=query, include_recurring=True)
-		return events
+	def getElements(self, start, end):
+		events = self.microsoft.extractCalendar(start, end)
+		self.microsoft.extractEvents(events)
 
-	def extract_infos(self, info):
-		info = str(info)
-		heading = info[info.find('Subject:')+9:info.find('on:')-2]
-		date = info[info.find('on:')+4:info.find('from:')-1]
-		start_timetable = info[info.find('from:')+6:info.find('to:')-1]
-		end_timetable = info[info.find('to:')+4:-1]
-		duration = datetime.strptime(end_timetable, '%H:%M:%S')-datetime.strptime(start_timetable, '%H:%M:%S')
+		if len(self.microsoft.events) > 0:
+			self.microsoft.sortByDay(self.microsoft.events)
+			self.microsoft.sortByHour(self.microsoft.events)
 
-		return heading, date, start_timetable, end_timetable, duration
+			self.microsoft.findDuplicate(self.microsoft.events)
 
-	@commands.command(name='currentcalendar', aliases=['cc', 'ac'])
-	async def actual_calendar(self, ctx):
-		"""Get the schedule of the day"""
-		today, events = datetime.now().date(), []
-		start = today
-		end = start + timedelta(1)
-		for event in await self.extract_calendar(start, end):
-			if not "start" in str(event):
-				events.append(self.extract_infos(str(event)))
-		image = task_in_img([events])
+		return self.microsoft.events
 
-		embed = discord.Embed(colour=0x474747)
-		embed.set_image(url='attachment://schedule.png')
-		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
-		await ctx.send(file=discord.File(fp=image, filename='schedule.png'), embed=embed)
-		image.close()
+	def processSchedule(self, events, startat = 9, endat = 17):
+		nday = len(events)
+		if nday < 1: nday = 1
 
-	@commands.command(name='nextcalendar', aliases=['nc'])
-	async def next_calendar(self, ctx, more = 1):
-		"""Get the schedule of the next day, use : nextcalendar {NUMBER}"""
-		today, events = datetime.now().date(), []
-		start = today + timedelta(more)
-		end = start + timedelta(1)
-		for event in await self.extract_calendar(start, end):
-			if not "start" in str(event):
-				events.append(self.extract_infos(str(event)))
-		image = task_in_img([events])
+		nhours = endat+1 - startat
+		width = 20+400*nday+10*(nday-1)
+		height = 50+50*nhours+nhours
 
-		embed = discord.Embed(colour=0x474747)
+		image = ProcessImage(width, height)
+
+		for j in range(0, nday):
+			for i in range(1,nhours+1):
+				image.rectangle(image.place(20+400*j+10*j, i*51, 400, 50), (255,255,255))
+				image.text(image.place(0, i*51 - 5, 20, 20), (255,255,255), "0"+str(i+(startat-1))+"h" if i+(startat-1) < 10 else str(i+(startat-1))+"h", 11)
+		image.textCentered(width, 50, (255,255,255), "PLANNING", 30)
+
+		for nday, day in enumerate(events):
+			for event in day:
+				title, start, end, n, duplicate = event[0], float(event[2][0:2])+float(event[2][3:5])/60-startat, float(event[3][0:2])+float(event[3][3:5])/60-startat, event[4], event[5]
+				duration = end - start
+
+				if not round(start) == start:
+					y = 50+50*start+1*int(start+1)+1
+					height = 50*duration+1*int(duration)-1
+				elif not round(end) == end:
+					y = 50+50*start+1*int(start+1)
+					height = 50*duration+1*int(duration)
+				else:
+					y = 50+50*start+1*int(start+1)
+					height = 50*duration+1*int(duration)-1
+
+				if duplicate > 1 and n != duplicate:
+					x = 20+400*nday+10*nday + 400/duplicate*(n-1)
+					width = 400/duplicate - (duplicate-1)+1
+				elif duplicate > 1:
+					x = 20+400*nday+10*nday + 400/duplicate*(n-1)+1
+					width = 400/duplicate - (duplicate-1)
+				else : 
+					x = 20+400*nday+10*nday
+					width = 400
+
+				fontsize = 14
+				s = image.getTextsize(title, fontsize)
+
+				image.rectangle(image.place(x = x, y = y, width = width, height = height), (0, 100, 200))
+				image.text((x+width/2-s[0]/2, y+height/2-s[1]/2), color = (255, 255, 255), text = title, fontsize = fontsize)
+
+		return image.saveBinary()
+
+	@commands.command(name='daycalendar', aliases=['dc'])
+	async def day_calendar(self, ctx, more = 0):
+		"""Get the schedule of the scolar day, use : daycalendar {NUMBER}"""
+		today = datetime.now().date()
+		start = today + timedelta(days=more)
+		end = start + timedelta(days=1)
+
+		events = self.getElements(start, end)
+		image = self.processSchedule(events, startat, endat)
+
+		embed = discord.Embed(description='📅 __Planning__ : of `'+str(start)+'`', colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
 		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(file=discord.File(fp=image, filename='schedule.png'), embed=embed)
 		image.close()
 
 	@commands.command(name='weekcalendar', aliases=['wc'])
-	async def week_calendar(self, ctx):
-		"""Get the schedule of the actual scolar week"""
-		today, events, stock, final = datetime.now().date(), [], [], []
-		start = today - timedelta(days=today.weekday())
-		end = start + timedelta(days=5)
-		for event in await self.extract_calendar(start, end):
-			if not "start" in str(event):
-				events.append(self.extract_infos(str(event)))
-		for i in range(0, len(events)):
-			for j in range(0, len(events)-i-1):
-				if events[j][1] > events[j+1][1]:
-					events[j], events[j+1] = events[j+1], events[j]
-		for i in range(0, len(events)):
-			stock.append(events[i])
-			if i == len(events)-1 or events[i][1] != events[i+1][1]:
-				final.append(stock)
-				stock = []
-		
-		image = task_in_img(final)
+	async def week_calendar(self, ctx, more = 0):
+		"""Get the schedule of the scolar week, use : weekcalendar {NUMBER}"""
+		today = datetime.now().date()
+		start = today + timedelta(days=today.weekday()+1+((more-1)*7))
+		end = start + timedelta(weeks=1)
 
-		embed = discord.Embed(colour=0x474747)
-		embed.set_image(url='attachment://schedule.png')
-		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
-		await ctx.send(file=discord.File(fp=image, filename='schedule.png'), embed=embed)
-		image.close()
+		events = self.getElements(start, end)
+		image = self.processSchedule(events, startat, endat)
 
-	@commands.command(name='nextweekcalendar', aliases=['nwc'])
-	async def next_week_calendar(self, ctx, more = 1):
-		"""Get the schedule of the next scolar week, use : nextweekcalendar {NUMBER}"""
-		today, events, stock, final = datetime.now().date(), [], [], []
-		start = today - timedelta(days=today.weekday()+(more*7))
-		end = start + timedelta(days=5)
-		for event in await self.extract_calendar(start, end):
-			if not "start" in str(event):
-				events.append(self.extract_infos(str(event)))
-		for i in range(0, len(events)):
-			for j in range(0, len(events)-i-1):
-				if events[j][1] > events[j+1][1]:
-					events[j], events[j+1] = events[j+1], events[j]
-		for i in range(0, len(events)):
-			stock.append(events[i])
-			if i == len(events)-1 or events[i][1] != events[i+1][1]:
-				final.append(stock)
-				stock = []
-		image = task_in_img(final)
-
-		embed = discord.Embed(colour=0x474747)
+		embed = discord.Embed(description='📅 __Planning__ : from `'+str(start)+'` to `'+str(end)+'`', colour=0x474747)
 		embed.set_image(url='attachment://schedule.png')
 		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(file=discord.File(fp=image, filename='schedule.png'), embed=embed)

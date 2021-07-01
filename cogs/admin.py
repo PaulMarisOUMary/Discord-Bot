@@ -59,7 +59,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			await ctx.send("Task successfully killed")
 		else : await ctx.send("Task not found..")
 
-	@commands.command(name='deletechannel', aliases=['dc'], require_var_positional=True)
+	@commands.command(name='deletechannel', aliases=['delc'], require_var_positional=True)
 	@commands.check(is_owner)
 	async def delete_channel(self, ctx, channel_name):
 		"""Delete a specific channel, use : deletechannel {CHANNEL_NAME}"""

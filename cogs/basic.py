@@ -59,7 +59,6 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 	async def get_command_error(self, ctx, error):
 		if isinstance(error, commands.CommandNotFound):
 			await ctx.send(error)
-		else : await ctx.send("`C0DE 3RR0R` : " + error)
 
 def setup(bot):
 	bot.add_cog(Basic(bot))
