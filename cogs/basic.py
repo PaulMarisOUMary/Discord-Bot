@@ -54,11 +54,11 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 		message = await ctx.message.reply(":ping_pong: Pong !")
 		ping = (time.monotonic() - before) * 1000
 		await message.edit(content=f":ping_pong: Pong ! in `{float(round(ping/1000.0,3))}s` ||{int(ping)}ms||")
-
+"""
 	@commands.Cog.listener('on_command_error')
 	async def get_command_error(self, ctx, error):
 		if isinstance(error, commands.CommandNotFound):
-			await ctx.send(error)
+			await ctx.send(error)"""
 
 def setup(bot):
 	bot.add_cog(Basic(bot))

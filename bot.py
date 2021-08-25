@@ -24,4 +24,4 @@ async def on_ready():
 	print("Logged in as: "+str(bot.user)+"\nVersion: "+str(discord.__version__))
 
 token_file = open(os.path.join(current_directory, "auth", "token.dat"), "r").read()
-bot.run(token_file, bot=True, reconnect=True)
+bot.run(token_file, reconnect=True)

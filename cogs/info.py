@@ -42,7 +42,7 @@ class Info(commands.Cog, name="info", command_attrs=dict(hidden=False)):
 		
 		embed = discord.Embed(title="Current server stats ({})".format(data['members']),description="<:offline:698246924138184836> : **`{}`** (Offline)\n<:idle:698246924058361898> : **`{}`** (AFK)\n<:dnd:698246924528254986> : **`{}`** (dnd)\n<:online:698246924465340497> : **`{}`** (Online)\n<:streaming:699381397898395688> : **`{}`** (Streaming)\n<:phone0:698257015578951750> : **`{}`** (on mobile)\n<:isbot:698250069165473852> : **`{}`** (Robot)".format(data['offline'], data['idle'], data['dnd'], data['online'], data['streaming'], data['mobile'], data['bot']))
 		embed.set_image(url='attachment://stat.png')
-		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
 		await ctx.send(file=discord.File(fp=image_binary, filename='stat.png'), embed=embed)
 
 def setup(bot):

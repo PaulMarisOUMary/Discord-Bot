@@ -1,10 +1,6 @@
-import os
 import discord
 
 from discord.ext import commands
-
-async def is_owner(ctx):
-	return ctx.author.id == 265148938091233293
 
 class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	"""Admin commands, you probably don't have the permission to use them"""
@@ -12,7 +8,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 		self.bot = bot
 
 	@commands.command(name='reloadall', aliases=['rell', 'relall'])
-	@commands.check(is_owner)
+	@commands.is_owner()
 	async def reload_all_cogs(self, ctx):
 		"""Reload each cogs & kill each loop_tasks"""
 		victim, victim_list, botCogs, safeCogs = 0, [], self.bot.extensions, []
@@ -35,7 +31,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			await ctx.send(succes_text)
 
 	@commands.command(name='reload', aliases=['rel'], require_var_positional=True)
-	@commands.check(is_owner)
+	@commands.is_owner()
 	async def reload_cogs(self, ctx, cog):
 		"""Reload a spacific cog use : reload {COG}"""
 		victim, cog, g_cog = 0, 'cogs.'+cog, self.bot.get_cog(cog)
@@ -50,7 +46,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			await ctx.send(':metal: '+cog+' reloaded ! : __`' + str(victim) + ' task killed`__')
 
 	@commands.command(name='killloop', aliases=['kill'], require_var_positional=True)
-	@commands.check(is_owner)
+	@commands.is_owner()
 	async def kill_loop(self, ctx, cog):
 		"""Kill the loop_task in a specific cog, use : killloop {COG}"""
 		cogs = self.bot.get_cog(cog)
@@ -60,7 +56,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 		else : await ctx.send("Task not found..")
 
 	@commands.command(name='deletechannel', aliases=['delc'], require_var_positional=True)
-	@commands.check(is_owner)
+	@commands.is_owner()
 	async def delete_channel(self, ctx, channel_name):
 		"""Delete a specific channel, use : deletechannel {CHANNEL_NAME}"""
 		channel = discord.utils.get(ctx.guild.channels, name=channel_name)

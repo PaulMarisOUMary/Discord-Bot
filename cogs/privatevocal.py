@@ -3,7 +3,6 @@ import discord
 
 from discord.ext import commands
 
-
 class PrivateVocal(commands.Cog, name="privatevocal", command_attrs=dict(hidden=True)):
 	"""Create a voice channel when all are taken, initial channel : 'General'"""
 	def __init__(self, bot):

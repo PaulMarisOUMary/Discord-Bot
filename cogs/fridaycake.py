@@ -9,7 +9,6 @@ groups = ["Aurélien Romain", "Théo Salah", "Louis Clémentine", "Paul Martin",
 holidays = [(date(2021, 6, 30), date(2021, 9, 23))]
 start = date(2021, 5, 14) #year #month #day
 
-
 def getFriday(date, holiday, count):
     holes, i = [], 0
     date += timedelta(days=4 - date.weekday())
@@ -23,7 +22,6 @@ def getFriday(date, holiday, count):
             yield date
             i += 1
         date += timedelta(days=7)
-
 
 class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=False)):
     """FridayCake's commands"""
@@ -97,7 +95,6 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
             await ctx.send("Sorry you're not participating in the Fridaycake event")
         else:
             await ctx.send('Error')
-
 
 def setup(bot):
     bot.add_cog(FridayCake(bot))

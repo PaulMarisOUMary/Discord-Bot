@@ -1,8 +1,6 @@
-import time
 import discord
 
 from discord.ext import commands
-
 
 class Usefull(commands.Cog, name="usefull", command_attrs=dict(hidden=False)):
 	"""Usefull commands for Devs & more"""
@@ -17,7 +15,6 @@ class Usefull(commands.Cog, name="usefull", command_attrs=dict(hidden=False)):
 		message = await ctx.send("__*" + ctx.message.author.mention + "*__ : " + context)
 		await message.add_reaction(emoji=checkmark)
 		await message.add_reaction(emoji=crossmark)
-
 
 	@commands.command(name='emojilist', aliases=['ce', 'el'], pass_context=True)
 	async def getcustomemojis(self, ctx):
