@@ -41,7 +41,10 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	async def reload_all(self, ctx):
 		"""Reload each cogs & kill each loop_tasks"""
 		try:
-			victims = await self.reload_cogs(self.bot.extensions)
+			cogs = []
+			for cog in self.bot.extensions:
+				cogs.append(cog)
+			victims = await self.reload_cogs(cogs)
 			infants = await self.reload_views()
 		except commands.ExtensionError as e:
 			await ctx.send(f'{e.__class__.__name__}: {e}')
