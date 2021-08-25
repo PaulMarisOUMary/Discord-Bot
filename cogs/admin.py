@@ -64,6 +64,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			await ctx.send('🤘 '+cog+' reloaded ! | ☠️ __`' + str(len(victims)) + ' task killed`__ | 🔄 __`views reloaded`__')
 
 	@commands.command(name='reloadviews', aliases=['rmod', 'rview', 'rviews'])
+	@commands.is_owner()
 	async def reload_view(self, ctx):
 		try:
 			infants = await self.reload_views()
