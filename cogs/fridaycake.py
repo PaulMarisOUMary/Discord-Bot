@@ -50,7 +50,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
             embed.add_field(name="Friday "+f.strftime("%d %B, %Y"),
                             value=p.replace(' ', '` & `'), inline=False)
         embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" at " +
-                        str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+                        str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.display_avatar.url)
         await ctx.send(embed=embed)
 
     @commands.command(name='when', aliases=['w'])
@@ -70,7 +70,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
         embed.add_field(name="`{}` be ready for the ".format(
             ctx.message.author.display_name), value="Friday "+pin[1].strftime("%d %B, %Y"), inline=False)
         embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" at " +
-                        str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+                        str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.display_avatar.url)
         await ctx.send(embed=embed)
 
     @commands.command(name='next', aliases=['n'])
@@ -86,7 +86,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
         embed.add_field(name="The next cooks are :", value="`{}` for `Friday {}`".format(
             pin[0].replace(' ', '` & `'), pin[1].strftime("%d %B")), inline=False)
         embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" at " +
-                        str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+                        str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.display_avatar.url)
         await ctx.send(embed=embed)
 
     @when_cake.error

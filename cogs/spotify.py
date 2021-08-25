@@ -19,7 +19,7 @@ class Spotify(commands.Cog, name="spotify", command_attrs=dict(hidden=False)):
 				embed.set_author(name="Spotify", url="https://open.spotify.com/track/"+str(activity.track_id), icon_url="https://toppng.com/uploads/thumbnail//spotify-logo-icon-transparent-icon-spotify-11553501653zkfre5mcur.png")
 				embed.add_field(name=activity.title, value=activity.artist, inline=False)
 				embed.set_thumbnail(url=activity.album_cover_url)
-				embed.set_footer(text=str(activity.duration)[2:-7]+" | Requested by : "+str(ctx.message.author.name)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+				embed.set_footer(text=str(activity.duration)[2:-7]+" | Requested by : "+str(ctx.message.author.name)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.display_avatar.url)
 				await ctx.send(embed=embed)
 		if keeper: await ctx.send(str(user.name)+" is not currently listening to Spotify")
 

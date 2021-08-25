@@ -44,7 +44,7 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 			title, description, color = "Help · Error", "Too many arguments", discord.Color.orange()
 
 		embed.title, embed.description, embed.color = title, remind + description, color
-		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.display_avatar.url)
 		await ctx.send(embed=embed)
 
 	@commands.command(name='ping', pass_context=True)
