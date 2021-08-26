@@ -98,22 +98,15 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			channel = discord.utils.get(ctx.guild.channels, name=channel_name)
 		await ctx.send("All channels named `"+str(channel_name)+"` as been succesfuly deleted")
 
-	@reload_all.error
-	async def reload_all_cogs_error(self, ctx, error):
-		if isinstance(error, commands.CheckFailure):
-			await ctx.send('Error, you are not authorized to type that !')
+	#Cog errors
+	async def cog_command_error(self, ctx, error):
+		if isinstance(error, (commands.CheckFailure, commands.NotOwner)):
+			await ctx.send('🕳️ Error, you are not authorized to type that !')
 		else:
-			await ctx.send('Error')
-		await ctx.message.add_reaction(emoji='❌')
-
-	@reload_cog.error
-	async def reload_cogs_error(self, ctx, error):
-		if isinstance(error, commands.MissingRequiredArgument):
-			await ctx.send('Please specify which cogs')
-		elif isinstance(error, commands.CheckFailure):
-			await ctx.send('Error, you are not authorized to type that !')
-		else:
-			await ctx.send('Error, check the argument(s) provided')
+			try:
+				message = await ctx.send('🕳️ There is an error.')
+				await message.edit("🕳️ `"+str(type(error).__name__)+"` : "+str(error))
+			except: pass
 		await ctx.message.add_reaction(emoji='❌')
 
 def setup(bot):
