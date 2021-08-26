@@ -62,7 +62,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
             if name in p.lower().replace('é', 'e').replace('-', '') and not pin:
                 pin = [p, f]
         if not pin:
-            raise commands.CommandError("member.isblacklisted")
+            raise commands.CommandError("You are not registered for the FridayCake.")
 
         embed = discord.Embed(title="When ·", colour=0xf7346b)
         embed.set_thumbnail(
@@ -88,13 +88,6 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
         embed.set_footer(text="Requested by : "+str(ctx.message.author.name)+" at " +
                         str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.display_avatar.url)
         await ctx.send(embed=embed)
-
-    @when_cake.error
-    async def when_cake_error(self, ctx, error):
-        if str(error) == 'member.isblacklisted':
-            await ctx.send("Sorry you're not participating in the Fridaycake event")
-        else:
-            await ctx.send('Error')
 
 def setup(bot):
     bot.add_cog(FridayCake(bot))

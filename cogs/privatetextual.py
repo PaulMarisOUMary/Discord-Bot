@@ -28,18 +28,18 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 
 	@commands.command(name='addprivate', aliases=['create', 'add', '+', '>'], require_var_positional=True)
 	@commands.cooldown(1, 10, commands.BucketType.user)
-	async def create_private_channel(self, ctx, *guys : discord.Member):
+	async def create_private_channel(self, ctx, *members : discord.Member):
 		"""Create a private channel, use : addprivate {@USERNAME_1} {@USERNAME_2}"""
 		users, mentions, down_role = [ctx.message.author], "", discord.utils.get(ctx.guild.roles, name="🎓Student")
 
-		for g in guys:
-			if g.bot: raise commands.CommandError("bot.notAllowed")
+		for g in members:
+			if g.bot: raise commands.CommandError("You can't invite bots in your team.")
 			else: users.append(g)
 		users = list(set(users))
-		if len(users) <= 1: raise commands.CommandError("author.isAlone")
+		if len(users) <= 1: raise commands.CommandError("You can't create a team alone.")
 
 		role = await ctx.guild.create_role(name="team")
-		team_channel = await ctx.guild.create_text_channel(name="_team_text", category=discord.utils.get(ctx.guild.categories, id=ctx.channel.category_id), sync_permissions=False)
+		team_channel = await ctx.guild.create_text_channel(name="_team_text", category=discord.utils.get(ctx.guild.categories, id=ctx.channel.category_id))
 		await team_channel.set_permissions(role, send_messages=True, view_channel=True, read_message_history=True, add_reactions=True, external_emojis=True)
 		await team_channel.set_permissions(down_role, send_messages=False, view_channel=False)
 
@@ -59,8 +59,7 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 			await roles[0].delete()
 			await channel.delete()
 		else:
-			await ctx.send("Error, you can't delete a non-team channel.")
-			await ctx.message.add_reaction(emoji='❌')
+			raise commands.CommandError("You can't delete a non-team channel.")
 
 	@commands.command(name='renprivate', aliases=['rename', 'ren', 'r', '_'], require_var_positional=True)
 	async def rename_private_channel(self, ctx, custom_name : str):
@@ -71,32 +70,8 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 				await channel.edit(name='_'+normalize_cn)
 				await ctx.message.add_reaction(emoji='✅')
 		elif not '_' in channel.name:
-			await ctx.send("Error, you can't rename a non-team channel.")
-			await ctx.message.add_reaction(emoji='❌')
-		if forbidden: await ctx.send(":warning: you can't use `"+str(forbidden)+"` to rename a channel.")
-
-	### ERRORS ###
-	@create_private_channel.error
-	async def private_channel_error(self, ctx, error):
-		if isinstance(error, commands.MissingRequiredArgument):
-			await ctx.send('Please specify users which you want to add : `?pv @user1 @user2`')
-		elif isinstance(error, commands.CommandOnCooldown):
-			await ctx.send('Command is on cooldown, wait `'+str(error)[-6:-4]+'s` !')
-		elif str(error) == 'bot.notAllowed':
-			await ctx.send("Error, you can't invite bots in your team !")
-		elif str(error) == 'author.isAlone':
-			await ctx.send("Error, you can't create a team alone.")
-		else:
-			await ctx.send('Error, check the arguments provided')
-		await ctx.message.add_reaction(emoji='❌')
-
-	@rename_private_channel.error
-	async def rename_channel_error(self, ctx, error):
-		if isinstance(error, commands.MissingRequiredArgument):
-			await ctx.send('Please specify the custom title for the channel : `?_ {name_whitout_space}`')
-		else:
-			await ctx.send('Error, check the arguments provided')
-		await ctx.message.add_reaction(emoji='❌')
+			raise commands.CommandError("You can't rename a non-team channel.")
+		if forbidden: raise commands.CommandError("You can't use `"+str(forbidden)+"` to rename a channel.")
 
 def setup(bot):
 	bot.add_cog(PrivateTextual(bot))

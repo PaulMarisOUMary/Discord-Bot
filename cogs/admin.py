@@ -58,7 +58,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	@commands.command(name='reload', aliases=['rel'], require_var_positional=True)
 	@commands.is_owner()
 	async def reload_cog(self, ctx, cog):
-		"""Reload a spacific cog use : reload {COG}"""
+		"""Reload a specific cog use : reload {COG}"""
 		try:
 			victims = await self.reload_cogs(['cogs.'+str(cog)])
 		except commands.ExtensionError as e:
@@ -69,6 +69,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	@commands.command(name='reloadviews', aliases=['rmod', 'rview', 'rviews'])
 	@commands.is_owner()
 	async def reload_view(self, ctx):
+		"""Reload each views"""
 		try:
 			infants = await self.reload_views()
 		except commands.ExtensionError as e:
@@ -97,17 +98,6 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			await channel.delete()
 			channel = discord.utils.get(ctx.guild.channels, name=channel_name)
 		await ctx.send("All channels named `"+str(channel_name)+"` as been succesfuly deleted")
-
-	#Cog errors
-	async def cog_command_error(self, ctx, error):
-		if isinstance(error, (commands.CheckFailure, commands.NotOwner)):
-			await ctx.send('🕳️ Error, you are not authorized to type that !')
-		else:
-			try:
-				message = await ctx.send('🕳️ There is an error.')
-				await message.edit("🕳️ `"+str(type(error).__name__)+"` : "+str(error))
-			except: pass
-		await ctx.message.add_reaction(emoji='❌')
 
 def setup(bot):
 	bot.add_cog(Admin(bot))

@@ -46,6 +46,9 @@
 
 ?reloadall
 ["rell", "relall"]
+
+?reloadviews
+["rmod", "rview", "rviews"]
 ```
 
 - BASIC:
