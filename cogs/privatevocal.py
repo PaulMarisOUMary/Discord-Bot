@@ -9,6 +9,12 @@ class PrivateVocal(commands.Cog, name="privatevocal", command_attrs=dict(hidden=
 		self.bot = bot
 		self.task_if_connected = self.bot.loop.create_task(self.loop_if_connected())
 
+	"""def help_custom(self):
+		emoji = '💭'
+		label = "Vocal"
+		description = "Auto vocal channels."
+		return emoji, label, description"""
+
 	def return_loop_task(self):
 		return self.task_if_connected
 

@@ -9,6 +9,12 @@ class Status(commands.Cog, name="status", command_attrs=dict(hidden=True)):
 		self.bot = bot
 		self.task_change_status = self.bot.loop.create_task(self.loop_change_status())
 
+	"""def help_custom(self):
+		emoji = '🏷️'
+		label = "Status"
+		description = "Setup the status of the bot."
+		return emoji, label, description"""
+
 	def return_loop_task(self):
 		return self.task_change_status
 

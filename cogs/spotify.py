@@ -8,6 +8,12 @@ class Spotify(commands.Cog, name="spotify", command_attrs=dict(hidden=False)):
 	def __init__(self, bot):
 		self.bot = bot
 
+	def help_custom(self):
+		emoji = '<:spotify:880896591756656641>'
+		label = "Spotify"
+		description = "Spotify status commands."
+		return emoji, label, description
+
 	@commands.command(name='spotify', aliases=['sy', 'sp', 'spy', 'spot'])
 	async def actual_calendar(self, ctx, user: discord.Member = None):
 		"""Show the current Spotify song, or use : spotify {@USERNAME}"""

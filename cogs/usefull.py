@@ -7,6 +7,12 @@ class Usefull(commands.Cog, name="usefull", command_attrs=dict(hidden=False)):
 	def __init__(self, bot):
 		self.bot = bot
 
+	def help_custom(self):
+		emoji = '🚩'
+		label = "Usefull"
+		description = "Usefull commands."
+		return emoji, label, description
+
 	@commands.command(name='strawpoll', aliases=['straw', 'stp', 'sond', 'sondage'], pass_context=True)
 	async def strawpool(self, ctx, *, context):
 		"""Ask a sondage, with 2 reactions, use : strawpoll {QUESTION}"""

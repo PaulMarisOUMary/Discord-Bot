@@ -27,6 +27,12 @@ class Info(commands.Cog, name="info", command_attrs=dict(hidden=False)):
 	def __init__(self, bot):
 		self.bot = bot
 
+	def help_custom(self):
+		emoji = '📊'
+		label = "Info"
+		description = "Commands about additionals informations."
+		return emoji, label, description
+
 	@commands.command(name='stat', aliases=['status','graph','gs','sg'])
 	async def stat(self, ctx):
 		"""Show a graphic pie about the server's members""" 

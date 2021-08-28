@@ -16,6 +16,12 @@ class Schedule(commands.Cog, name="schedule", command_attrs=dict(hidden=False)):
 		self.microsoft.readToken()
 		self.microsoft.login()
 
+	def help_custom(self):
+		emoji = '📅'
+		label = "Schedule"
+		description = "Algosup's planning in two commands."
+		return emoji, label, description
+
 	def getElements(self, start, end):
 		events = self.microsoft.extractCalendar(start, end)
 		self.microsoft.extractEvents(events)

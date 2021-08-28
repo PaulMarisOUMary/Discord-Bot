@@ -26,6 +26,12 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 	def __init__(self, bot):
 		self.bot = bot
 
+	def help_custom(self):
+		emoji = '💬'
+		label = "Private Textual"
+		description = "Add and edit textuals channels."
+		return emoji, label, description
+
 	@commands.command(name='addprivate', aliases=['create', 'add', '+', '>'], require_var_positional=True)
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def create_private_channel(self, ctx, *members : discord.Member):

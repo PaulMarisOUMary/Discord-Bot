@@ -7,9 +7,15 @@ from discord.ext import commands
 from importlib import reload
 
 class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
-	"""Admin commands, you probably don't have the permission to use them"""
+	"""Admin commands, you probably don't have the permission to use them."""
 	def __init__(self, bot):
 		self.bot = bot
+
+	def help_custom(self):
+		emoji = '⚙️'
+		label = "Admin"
+		description = "Show the list of admin commands."
+		return emoji, label, description
 
 	async def reload_views(self):
 		modules, infants = [], []
@@ -39,7 +45,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	@commands.command(name='reloadall', aliases=['rell', 'relall'])
 	@commands.is_owner()
 	async def reload_all(self, ctx):
-		"""Reload each cogs & kill each loop_tasks"""
+		"""Reload the bot, includes: cogs, loops and views."""
 		try:
 			cogs = []
 			for cog in self.bot.extensions:
@@ -58,7 +64,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	@commands.command(name='reload', aliases=['rel'], require_var_positional=True)
 	@commands.is_owner()
 	async def reload_cog(self, ctx, cog):
-		"""Reload a specific cog use : reload {COG}"""
+		"""Reload a specific cog."""
 		try:
 			victims = await self.reload_cogs(['cogs.'+str(cog)])
 		except commands.ExtensionError as e:
@@ -69,7 +75,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	@commands.command(name='reloadviews', aliases=['rmod', 'rview', 'rviews'])
 	@commands.is_owner()
 	async def reload_view(self, ctx):
-		"""Reload each views"""
+		"""Reload each registered views."""
 		try:
 			infants = await self.reload_views()
 		except commands.ExtensionError as e:
@@ -82,7 +88,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	@commands.command(name='killloop', aliases=['kill'], require_var_positional=True)
 	@commands.is_owner()
 	async def kill_loop(self, ctx, cog):
-		"""Kill the loop_task in a specific cog, use : killloop {COG}"""
+		"""Kill loops running in background in a specific cog."""
 		cogs = self.bot.get_cog(cog)
 		if "return_loop_task" in dir(cogs):
 			cogs.return_loop_task().cancel()
@@ -92,7 +98,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 	@commands.command(name='deletechannel', aliases=['delc'], require_var_positional=True)
 	@commands.is_owner()
 	async def delete_channel(self, ctx, channel_name):
-		"""Delete a specific channel, use : deletechannel {CHANNEL_NAME}"""
+		"""Delete the provided channel."""
 		channel = discord.utils.get(ctx.guild.channels, name=channel_name)
 		while channel:
 			await channel.delete()

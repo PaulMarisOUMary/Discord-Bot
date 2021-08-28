@@ -10,6 +10,12 @@ class Views(commands.Cog, name="views"):
 	def __init__(self, bot):
 		self.bot = bot
 
+	def help_custom(self):
+		emoji = '🔘'
+		label = "Views"
+		description = "Demo : New discord features."
+		return emoji, label, description
+
 	@commands.command(name='bool')
 	async def boo(self, ctx):
 		"""Preview of buttons"""

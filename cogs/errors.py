@@ -8,6 +8,12 @@ class Errors(commands.Cog, name="errors", command_attrs=dict(hidden=True)):
 	def __init__(self, bot):
 		self.bot = bot
 
+	"""def help_custom(self):
+		emoji = '<a:crossmark:842800737221607474>'
+		label = "Error"
+		description = "A custom errors handler."
+		return emoji, label, description"""
+
 	@commands.Cog.listener('on_command_error')
 	async def get_command_error(self, ctx, error):
 		try:
@@ -30,7 +36,7 @@ class Errors(commands.Cog, name="errors", command_attrs=dict(hidden=True)):
 				await message.edit("🕳️ This command is disabled.")
 			else:
 				await message.edit("🕳️ `"+str(type(error).__name__)+"` : "+str(error))
-			await ctx.message.add_reaction(emoji='❌')
+			await ctx.message.add_reaction(emoji='<a:crossmark:842800737221607474>') #❌
 		except:
 			print("! Cog errors get_command_error : "+str(type(error).__name__)+" : "+str(error))
 

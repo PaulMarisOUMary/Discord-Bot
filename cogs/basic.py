@@ -1,12 +1,21 @@
 import time
+import asyncio
 import discord
 
 from discord.ext import commands
+from datetime import datetime, timedelta
+from views import help as vhelp
 
 class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 	"""Basic commands, like help, ping, ..."""
 	def __init__(self, bot):
 		self.bot = bot
+
+	def help_custom(self):
+		emoji = '📙'
+		label = "Basic"
+		description = "Basic commands, like help, ping, etc.."
+		return emoji, label, description
 
 	@commands.command(name='help', aliases=['?', 'h', 'commands'])
 	async def help(self, ctx, *input):
@@ -15,11 +24,20 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 		remind = "\n**Remind** : Hooks such as {} must not be used when executing commands."
 		title, description, color = "Help · ", "", discord.Color.blue()
 		if not input:
-			category_list = ''
-			for cog in self.bot.cogs:
-				cog_settings = self.bot.get_cog(cog).__cog_settings__
-				if len(cog_settings) == 0 or not cog_settings['hidden']: category_list += "{**"+str(cog).upper()+"**}\n *"+str(self.bot.cogs[cog].__doc__)+"*\n"
-			embed.add_field(name="Category :", value=category_list, inline=False)
+			allowed = 5
+			close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
+			embed = discord.Embed(color=discord.Color.dark_grey(), title = "Help · Home", description = "Welcome to the help page.\n\nUse `help command` for more info on a command.\nUse `help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+			embed.add_field(name="Time remaining :", value="This help session will end <t:"+str(close_in)+":R>.\nType `help` to open a new session.\n\u200b", inline=False)
+			embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*. Made for Algosup in 2020.\nI have a lot of features such translator, events manager, utils, and more.\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Algosup-Discord) !")
+
+			view = vhelp.View(bot=self.bot, ctx=ctx, homeembed=embed)
+			message = await ctx.send(embed=embed, view=view)
+			try:
+				await asyncio.sleep(60*allowed)
+				await message.delete()
+				await ctx.message.add_reaction("<a:checkmark_a:842800730049871892>")
+			except: pass
+			return #end function
 
 		elif len(input) == 1:
 			search, search_command, search_cog = input[0].lower(), False, False

@@ -8,6 +8,12 @@ class Traductor(commands.Cog, name="traductor", command_attrs=dict(hidden=True))
 	def __init__(self, bot):
 		self.bot = bot
 
+	"""def help_custom(self):
+		emoji = '<:Gtranslate:807986736663101440>'
+		label = "Traductor"
+		description = "Informations about the Traductor."
+		return emoji, label, description"""
+
 	@commands.Cog.listener('on_message')
 	async def on_receive_message(self, message):
 		convert_emoji = '🔀'
