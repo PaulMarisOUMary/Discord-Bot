@@ -46,7 +46,7 @@ class PrivateVocal(commands.Cog, name="privatevocal", command_attrs=dict(hidden=
 					is_change = False
 
 					if usedChannels == len(data[guild.id]):
-						a = await guild.create_voice_channel(name="Vocal", category=category, sync_permissions=True)
+						a = await guild.create_voice_channel(name="Vocal", category=category)
 						data[guild.id].append(a)
 						is_change = True
 
