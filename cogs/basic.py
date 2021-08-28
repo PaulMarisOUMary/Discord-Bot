@@ -26,7 +26,7 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 		if not input:
 			allowed = 5
 			close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
-			embed = discord.Embed(color=discord.Color.dark_grey(), title = "Help · Home", description = "Welcome to the help page.\n\nUse `help command` for more info on a command.\nUse `help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+			embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = "Welcome to the help page.\n\nUse `help command` for more info on a command.\nUse `help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Algosup-Discord')
 			embed.add_field(name="Time remaining :", value="This help session will end <t:"+str(close_in)+":R>.\nType `help` to open a new session.\n\u200b", inline=False)
 			embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*. Made for Algosup in 2020.\nI have a lot of features such translator, events manager, utils, and more.\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Algosup-Discord) !")
 
@@ -34,6 +34,7 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 			message = await ctx.send(embed=embed, view=view)
 			try:
 				await asyncio.sleep(60*allowed)
+				view.stop()
 				await message.delete()
 				await ctx.message.add_reaction("<a:checkmark_a:842800730049871892>")
 			except: pass
