@@ -23,7 +23,7 @@ def statServer(guild):
 	return status
 
 class Info(commands.Cog, name="info", command_attrs=dict(hidden=False)):
-	"""Info & statistics"""
+	"""Info & statistics."""
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -35,7 +35,7 @@ class Info(commands.Cog, name="info", command_attrs=dict(hidden=False)):
 
 	@commands.command(name='stat', aliases=['status','graph','gs','sg'])
 	async def stat(self, ctx):
-		"""Show a graphic pie about the server's members""" 
+		"""Show a graphic pie about the server's members.""" 
 		plt.clf()
 		ax, data, colors = plt.subplot(), statServer(ctx.guild.members), ["#747f8d","#f04747","#faa81a","#43b582"]
 		ax.pie([data['offline'], data['dnd'], data['idle'], data['online']], colors=colors, startangle=-40, wedgeprops=dict(width=0.5))

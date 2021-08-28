@@ -35,7 +35,7 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 	@commands.command(name='addprivate', aliases=['create', 'add', '+', '>'], require_var_positional=True)
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def create_private_channel(self, ctx, *members : discord.Member):
-		"""Create a private channel, use : addprivate {@USERNAME_1} {@USERNAME_2}"""
+		"""Create a private textual channel."""
 		users, mentions, down_role = [ctx.message.author], "", discord.utils.get(ctx.guild.roles, name="🎓Student")
 
 		for g in members:
@@ -59,7 +59,7 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 	
 	@commands.command(name='delprivate', aliases=['delete', 'del', '-', '<'])
 	async def delete_private_channel(self, ctx):
-		"""Delete your private channel"""
+		"""Delete your private textual channel."""
 		channel, roles = ctx.channel, get_created_roles(ctx)
 		if '_' in channel.name and roles:
 			await roles[0].delete()
@@ -69,7 +69,7 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 
 	@commands.command(name='renprivate', aliases=['rename', 'ren', 'r', '_'], require_var_positional=True)
 	async def rename_private_channel(self, ctx, custom_name : str):
-		"""Rename your private channel, use : renprivate {NAME}"""
+		"""Rename your private textual channel."""
 		channel, roles = ctx.channel, get_created_roles(ctx)
 		normalize_cn, forbidden = text_to_allowed(custom_name)
 		if '_' in channel.name and roles and normalize_cn:

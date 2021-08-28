@@ -16,7 +16,7 @@ class Spotify(commands.Cog, name="spotify", command_attrs=dict(hidden=False)):
 
 	@commands.command(name='spotify', aliases=['sy', 'sp', 'spy', 'spot'])
 	async def actual_calendar(self, ctx, user: discord.Member = None):
-		"""Show the current Spotify song, or use : spotify {@USERNAME}"""
+		"""Show the current Spotify song."""
 		keeper = True
 		if not user: user = ctx.author
 		for activity in user.activities:

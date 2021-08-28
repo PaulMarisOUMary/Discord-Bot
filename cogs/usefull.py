@@ -15,7 +15,7 @@ class Usefull(commands.Cog, name="usefull", command_attrs=dict(hidden=False)):
 
 	@commands.command(name='strawpoll', aliases=['straw', 'stp', 'sond', 'sondage'], pass_context=True)
 	async def strawpool(self, ctx, *, context):
-		"""Ask a sondage, with 2 reactions, use : strawpoll {QUESTION}"""
+		"""Ask a sondage, and add 2 reactions to vote with your community."""
 		crossmark, checkmark = self.bot.get_emoji(842800737221607474), self.bot.get_emoji(842800730049871892)
 		await ctx.message.delete()
 		message = await ctx.send("__*" + ctx.message.author.mention + "*__ : " + context)
@@ -24,7 +24,7 @@ class Usefull(commands.Cog, name="usefull", command_attrs=dict(hidden=False)):
 
 	@commands.command(name='emojilist', aliases=['ce', 'el'], pass_context=True)
 	async def getcustomemojis(self, ctx):
-		"""Return a list of each cutom emojis of the server"""
+		"""Return a list of each cutom emojis from the current server."""
 		embed_list, embed = [], discord.Embed(title="Custom Emojis List ("+str(len(ctx.guild.emojis))+") :")
 		for i, emoji in enumerate(ctx.guild.emojis, start=1):
 			if i == 0 : i += 1

@@ -18,13 +18,13 @@ class Views(commands.Cog, name="views"):
 
 	@commands.command(name='bool')
 	async def boo(self, ctx):
-		"""Preview of buttons"""
+		"""Discover buttons feature with this command."""
 		view = bool.View(flabel="Agree", slabel="Disagree", sstyle=discord.ButtonStyle.red, emojis = True, source=ctx)
 		await ctx.send("Buttons demo right there !", view=view)
 
 	@commands.command(name='dropdown')
 	async def dro(self, ctx):
-		"""Preview of the Dropdown menu"""
+		"""Discover select menu feature with this command."""
 		options = [
 			{'label':"Mandarin", 'description':"你好", 'emoji':"🇨🇳"},
 			{'label':"Spanish", 'description':"Buenos dias", 'emoji':"🇪🇸"},
@@ -55,7 +55,7 @@ class Views(commands.Cog, name="views"):
 
 	@commands.command(name='link')
 	async def lin(self, ctx):
-		"""Preview of link button"""
+		"""Discover button link with this feature."""
 		view = link.View(label="Source code on Github", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
 		await ctx.send("Find out what is behind Algobot !", view=view)
 

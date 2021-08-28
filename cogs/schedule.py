@@ -85,7 +85,7 @@ class Schedule(commands.Cog, name="schedule", command_attrs=dict(hidden=False)):
 
 	@commands.command(name='daycalendar', aliases=['dc'])
 	async def day_calendar(self, ctx, more = 0):
-		"""Get the schedule of the scolar day, use : daycalendar {NUMBER}"""
+		"""Get the schedule of the scolar day."""
 		today = datetime.now().date()
 		start = today + timedelta(days=more)
 		end = start + timedelta(days=1)
@@ -101,7 +101,7 @@ class Schedule(commands.Cog, name="schedule", command_attrs=dict(hidden=False)):
 
 	@commands.command(name='weekcalendar', aliases=['wc'])
 	async def week_calendar(self, ctx, more = 0):
-		"""Get the schedule of the scolar week, use : weekcalendar {NUMBER}"""
+		"""Get the schedule of the scolar week."""
 		today = datetime.now().date()
 		start = today + timedelta(days=today.weekday()+1+((more-1)*7))
 		end = start + timedelta(weeks=1)
