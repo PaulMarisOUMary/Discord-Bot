@@ -1,5 +1,6 @@
-
-![GitHub last commit](https://img.shields.io/github/last-commit/PaulMarisOUMary/Algosup-Discord)
+![GitHub is maintained](https://img.shields.io/maintenance/yes/2022?color=success)
+![GitHub last commit](https://img.shields.io/github/last-commit/PaulMarisOUMary/Algosup-Discord?color=informational)
+![GitHub last release](https://img.shields.io/github/v/release/PaulMarisOUMary/Algosup-Discord?color=blueviolet)
 
 # Algobot
 
@@ -196,3 +197,8 @@
 ## Discord bot logo (sample)
 ![](https://github.com/PaulMarisOUMary/Algosup-Discord/blob/main/images/bot_logo.png?raw=true)
 </details>
+
+<h5>Contributors :</h5>
+<a href="https://github.com/PaulMarisOUMary/Algosup-Discord/graphs/contributors">
+  <img width="75px" src="https://contrib.rocks/image?repo=PaulMarisOUMary/Algosup-Discord" />
+</a>
