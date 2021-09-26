@@ -22,6 +22,12 @@ class Usefull(commands.Cog, name="usefull", command_attrs=dict(hidden=False)):
 		await message.add_reaction(emoji=checkmark)
 		await message.add_reaction(emoji=crossmark)
 
+	@commands.command(name='profilepicture', aliases=['pp'])
+	async def strawpool(self, ctx, member : discord.Member = None):
+		"""Show the profile picture of the selected member."""
+		author = member if member else ctx.message.author
+		await ctx.send(author.display_avatar.url)
+
 	@commands.command(name='emojilist', aliases=['ce', 'el'], pass_context=True)
 	async def getcustomemojis(self, ctx):
 		"""Return a list of each cutom emojis from the current server."""
