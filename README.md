@@ -1,7 +1,5 @@
 ![GitHub is maintained](https://img.shields.io/maintenance/yes/2022?color=success)
-
 ![GitHub last commit](https://img.shields.io/github/last-commit/PaulMarisOUMary/Algosup-Discord?color=informational)
-
 ![GitHub last release](https://img.shields.io/github/v/release/PaulMarisOUMary/Algosup-Discord?color=blueviolet)
   
 # Algobot
