@@ -5,10 +5,10 @@ from discord.ext import commands
 def text_to_allowed(input):
 	out, forbidden, line = "", [], input.lower()
 	for char in line:
-		if not char in "abcdefghijklmnopqrstuvwxyz-éèà¤£€µù§_0123456789":
+		if not char in "abcdefghijklmnopqrstuvwxyz-_0123456789":
 			forbidden.append(char)
 			char = char.replace(char,'')
-		out += char.lower()
+		out += char
 
 	return out, forbidden
 
@@ -32,7 +32,7 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 		description = "Add and edit textuals channels."
 		return emoji, label, description
 
-	@commands.command(name='addprivate', aliases=['create', 'add', '+', '>'], require_var_positional=True)
+	@commands.command(name='createprivate', aliases=['create', '+'], require_var_positional=True)
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def create_private_channel(self, ctx, *members : discord.Member):
 		"""Create a private textual channel."""
@@ -46,8 +46,9 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 
 		role = await ctx.guild.create_role(name="team")
 		team_channel = await ctx.guild.create_text_channel(name="_team_text", category=discord.utils.get(ctx.guild.categories, id=ctx.channel.category_id))
-		await team_channel.set_permissions(role, send_messages=True, view_channel=True, read_message_history=True, add_reactions=True, external_emojis=True)
-		await team_channel.set_permissions(down_role, send_messages=False, view_channel=False)
+		await team_channel.set_permissions(role, send_messages=True, view_channel=True, read_message_history=True, add_reactions=True, external_emojis=True, attach_files=True, embed_links=True)
+		try: await team_channel.set_permissions(down_role, send_messages=False, view_channel=False)
+		except: pass
 
 		for user in users:
 			await user.add_roles(role)
@@ -55,9 +56,9 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 
 		await team_channel.send(str(team_channel.mention)+" was created by "+str(ctx.message.author.mention)+".")
 		await team_channel.send(mentions)
-		await ctx.message.add_reaction(emoji='✅')
+		await ctx.message.add_reaction(emoji='<a:checkmark_a:842800730049871892>')
 	
-	@commands.command(name='delprivate', aliases=['delete', 'del', '-', '<'])
+	@commands.command(name='deleteprivate', aliases=['delete', '-'])
 	async def delete_private_channel(self, ctx):
 		"""Delete your private textual channel."""
 		channel, roles = ctx.channel, get_created_roles(ctx)
@@ -67,17 +68,26 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 		else:
 			raise commands.CommandError("You can't delete a non-team channel.")
 
-	@commands.command(name='renprivate', aliases=['rename', 'ren', 'r', '_'], require_var_positional=True)
+	@commands.command(name='renameprivate', aliases=['rename', '_'], require_var_positional=True)
 	async def rename_private_channel(self, ctx, custom_name : str):
 		"""Rename your private textual channel."""
 		channel, roles = ctx.channel, get_created_roles(ctx)
 		normalize_cn, forbidden = text_to_allowed(custom_name)
-		if '_' in channel.name and roles and normalize_cn:
+		if '_' in channel.name and roles and len(normalize_cn) > 0:
 				await channel.edit(name='_'+normalize_cn)
-				await ctx.message.add_reaction(emoji='✅')
+				await ctx.message.add_reaction(emoji='<a:checkmark_a:842800730049871892>')
 		elif not '_' in channel.name:
 			raise commands.CommandError("You can't rename a non-team channel.")
 		if forbidden: raise commands.CommandError("You can't use `"+str(forbidden)+"` to rename a channel.")
+
+	@commands.command(name='addprivate', aliases=['add', '>'], require_var_positional=True)
+	async def addd_to_private_channel(self, ctx, *members : discord.Member):
+		"""Join a specified member to your team channel."""
+		roles = get_created_roles(ctx)
+		for member in members:
+			if not member.bot : await member.add_roles(roles[0])
+			else : raise commands.CommandError("You can't invite bots in your team.")
+		await ctx.message.add_reaction(emoji='<a:checkmark_a:842800730049871892>')
 
 def setup(bot):
 	bot.add_cog(PrivateTextual(bot))

@@ -151,21 +151,27 @@ $ python3 -m pip install -U .[voice]
 
 ```c#
 
+?createprivate
+
+["create", "+"]
+
+  
+
+?deleteprivate
+
+["delete", "-"]
+
+  
+
+?renameprivate
+
+["rename", "_"]
+
+  
+
 ?addprivate
 
-["create", "add", "+", ">"]
-
-  
-
-?delprivate
-
-["delete", "del", "-", "<"]
-
-  
-
-?renprivate
-
-["rename", "ren", "r", "_"]
+["add", ">"]
 
 ```
 
