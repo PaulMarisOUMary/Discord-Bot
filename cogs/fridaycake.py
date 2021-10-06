@@ -61,7 +61,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 	def __init__(self, bot):
 		self.bot, self.seed, self.nparticipants = bot, seed, 0
 		self.cakes = ['🎂', '🥮', '🥧', '🥯', '🧁', '🫓', '🧇', '🍞', '🍮', '🍰', '🥐']
-		self.participants = mix_participants(get_participants(data_directory), seed, 3)
+		self.participants = mix_participants(get_participants(data_directory), seed, 2)
 		for day in self.participants:
 			for _ in day: self.nparticipants += 1
 
