@@ -20,11 +20,11 @@ def get_participants(path : str) -> list[tuple]:
 	with open(path, encoding='utf-8', errors='ignore') as file:
 		lines = file.readlines()
 		for line in lines:
-			if not line[0:2] == "--":
+			if not line[0:2] == "--" and line[0] == '1':
 				line = line.strip('\n').split()
-				id = line[0]
+				id = line[1]
 				names = ""
-				for name in line[1:len(line)]: names += name+' '
+				for name in line[2:len(line)]: names += name+' '
 				participants.append((id, names[0:-1]))
 		file.close()
 	return participants
