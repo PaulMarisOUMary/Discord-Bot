@@ -23,7 +23,7 @@ class Usefull(commands.Cog, name="usefull", command_attrs=dict(hidden=False)):
 		await message.add_reaction(emoji=crossmark)
 
 	@commands.command(name='profilepicture', aliases=['pp'])
-	async def strawpool(self, ctx, member : discord.Member = None):
+	async def profilepicture(self, ctx, member : discord.Member = None):
 		"""Show the profile picture of the selected member."""
 		author = member if member else ctx.message.author
 		await ctx.send(author.display_avatar.url)
