@@ -23,13 +23,19 @@ def statServer(guild):
 	return status
 
 class Info(commands.Cog, name="info", command_attrs=dict(hidden=False)):
-	"""Info & statistics"""
+	"""Info & statistics."""
 	def __init__(self, bot):
 		self.bot = bot
 
+	def help_custom(self):
+		emoji = '📊'
+		label = "Info"
+		description = "Commands about additionals informations."
+		return emoji, label, description
+
 	@commands.command(name='stat', aliases=['status','graph','gs','sg'])
 	async def stat(self, ctx):
-		"""Show a graphic pie about the server's members""" 
+		"""Show a graphic pie about the server's members.""" 
 		plt.clf()
 		ax, data, colors = plt.subplot(), statServer(ctx.guild.members), ["#747f8d","#f04747","#faa81a","#43b582"]
 		ax.pie([data['offline'], data['dnd'], data['idle'], data['online']], colors=colors, startangle=-40, wedgeprops=dict(width=0.5))
@@ -42,7 +48,7 @@ class Info(commands.Cog, name="info", command_attrs=dict(hidden=False)):
 		
 		embed = discord.Embed(title="Current server stats ({})".format(data['members']),description="<:offline:698246924138184836> : **`{}`** (Offline)\n<:idle:698246924058361898> : **`{}`** (AFK)\n<:dnd:698246924528254986> : **`{}`** (dnd)\n<:online:698246924465340497> : **`{}`** (Online)\n<:streaming:699381397898395688> : **`{}`** (Streaming)\n<:phone0:698257015578951750> : **`{}`** (on mobile)\n<:isbot:698250069165473852> : **`{}`** (Robot)".format(data['offline'], data['idle'], data['dnd'], data['online'], data['streaming'], data['mobile'], data['bot']))
 		embed.set_image(url='attachment://stat.png')
-		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" à "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.avatar_url)
+		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.display_avatar.url)
 		await ctx.send(file=discord.File(fp=image_binary, filename='stat.png'), embed=embed)
 
 def setup(bot):

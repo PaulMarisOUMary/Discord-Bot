@@ -7,8 +7,7 @@ intents = discord.Intents.default()
 intents.presences = True
 intents.members = True
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"), description='Algobot', intents=intents)
-bot.remove_command('help')
+bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"), description='Algobot', intents=intents, help_command=None)
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -24,4 +23,4 @@ async def on_ready():
 	print("Logged in as: "+str(bot.user)+"\nVersion: "+str(discord.__version__))
 
 token_file = open(os.path.join(current_directory, "auth", "token.dat"), "r").read()
-bot.run(token_file, bot=True, reconnect=True)
+bot.run(token_file, reconnect=True)
