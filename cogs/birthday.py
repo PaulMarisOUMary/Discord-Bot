@@ -1,14 +1,13 @@
-#############################################
-#											#
+#################################################
+#						#
 #  This Cog is made for Algosup Discord Bot	#
-#   										#
-#		By LavaL, creator of LavaL Bot		#
-#											#
-#############################################
+#   						#
+#	By LavaL, creator of LavaL Bot		#
+#						#
+#################################################
 
 from os import name
 import time
-from turtle import isdown
 import discord
 import datetime
 from datetime import date
