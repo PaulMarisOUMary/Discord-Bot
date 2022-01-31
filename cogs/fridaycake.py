@@ -11,9 +11,9 @@ from copy import deepcopy
 
 data_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "participants.dat")
 
-holidays = [(date(2021, 6, 30), date(2021, 9, 23)), (date(2021, 11, 1), date(2021, 11, 5)), (date(2021, 11, 11), date(2021, 11, 13)), (date(2021, 12, 20), date(2021, 12, 31))]
-start = date(2021, 10, 8)#date(2021, 2, 7) #year #month #day (first friday)
-seed = 1
+holidays = [(date(2022, 2, 12), date(2022, 2, 19)), (date(2022, 4, 10), date(2022, 4, 23))] #Saturday -> Saturday
+start = date(2022, 2, 4)#date(2021, 10, 8)#date(2021, 2, 7) #year #month #day (first friday)
+seed = 2
 
 def get_participants(path : str) -> list[tuple]:
 	participants = []
@@ -29,19 +29,22 @@ def get_participants(path : str) -> list[tuple]:
 		file.close()
 	return participants
 
-def get_dates(date : datetime, holiday : list, count : int) -> datetime:
-	holes, i = [], 0
-	date += timedelta(days=4 - date.weekday())
-	for h in holiday:
-		hole = h[0]+timedelta(days=1 - h[0].weekday())
-		for _ in range(h[0].toordinal(), h[1].toordinal()+1):
-			hole += timedelta(days=1)
-			holes.append(hole)
-	while i <= count:
-		if not date in holes:
-			yield date
-			i += 1
-		date += timedelta(days=7)
+def isDateInHole(date : datetime, holes : list) -> bool:
+    for hole in holes:
+        if date > hole[0] and date < hole[1]:
+            return True
+    return False
+
+def get_dates(startthe:date, holes:list, count:int):
+    fridays = []
+    value = start
+    while len(fridays) < count:
+        if isDateInHole(value, holes) == False:
+            fridays.append(value)
+            value += timedelta(days=7)
+        else:
+            value += timedelta(days=7)
+    return fridays
 
 def mix_participants(participants : list, seed : int, n_group : int) -> list[list]:
 	random.seed(seed)
@@ -79,7 +82,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		for participants, _date in zip(self.participants, get_dates(start, holidays, len(self.participants))): 
 			string = "`"
 			for _id, names in participants:
-				string += names + "` & `" if not int(_id) == author.id else names + "` [⮘](https://github.com/PaulMarisOUMary/Algosup-Discord) & `"
+				string += names + "` & `" if not int(_id) == author.id else names + "` [ᐊ](https://github.com/PaulMarisOUMary/Algosup-Discord) & `"
 			embed.add_field(name=f"Friday {_date.strftime('%d %B, %Y')}", value=f"~~{string[0:-4]}~~" if date.today() >= _date else f"{string[0:-4]}", inline=False)
 		return embed
 
@@ -94,7 +97,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		else:
 			participants = ''
 			for _id, names in pin[0]:
-				participants += f"<@{_id}> `{names}`\n" if not _id == author.id else f"<@{_id}> `{names}` [⮘](https://github.com/PaulMarisOUMary/Algosup-Discord)\n"
+				participants += f"<@{_id}> `{names}`\n" if not _id == author.id else f"<@{_id}> `{names}` [ᐊ](https://github.com/PaulMarisOUMary/Algosup-Discord)\n"
 			embed = discord.Embed(title=f"{random.choice(self.cakes)} Fridaycake · Next", description="`Show who are the next to make a cake.`\n\u200b" ,colour=0xf7346b, url='https://github.com/PaulMarisOUMary/Algosup-Discord')
 			embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
 			embed.add_field(name=f"📅 Date :", value=f"Friday {pin[1].strftime('%d %B, %Y')}\n\u200b", inline=False)
@@ -111,7 +114,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		else:
 			participants = ''
 			for _id, names in pin[0]:
-				participants += f"<@{_id}> `{names}`\n" if not int(_id) == author.id else f"<@{_id}> `{names}` [⮘](https://github.com/PaulMarisOUMary/Algosup-Discord)\n"
+				participants += f"<@{_id}> `{names}`\n" if not int(_id) == author.id else f"<@{_id}> `{names}` [ᐊ](https://github.com/PaulMarisOUMary/Algosup-Discord)\n"
 			embed = discord.Embed(title=f"{random.choice(self.cakes)} Fridaycake · When", description="`Show your personnal order of passage.`\n\u200b" ,colour=0xf7346b, url='https://github.com/PaulMarisOUMary/Algosup-Discord')
 			embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
 			embed.add_field(name=f"👨‍🍳 Be ready for the Friday {pin[1].strftime('%d %B, %Y')} !", value=f"{author.mention}\n\u200b", inline=False)
