@@ -1,4 +1,5 @@
 import os
+import json
 import discord
 
 from discord.ext import commands
@@ -22,5 +23,5 @@ if __name__ == '__main__':
 async def on_ready():
 	print("Logged in as: "+str(bot.user)+"\nVersion: "+str(discord.__version__))
 
-token_file = open(os.path.join(current_directory, "auth", "token.dat"), "r").read()
-bot.run(token_file, reconnect=True)
+with open(os.path.join(current_directory, "auth", "auth.json"), "r") as data: token = json.load(data)["token"]
+bot.run(token, reconnect=True)
