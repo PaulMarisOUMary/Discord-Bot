@@ -1,6 +1,6 @@
 import discord
-import re
 import requests
+import re
 
 from datetime import datetime
 from discord.ext import commands
@@ -11,16 +11,16 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 	"""Don't leave your computer unlocked!"""
 
 	EMOJI = '🥐'
-	REGEX = re.compile("^(J[e']? ?pa[iy]e ?les ?(crois|🥐))|^🥐", re.IGNORECASE)
+	REGEX = re.compile("^(J[e']? ?pa[iy]e? ?(les)? ?(crois|🥐))", re.IGNORECASE)
 
 	def __init__(self, bot):
 		self.bot = bot
 
-	"""def help_custom(self):
+	def help_custom(self):
 		emoji = self.emoji
 		label = "Croissants"
 		description = "For when someone left their computer unlocked."
-		return emoji, label, description"""
+		return emoji, label, description
 
 	@commands.Cog.listener('on_message')
 	async def on_receive_message(self, message : discord.Message):
