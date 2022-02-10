@@ -17,7 +17,7 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		self.bot = bot
 
 	def help_custom(self):
-		emoji = self.emoji
+		emoji = '🥐'
 		label = "Croissants"
 		description = "For when someone left their computer unlocked."
 		return emoji, label, description
