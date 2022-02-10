@@ -46,7 +46,7 @@ class PrivateTextual(commands.Cog, name="privatetextual", command_attrs=dict(hid
 
 		role = await ctx.guild.create_role(name="team")
 		team_channel = await ctx.guild.create_text_channel(name="_team_text", category=discord.utils.get(ctx.guild.categories, id=ctx.channel.category_id))
-		await team_channel.set_permissions(role, send_messages=True, view_channel=True, read_message_history=True, add_reactions=True, external_emojis=True, attach_files=True, embed_links=True)
+		await team_channel.set_permissions(role, add_reactions=True, attach_files=True, embed_links=True, external_emojis=True, manage_messages=True, read_message_history=True, read_messages=True, send_messages=True, use_external_emojis=True, use_slash_commands=True, view_channel=True)
 		try: await team_channel.set_permissions(down_role, send_messages=False, view_channel=False)
 		except: pass
 
