@@ -1,33 +1,23 @@
 import os
+import json
 import random
 import discord
 import asyncio
 
 from views import fridaycake
+from classes.database import DataSQL
 
 from datetime import date, timedelta, datetime
 from discord.ext import commands
 from copy import deepcopy
 
-data_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "participants.dat")
-
 holidays = [(date(2022, 2, 12), date(2022, 2, 19)), (date(2022, 4, 10), date(2022, 4, 23))] #Saturday -> Saturday
 start = date(2022, 2, 4)#date(2021, 10, 8)#date(2021, 2, 7) #year #month #day (first friday)
 seed = 2
 
-def get_participants(path : str) -> list[tuple]:
-	participants = []
-	with open(path, encoding='utf-8', errors='ignore') as file:
-		lines = file.readlines()
-		for line in lines:
-			if not line[0:2] == "--" and line[0] == '1':
-				line = line.strip('\n').split()
-				id = line[1]
-				names = ""
-				for name in line[2:len(line)]: names += name+' '
-				participants.append((id, names[0:-1]))
-		file.close()
-	return participants
+auth_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "auth", "auth.json")
+with open(auth_directory, "r") as data: database_data = json.load(data)["database"]
+fridaycake_data = database_data["fridaycake"]
 
 def isDateInHole(date : datetime, holes : list) -> bool:
     for hole in holes:
@@ -35,9 +25,9 @@ def isDateInHole(date : datetime, holes : list) -> bool:
             return True
     return False
 
-def get_dates(startthe:date, holes:list, count:int):
+def get_dates(startthe:date, holes:list, count:int) -> list:
     fridays = []
-    value = start
+    value = startthe
     while len(fridays) < count:
         if isDateInHole(value, holes) == False:
             fridays.append(value)
@@ -62,17 +52,25 @@ def mix_participants(participants : list, seed : int, n_group : int) -> list[lis
 class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=False)):
 	"""FridayCake's event commands."""
 	def __init__(self, bot):
-		self.bot, self.seed, self.nparticipants = bot, seed, 0
+		self.bot, self.seed = bot, seed
 		self.cakes = ['🎂', '🥮', '🥧', '🥯', '🧁', '🫓', '🧇', '🍞', '🍮', '🍰', '🥐']
-		self.participants = mix_participants(get_participants(data_directory), seed, 2)
-		for day in self.participants:
-			for _ in day: self.nparticipants += 1
+
+		self.bot.loop.create_task(self.initFridaycake())
 
 	def help_custom(self):
 		emoji = random.choice(self.cakes)
 		label = "FridayCake"
 		description = "Commands relative to the FridayCake event !"
 		return emoji, label, description
+
+	async def initFridaycake(self):
+		self.database = DataSQL(database_data["host"], database_data["port"])
+		await self.database.auth(database_data["user"], database_data["password"], database_data["fridaycake"]["database"])
+
+		participants = await self.database.select(fridaycake_data["table"], "user_id, user_name", "user_isin = 1")
+		participants = [[*row] for row in participants] #convert tuple of tuples to list of lists
+		self.participants = mix_participants(participants, seed, 2)
+		self.nparticipants = len(participants) #mandatory in fridaycake view
 
 	def all(self, ctx):
 		author = ctx.message.author
