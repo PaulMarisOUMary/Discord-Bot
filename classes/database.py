@@ -20,8 +20,7 @@ class DataSQL():
         async with self.connector.cursor() as cursor:
             try:
                 await cursor.execute(query)
-                response = await cursor.fetchall() 
-                await cursor.close()
+                response = await cursor.fetchall()
                 return response
             except Exception as e:
                 return e
