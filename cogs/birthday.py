@@ -1,67 +1,71 @@
 #################################################
-#						#
-#  This Cog is made for Algosup Discord Bot	#
-#   						#
-#	By LavaL, creator of LavaL Bot		#
-#						#
+#												#
+#  This Cog is made for Algosup Discord Bot		#
+#   											#
+#	By LavaL, creator of LavaL Bot				#
+#												#
 #################################################
 
-from os import name
+import os
 import time
 import discord
 import datetime
-from datetime import date
-from discord import user
 from pytz import timezone
 from discord.ext import commands, tasks
 from discord import Member
+import aiomysql
+import json
+from views import birthday as vbirthday
+
+with open('auth/database.json', 'r') as json_file:
+	data = json.load(json_file)
+
+#database connection
+async def database_connection():
+	connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
+	cursor = await connection.cursor()
+	await cursor.execute("SELECT * FROM `algobot_birthday` ORDER BY `name` ASC")
+	students = await cursor.fetchall()
+	listofstudents = []
+	for student in students:
+		name = student[0]
+		surname = student[1]
+		discord_id = student[2]
+		date_of_birth = student[3]
+		promo = student[4]
+		listofstudents.append(Student(name, surname, discord_id, date_of_birth, promo))
+	await cursor.close()
+	connection.close()
+	return listofstudents
+
+async def orderby_date_database_connection():
+	connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
+	cursor = await connection.cursor()
+	await cursor.execute("SELECT * FROM `algobot_birthday` ORDER BY `date_of_birth` ASC")
+	students = await cursor.fetchall()
+	listofstudents = []
+	for student in students:
+		name = student[0]
+		surname = student[1]
+		discord_id = student[2]
+		date_of_birth = student[3]
+		promo = student[4]
+		listofstudents.append(Student(name, surname, discord_id, date_of_birth, promo))
+	await cursor.close()
+	connection.close()
+	return listofstudents
 
 class Student:
-	def __init__(self, name, surname, user_id, dateofbirth, promo):
+	def __init__(self, name, surname, discord_id, date_of_birth, promo):
 		self.name = name
 		self.surname = surname
-		self.user_id = user_id
-		self.dateofbirth= dateofbirth
+		self.discord_id = discord_id
+		self.date_of_birth= date_of_birth
 		self.promo = promo
-	def __repr__(self):
-		return repr((self.name, self.surname, self.user_id, self.dateofbirth, self.promo))
-
-students = [
-	# Class(Name, Surnane, discord_id, date of birth(year-month-day), Promo)
-	Student("Nicolaon", "Romain", 405414058775412746, '2002-12-20', "Alpha"),
-	Student("Diancourt", "Théo", 202041154231861248, '2004-04-21', "Beta"),
-	Student("Chartier", "Léo", 283358054827819008, '2001-10-27', "Beta"),
-	Student("Debry", "Robin", 692669442131492936, '2000-11-17', "Beta"),
-	Student("Bobis", "Alexandre", 890238206103134238, '2003-08-18', "Beta"),
-	Student("Gorin", "Pierre", 289689300574928897, '2004-03-21', "Beta"),
-	Student("Mida", "Nicolas", 209765697188790272, '2001-11-09', "Beta"),
-	Student("Archimbaud", "Malo", 231447375254781962, '2002-06-06', "Beta"),
-	Student("Bernard", "Max", 627775366601113601, '2002-04-21', "Alpha"),
-	Student("Le Brun", "Gaël", 217727048632762369, '2002-01-08', "Beta"),
-	Student("Curel", "Clémentine", 755449654912614441, '1999-02-27', "Alpha"),
-	Student("Caton", "Clément", 219156294974570497, '1999-04-02', "Alpha"),
-	Student("Priol", "Eloi", 456516058984087583, '2003-05-11', "Alpha"),
-	Student("De Lavenne", "Louis", 501471077709381643, '2002-07-27', "Alpha"),
-	Student("Molnar", "Ivan", 267377288989900810, '1999-07-27', "Alpha"),
-	Student("Bouquin", "Laurent", 248910730122756108, '2002-09-26', "Alpha"),
-	Student("Fernandez", "Aurélien", 354321839234744320, '2002-10-23', "Alpha"),
-	Student("Vinette", "Karine", 759045368591155221, '1985-11-13', "Alpha"),
-	Student("Maris", "Paul", 265148938091233293, '2000-11-14', "Alpha"),
-	Student("Namir", "Salaheddine", 436469556257619978, '1997-12-03', "Alpha"),
-	Student("Trouvé", "Théo", 293476472767905792, '2001-12-18', "Alpha"),
-	Student("Clément", "Quentin", 477507595402477568, "2003-11-26", "Beta"),
-	Student("Chaput", "Mathieu", 274284070261882880, "2002-04-20", "Beta"),
-	Student("Leroy", "Victor", 332519404308791297, "2004-07-08", "Beta"),
-	Student("Gautier", "Elise", 890234516587839498, "2003-03-28", "Beta"),
-	Student("Planchard", "Thomas", 300305011554910209, "2003-07-11", "Beta"),
-	Student("Pages", "Maxime", 200894937330483201, "2002-04-20", "Beta"),
-	Student("Riviere", "Guillaume", 157840464559472640, "1997-08-22", "Beta"),
-	Student("Lorut-Gauriat", "Martin", 615932803439394817, "2000-07-05", "Alpha"),
-	Student("Cuahonte", "David", 222030501005885461, "2002-12-20", "Beta"),
-	Student("Lemoine", "Arthur", 294083746439626752, "2001-09-10", "Beta"),
-	Student("Pillet", "Antonin", 303832553482092545, "2003-11-13", "Beta"),
-	Student("Hureaux", "Florent", 267613920343228417, "1996-11-26", "Alpha")
-]
+  
+	def __str__(self):
+		return "{} {} {} {} {}".format(self.name, self.surname, self.discord_id, self.date_of_birth, self.promo)
+  
 
 def Timer():
 	fmt = "%H:%M:%S"
@@ -70,15 +74,9 @@ def Timer():
 	now_berlin = now_utc.astimezone(timezone('Europe/berlin'))
 	actual_time = now_berlin.strftime(fmt)
 	return actual_time
-
-
-def Calcul_Age(birthDate):
-	today = date.today() 
-	age = today.year - birthDate.year - ((today.month, today.day) < (birthDate.month, birthDate.day))
-	return age
  
 
-class Birthday(commands.Cog, name="birthday"):
+class Algobot_Birthday(commands.Cog, name="algobot_birthday"):
 	"""Birthday description"""
 	def __init__(self, bot):
 		self.bot = bot
@@ -87,72 +85,104 @@ class Birthday(commands.Cog, name="birthday"):
 	def cog_unload(self):
 		self.daily_birthday.cancel()
 
-
 	@tasks.loop(hours=1)
 	async def daily_birthday(self):
+		a = await database_connection()
 		guild = self.bot.get_guild(551753752781127680)
 		channel = guild.get_channel(840003378062557202)
 		is_nothing = True
 		if datetime.datetime.now().hour == 9:
-			for student in students:
-				new_date = date.fromisoformat(student.dateofbirth)
-				diff = Calcul_Age(new_date)
-				if (new_date.month == date.today().month) and (new_date.day == date.today().day):
-					message = ("Bon anniversaire **<@!" + str(student.user_id) + ">**, tu es né(e) le `" + str(new_date) + "` et tu as désormais " + str(diff) + " ans ! 🎉")
+			for item in a:
+				today = datetime.datetime.today().date()
+				birthday = item.date_of_birth
+				diff = abs(today - birthday)
+				diff = diff.days
+				age = diff // 365
+				if (birthday.month == datetime.datetime.today().month) and (birthday.day == datetime.datetime.today().day):
+					message = ("Bon anniversaire **<@!" + str(item.discord_id) + ">**, tu es né(e) le `" + str(birthday) + "` et tu as désormais " + str(age) + " ans ! 🎉")
 
 					embed = discord.Embed(title="Bon anniversaire !", colour=discord.Colour.dark_gold())
 					embed.add_field(name="Wow c'est ton anniversaire aujourd'hui !", value=message, inline=False)
 					embed.set_thumbnail(url="https://acegif.com/wp-content/gif/joyeux-anniversaire-chat-31.gif")
 					await channel.send(embed=embed)
 					is_nothing = False
-     
+		
 			if is_nothing:
-				await channel.send("Il n'y a pas d'anniversaire aujourd'hui :(")
+				await channel.send("Il n'y a pas d'anniversaire aujourd'hui :sob:")
 
 
 	@daily_birthday.before_loop
 	async def before_daily_birthday(self):
 		await self.bot.wait_until_ready()
 
-	@commands.command(name='birthdayall', aliases=['bda'])
+	@commands.command(name='abirthdayall', aliases=['abda'])
 	async def birthdayall(self, ctx):
-		listofstudents = sorted(students, key=lambda student: student.dateofbirth)
+		b = await orderby_date_database_connection()
 		embed=discord.Embed(title="All birthdays", colour=discord.Colour.dark_gold())
 		embed.set_thumbnail(url="https://stickeramoi.com/8365-large_default/sticker-mural-couronne-jaune.jpg")
-		i = 0
-		while i < len(students):
-			embed.add_field(name=listofstudents[i].name + " " + listofstudents[i].surname, value=listofstudents[i].dateofbirth, inline=True)
-			embed.set_footer(text="Demandé par : "+str(ctx.message.author.name)+" à " +
-					Timer(), icon_url=ctx.message.author.display_avatar.url)
-			i = i + 1
-		await ctx.send(embed=embed)
+		embed2=discord.Embed(title="All birthdays", colour=discord.Colour.dark_gold())
+		embed2.set_thumbnail(url="https://stickeramoi.com/8365-large_default/sticker-mural-couronne-jaune.jpg")
+		for item in b[0:24]:
+			embed.add_field(name=item.name + " " + item.surname, value=item.date_of_birth, inline=True)
+			embed.set_footer(text="Demandé par : "+str(ctx.message.author.name)+" à " + Timer(), icon_url=ctx.message.author.display_avatar.url)
+		for item in b[25::]:
+			embed2.add_field(name=item.name + " " + item.surname, value=item.date_of_birth, inline=True)
+			embed2.set_footer(text="Demandé par : "+str(ctx.message.author.name)+" à " + Timer(), icon_url=ctx.message.author.display_avatar.url)
 
-	@commands.command(name='birthday', aliases=['birth'])
+		await ctx.send(embed=embed)
+		await ctx.send(embed=embed2)
+
+	@commands.command(name='abirthdaya', aliases=['abirth'])
 	async def birthday(self, ctx, member: Member = None):
 		if not member:
 			ID_discord = ctx.message.author.id
 		else:
 			ID_discord = member.id
-		# ID_discord = ctx.message.author.id
-		for student in students:
-			if ID_discord == student.user_id:
-				new_date = date.fromisoformat(student.dateofbirth)
-				diff = Calcul_Age(new_date)
-				message = "<@!" + str(student.user_id) + "> tu es agé(e) de " + str(diff) + " ans ! 🎉"
-				embed = discord.Embed(title=f"Age de {student.surname}", description=message, color=0x12F932)
-	
+		a = await database_connection()
+		for item in a:
+			if ID_discord == item.discord_id:
+				today = datetime.datetime.today().date()
+				birthday = item.date_of_birth
+				diff = abs(today - birthday)
+				diff = diff.days
+				age = diff // 365
+				message = "<@!" + str(item.discord_id) + "> tu es agé(e) de " + str(age) + " ans ! 🎉"
+				embed = discord.Embed(title=f"Age de {item.surname}", description=message, color=0x12F932)
+
 				embed.set_thumbnail(url="https://acegif.com/wp-content/gif/joyeux-anniversaire-chat-31.gif")
-	
+
 				embed.set_footer(text="Demandé par : "+str(ctx.message.author.name)+" à " +
-						 Timer(), icon_url=ctx.message.author.display_avatar.url)
-	
+							Timer(), icon_url=ctx.message.author.display_avatar.url)
+
 				await ctx.send(embed=embed)
 
-	@commands.command(name='lenstudent', aliases=['lens'])
-	@commands.is_owner()
+	@commands.command(name='alenstudent', aliases=['alens'])
 	async def lenstudent(self, ctx):
-		listofstudent = len(students)
-		print(listofstudent)
+		a = await database_connection()
+		await ctx.send(len(a))
+
+	@commands.command(name='addbirth', aliases=['ab'])
+	@commands.cooldown(1, 30, commands.BucketType.user)
+	async def aa(self, ctx, name, surname, discord_id, date_of_birth, promo):
+		connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
+		cursor = await connection.cursor()
+		lang_list = [name, surname,discord_id,date_of_birth,promo]
+		try:
+			await cursor.execute("INSERT INTO `algobot_birthday`(`name`, `surname`, `discord_id`, `date_of_birth`, `promo`) VALUES (%s, %s, %s, %s, %s)", lang_list)
+			await connection.commit()
+			await ctx.send("Tu t'es bien enregistré !")
+		except:
+			raise commands.CommandError('La commande est mal écrite, ex : Nicolaon, Romain, 405414058775412746, 2002-02-22, Alpha')
+  
+	@commands.command(name='deletebirth', aliases=['db'])
+	@commands.is_owner()
+	async def bb(self, ctx, text_do_delete):
+		connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
+		cursor = await connection.cursor()
+		await cursor.execute("DELETE FROM `algobot_birthday` WHERE `name` = %s", text_do_delete)
+		await connection.commit()
+		await ctx.send("Tu as bien delete !")
+
 
 def setup(bot):
-	bot.add_cog(Birthday(bot))
+	bot.add_cog(Algobot_Birthday(bot))
