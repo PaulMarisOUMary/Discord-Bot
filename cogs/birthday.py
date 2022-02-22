@@ -15,7 +15,6 @@ from discord.ext import commands, tasks
 from discord import Member
 import aiomysql
 import json
-from views import birthday as vbirthday
 
 with open('auth/database.json', 'r') as json_file:
 	data = json.load(json_file)
@@ -76,7 +75,7 @@ def Timer():
 	return actual_time
  
 
-class Algobot_Birthday(commands.Cog, name="algobot_birthday"):
+class Birthday(commands.Cog, name="birthday"):
 	"""Birthday description"""
 	def __init__(self, bot):
 		self.bot = bot
@@ -115,7 +114,7 @@ class Algobot_Birthday(commands.Cog, name="algobot_birthday"):
 	async def before_daily_birthday(self):
 		await self.bot.wait_until_ready()
 
-	@commands.command(name='abirthdayall', aliases=['abda'])
+	@commands.command(name='birthdayall', aliases=['bda'])
 	async def birthdayall(self, ctx):
 		b = await orderby_date_database_connection()
 		embed=discord.Embed(title="All birthdays", colour=discord.Colour.dark_gold())
@@ -132,7 +131,7 @@ class Algobot_Birthday(commands.Cog, name="algobot_birthday"):
 		await ctx.send(embed=embed)
 		await ctx.send(embed=embed2)
 
-	@commands.command(name='abirthdaya', aliases=['abirth'])
+	@commands.command(name='mybirthday', aliases=['mbirth'])
 	async def birthday(self, ctx, member: Member = None):
 		if not member:
 			ID_discord = ctx.message.author.id
@@ -147,7 +146,7 @@ class Algobot_Birthday(commands.Cog, name="algobot_birthday"):
 				diff = diff.days
 				age = diff // 365
 				message = "<@!" + str(item.discord_id) + "> tu es agé(e) de " + str(age) + " ans ! 🎉"
-				embed = discord.Embed(title=f"Age de {item.surname}", description=message, color=0x12F932)
+				embed = discord.Embed(title=f"Age de {item.surname} {item.name}", description=message, color=0x12F932)
 
 				embed.set_thumbnail(url="https://acegif.com/wp-content/gif/joyeux-anniversaire-chat-31.gif")
 
@@ -156,33 +155,44 @@ class Algobot_Birthday(commands.Cog, name="algobot_birthday"):
 
 				await ctx.send(embed=embed)
 
-	@commands.command(name='alenstudent', aliases=['alens'])
+	@commands.command(name='lenstudent', aliases=['lens'])
 	async def lenstudent(self, ctx):
 		a = await database_connection()
 		await ctx.send(len(a))
 
-	@commands.command(name='addbirth', aliases=['ab'])
+	@commands.command(name='registerbirthday', aliases=['rbirth'])
 	@commands.cooldown(1, 30, commands.BucketType.user)
-	async def aa(self, ctx, name, surname, discord_id, date_of_birth, promo):
+	async def registerbirthday(self, ctx, name, surname, discord_id, date_of_birth, promo):
 		connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
 		cursor = await connection.cursor()
-		lang_list = [name, surname,discord_id,date_of_birth,promo]
+		user_to_add = [name, surname, discord_id, date_of_birth, promo]
 		try:
-			await cursor.execute("INSERT INTO `algobot_birthday`(`name`, `surname`, `discord_id`, `date_of_birth`, `promo`) VALUES (%s, %s, %s, %s, %s)", lang_list)
+			await cursor.execute("INSERT INTO `algobot_birthday`(`name`, `surname`, `discord_id`, `date_of_birth`, `promo`) VALUES (%s, %s, %s, %s, %s)", user_to_add)
 			await connection.commit()
 			await ctx.send("Tu t'es bien enregistré !")
 		except:
 			raise commands.CommandError('La commande est mal écrite, ex : Nicolaon, Romain, 405414058775412746, 2002-02-22, Alpha')
   
-	@commands.command(name='deletebirth', aliases=['db'])
+	@commands.command(name='deletebirthday', aliases=['dbirth'])
 	@commands.is_owner()
-	async def bb(self, ctx, text_do_delete):
+	async def deletebirthday(self, ctx, name):
 		connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
 		cursor = await connection.cursor()
-		await cursor.execute("DELETE FROM `algobot_birthday` WHERE `name` = %s", text_do_delete)
+		user_to_delete = [name]
+		await cursor.execute("DELETE FROM `algobot_birthday` WHERE `name` = %s", user_to_delete)
 		await connection.commit()
 		await ctx.send("Tu as bien delete !")
 
+	@commands.command(name='modifbirthday', aliases=['modbirth'])
+	@commands.is_owner()
+	async def modifbirthday(self, ctx, var, name):
+		connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
+		cursor = await connection.cursor()
+		modiflist = [var, name]
+		await cursor.execute("UPDATE `algobot_birthday` SET `date_of_birth` = %s WHERE `name` = %s", modiflist)
+		await connection.commit()
+		await ctx.send("Tu as bien modif !")
+
 
 def setup(bot):
-	bot.add_cog(Algobot_Birthday(bot))
+	bot.add_cog(Birthday(bot))
