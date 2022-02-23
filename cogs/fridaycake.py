@@ -63,6 +63,9 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		description = "Commands relative to the FridayCake event !"
 		return emoji, label, description
 
+	def cog_unload(self) -> None:
+		self.database.close()
+
 	async def initFridaycake(self):
 		self.database = DataSQL(database_data["host"], database_data["port"])
 		await self.database.auth(database_data["user"], database_data["password"], database_data["fridaycake"]["database"])

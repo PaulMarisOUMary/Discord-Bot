@@ -47,15 +47,15 @@ class DataSQL():
 
     async def insert(self, table:str, args:list) -> query:
         query, variables, values, lenght = "INSERT INTO `"+ table +"` (", '', '', len(args)
-        for i, arg in enumerate(args):
-            variable, value, case = arg[0], arg[1], i+1
-
-            variables += "`"+ str(variable) +"`, " if case < lenght else "`"+ str(variable) +"`"
+        for i, items in enumerate(args.items()):
+            variable, value = items[0], items[1]
+            
+            variables += "`"+ str(variable) +"`, " if i+1 < lenght else "`"+ str(variable) +"`"
 
             if isinstance(value, (str)): value = "'"+value+"'"
-            values += str(value) +", " if case < lenght else str(value)
+            values += str(value) +", " if i+1 < lenght else str(value)    
 
-        query += variables +") VALUES ("+ values +");"
+        query += variables +") VALUES ("+ values +");"	 
 
         return await self.query(query)
 
