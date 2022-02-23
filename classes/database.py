@@ -6,6 +6,7 @@ class DataSQL():
         self.loop, self.host, self.port = loop, host, port
 
     async def auth(self, user:str="root", password:str='', database:str="mysql", autocommit:bool = True) -> None:
+        self.__authUser, self.__authPassword, self.__authDatabase, self.__authAutocommit = user, password, database, autocommit
         self.connector = await aiomysql.connect(
             host=self.host, 
             port=self.port, 
@@ -22,6 +23,13 @@ class DataSQL():
                 await cursor.execute(query)
                 response = await cursor.fetchall()
                 return response
+
+            except aiomysql.OperationalError as e:
+                if e.args[0] == 2013: #Lost connection to SQL server during query
+                    await self.auth(self.__authUser, self.__authPassword, self.__authDatabase, self.__authAutocommit)
+                    return await self.query(query)
+                return e            
+
             except Exception as e:
                 return e
     
