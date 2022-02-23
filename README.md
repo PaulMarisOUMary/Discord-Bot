@@ -145,6 +145,24 @@ $ python3 -m pip install -U .[voice]
 
 ```
 
+
+
+- ME:
+
+```c#
+
+?description
+
+["me"]
+
+  
+
+?showdescription
+
+["sme", "showme"]
+
+```
+
   
 
 - PRIVATETEXTUAL:

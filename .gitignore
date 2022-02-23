@@ -150,3 +150,6 @@ cython_debug/
 
 # Project
 auth/auth.json
+
+# MacOS (should be included in your local .gitignore)
+.DS_Store
