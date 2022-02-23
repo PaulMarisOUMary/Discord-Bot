@@ -147,3 +147,9 @@ cython_debug/
 # Visual Studio Code
 # Recommended: Configure a global .gitignore on your local machine
 .vscode/
+
+# Project
+auth/auth.json
+
+# MacOS (should be included in your local .gitignore)
+.DS_Store
