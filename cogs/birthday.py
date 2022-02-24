@@ -1,178 +1,100 @@
-#################################################
-#												#
-#  This Cog is made for Algosup Discord Bot		#
-#   											#
-#	By LavaL, creator of LavaL Bot				#
-#												#
-#################################################
-
 import os
-import time
-import discord
-import datetime
-from pytz import timezone
-from discord.ext import commands, tasks
-from discord import Member
-import aiomysql
 import json
+import time
+import random
+import asyncio
+import discord
 
-with open('auth/database.json', 'r') as json_file:
-	data = json.load(json_file)
+from classes.database import DataSQL
 
-#database connection
-async def database_connection():
-	connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
-	cursor = await connection.cursor()
-	await cursor.execute("SELECT * FROM `algobot_birthday` ORDER BY `date_of_birth` ASC")
-	students = await cursor.fetchall()
-	listofstudents = []
-	for student in students:
-		discord_id = student[0]
-		date_of_birth = student[1]
-		listofstudents.append(Student(discord_id, date_of_birth))
-	await cursor.close()
-	connection.close()
-	return listofstudents
+from datetime import datetime, date
+from discord.ext import commands, tasks
 
-class Student:
-	def __init__(self, discord_id, date_of_birth):
-		self.discord_id = discord_id
-		self.date_of_birth = date_of_birth
-  
-	def __str__(self):
-		return "{} {} {} {} {}".format(self.discord_id, self.date_of_birth)
-  
-
-def Timer():
-	fmt = "%H:%M:%S"
-	# Current time in UTC
-	now_utc = datetime.datetime.now(timezone('UTC'))
-	now_berlin = now_utc.astimezone(timezone('Europe/berlin'))
-	actual_time = now_berlin.strftime(fmt)
-	return actual_time
- 
+auth_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "auth", "auth.json")
+with open(auth_directory, "r") as data: database_data = json.load(data)["database"]
+birthday_data = database_data["birthday"]
 
 class Birthday(commands.Cog, name="birthday"):
-	"""Birthday description"""
+	"""I'll wish you soon a happy birthday!"""
 	def __init__(self, bot):
 		self.bot = bot
+
+		self.bot.loop.create_task(self.initBirthday())
 		self.daily_birthday.start()
+
+	async def initBirthday(self):
+		self.database = DataSQL(database_data["host"], database_data["port"])
+		await self.database.auth(database_data["user"], database_data["password"], birthday_data["database"])
 
 	def cog_unload(self):
 		self.daily_birthday.cancel()
 
 	@tasks.loop(hours=1)
 	async def daily_birthday(self):
-		a = await database_connection()
-		guild = self.bot.get_guild(551753752781127680)
-		channel = guild.get_channel(840003378062557202)
-		is_nothing = True
-		if datetime.datetime.now().hour == 9:
-			for item in a:
-				today = datetime.datetime.today().date()
-				birthday = item.date_of_birth
-				diff = abs(today - birthday)
-				diff = diff.days
-				age = diff // 365
-				if (birthday.month == datetime.datetime.today().month) and (birthday.day == datetime.datetime.today().day):
-					message = ("Bon anniversaire **<@!" + str(item.discord_id) + ">**, tu es né(e) le `" + str(birthday) + "` et tu as désormais " + str(age) + " ans ! 🎉")
+		if datetime.now().hour == 9:
+			guild = self.bot.get_guild(int(birthday_data["guild_id"]))
+			channel = guild.get_channel(int(birthday_data["channel_id"]))
 
-					embed = discord.Embed(title="Bon anniversaire !", colour=discord.Colour.dark_gold())
-					embed.add_field(name="Wow c'est ton anniversaire aujourd'hui !", value=message, inline=False)
-					embed.set_thumbnail(url="https://acegif.com/wp-content/gif/joyeux-anniversaire-chat-31.gif")
+			response = await self.database.select(birthday_data["table"], "*")
+			for data in response:
+				user_id, user_birth = data[0], data[1]
+
+				if user_birth.month == datetime.now().month and user_birth.day == datetime.now().day:
+					timestamp = round(time.mktime(user_birth.timetuple()))
+
+					message = f"Remembed this date because it's <@{str(user_id)}>'s birthday !\nHe was born <t:{timestamp}:R> !"
+					images = [
+						"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
+						"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
+						"https://winkgo.com/wp-content/uploads/2018/08/101-Best-Happy-Birthday-Memes-01-720x720.jpg",
+						"https://www.the-best-wishes.com/wp-content/uploads/2022/01/success-kid-cute-birthday-meme-for-her.jpg"]
+
+					embed = discord.Embed(title="🎉 Happy birthday !", description=message, colour=discord.Colour.dark_gold())
+					embed.set_image(url=images[random.randint(0, len(images)-1)])
 					await channel.send(embed=embed)
-					is_nothing = False
-		
-			if is_nothing:
-				await channel.send("Il n'y a pas d'anniversaire aujourd'hui :sob:")
-
 
 	@daily_birthday.before_loop
 	async def before_daily_birthday(self):
 		await self.bot.wait_until_ready()
+		while self.database.connector is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
-	@commands.command(name='birthdayall', aliases=['bda'])
-	async def birthdayall(self, ctx):
-		a = await database_connection()
-		embed=discord.Embed(title="All birthdays", colour=discord.Colour.dark_gold())
-		embed.set_thumbnail(url="https://stickeramoi.com/8365-large_default/sticker-mural-couronne-jaune.jpg")
-		embed2=discord.Embed(title="All birthdays", colour=discord.Colour.dark_gold())
-		embed2.set_thumbnail(url="https://stickeramoi.com/8365-large_default/sticker-mural-couronne-jaune.jpg")
-		for item in a[0:24]:
-			date = datetime.datetime.strftime(item.date_of_birth, "%d %b %Y")
-			embed.add_field(name=date, value=f"<@!{item.discord_id}>", inline=True)
-			embed.set_footer(text="Demandé par : "+str(ctx.message.author.name)+" à " + Timer(), icon_url=ctx.message.author.display_avatar.url)
-		for item in a[25::]:
-			date = datetime.datetime.strftime(item.date_of_birth, "%d %b %Y")
-			embed2.add_field(name=date, value=f"<@!{item.discord_id}>", inline=True)
-			embed2.set_footer(text="Demandé par : "+str(ctx.message.author.name)+" à " + Timer(), icon_url=ctx.message.author.display_avatar.url)
+	@commands.command(name='birthday', aliases=['bd', 'setbirthday', 'setbirth', 'birth'])
+	@commands.cooldown(1, 10, commands.BucketType.user)
+	async def birthday(self, ctx, date: str = None):
+		"""Allows you to set/show your birthday."""
+		if date:
+			try:
+				dataDate = datetime.strptime(date, "%d/%m/%Y").date()
+				if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: raise commands.CommandError("Please provide your real year of birth.")
+				# Insert
+				await self.database.insert(birthday_data["table"], {"user_id": ctx.author.id, "user_birth": dataDate})
+				# Update
+				await self.database.update(birthday_data["table"], "user_birth", dataDate, "user_id = "+str(ctx.author.id))
 
-		await ctx.send(embed=embed)
-		await ctx.send(embed=embed2)
-
-	@commands.command(name='mybirthday', aliases=['mbirth'])
-	async def birthday(self, ctx, member: Member = None):
-		if not member:
-			ID_discord = ctx.message.author.id
+				await self.show_birthday_message(ctx, ctx.author)
+			except ValueError:
+				raise commands.CommandError("Invalid date format, try : `dd/mm/yyyy`.\nExample : `26/12/1995`")
+			except Exception as e:
+				raise commands.CommandError(str(e))
 		else:
-			ID_discord = member.id
-		a = await database_connection()
-		for item in a:
-			if ID_discord == item.discord_id:
-				today = datetime.datetime.today().date()
-				birthday = item.date_of_birth
-				diff = abs(today - birthday)
-				diff = diff.days
-				age = diff // 365
-				message = "<@!" + str(item.discord_id) + "> tu es agé(e) de " + str(age) + " ans ! 🎉"
-				embed = discord.Embed(title=f"Mon age", description=message, color=0x12F932)
+			await self.show_birthday(ctx, ctx.author)
 
-				embed.set_thumbnail(url="https://acegif.com/wp-content/gif/joyeux-anniversaire-chat-31.gif")
+	@commands.command(name='showbirthday', aliases=['showbirth', 'sbd'])
+	@commands.cooldown(1, 5, commands.BucketType.user)
+	async def show_birthday(self, ctx, user:discord.Member = None):
+		"""Allows you to show the birthday of other users."""
+		if not user: user = ctx.author
+		await self.show_birthday_message(ctx, user)
 
-				embed.set_footer(text="Demandé par : "+str(ctx.message.author.name)+" à " +
-							Timer(), icon_url=ctx.message.author.display_avatar.url)
+	async def show_birthday_message(self, ctx, user:discord.Member) -> None:
+		response = await self.database.lookup(birthday_data["table"], "user_birth", "user_id", str(user.id))
+		if response:
+			dataDate : date = response[0][0]
+			timestamp = round(time.mktime(dataDate.timetuple()))
+			await ctx.send(f":birthday: Birthday the <t:{timestamp}:D> and was born <t:{timestamp}:R>.")
+		else:
+			await ctx.send(":birthday: Nothing was found. Set the birthday and retry.")
 
-				await ctx.send(embed=embed)
-
-	@commands.command(name='lenstudent', aliases=['lens'])
-	async def lenstudent(self, ctx):
-		a = await database_connection()
-		await ctx.send("Il y a ", len(a), "élèves qui sont enregistrés")
-
-	@commands.command(name='registerbirthday', aliases=['rbirth'])
-	@commands.cooldown(1, 30, commands.BucketType.user)
-	async def registerbirthday(self, ctx, date_of_birth):
-		name = ctx.message.author.name
-		discord_id = ctx.message.author.id
-		connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
-		cursor = await connection.cursor()
-		user_to_add = [discord_id, date_of_birth]
-		try:
-			await cursor.execute("INSERT INTO `algobot_birthday`(`discord_id`, `date_of_birth`) VALUES (%s, %s)", user_to_add)
-			await connection.commit()
-			await ctx.send("Tu t'es bien enregistré !")
-		except:
-			raise commands.CommandError('La commande est mal écrite, ex : `rbirth 2002-12-20`')
-  
-	@commands.command(name='deletebirthday', aliases=['dbirth'])
-	@commands.is_owner()
-	async def deletebirthday(self, ctx, discord_id):
-		connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
-		cursor = await connection.cursor()
-		user_to_delete = [discord_id]
-		await cursor.execute("DELETE FROM `algobot_birthday` WHERE `discord_id` = %s", user_to_delete)
-		await connection.commit()
-		await ctx.send("Tu as bien delete !")
-
-	@commands.command(name='modifbirthday', aliases=['modbirth'])
-	@commands.is_owner()
-	async def modifbirthday(self, ctx, var, discord_id):
-		connection = await aiomysql.connect(host=data['dbhost'], user=data['dbuser'], password=data['dbpassword'], db=data['dbname'])
-		cursor = await connection.cursor()
-		modiflist = [var, discord_id]
-		await cursor.execute("UPDATE `algobot_birthday` SET `date_of_birth` = %s WHERE `discord_id` = %s", modiflist)
-		await connection.commit()
-		await ctx.send("Tu as bien modif !")
 
 
 def setup(bot):
