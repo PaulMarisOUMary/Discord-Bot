@@ -1,3 +1,4 @@
+from datetime import datetime, date
 import aiomysql
 import asyncio
 
@@ -45,17 +46,19 @@ class DataSQL():
     async def lookup(self, table:str, target:str, what:str, which:str) -> select:
         return await self.select(table, target, what+" REGEXP '"+which+"'")
 
-    async def insert(self, table:str, args:list) -> query:
-        query, variables, values, lenght = "INSERT INTO `"+ table +"` (", '', '', len(args)
+    async def insert(self, table:str, args:dict) -> query:
+        query, variables, values, lenght = f"INSERT INTO `{table}` (", '', '', len(args)
         for i, items in enumerate(args.items()):
             variable, value = items[0], items[1]
             
             variables += "`"+ str(variable) +"`, " if i+1 < lenght else "`"+ str(variable) +"`"
 
-            if isinstance(value, (str)): value = "'"+value+"'"
-            values += str(value) +", " if i+1 < lenght else str(value)    
+            if isinstance(value, (str)): value = f"'{value}'"
+            elif isinstance(value, (date)): value = f"'{value.strftime('%Y-%m-%d')}'"
+            elif isinstance(value, (datetime)): value = f"'{value.strftime('%Y-%m-%d %H:%M:%S')}'"
+            values += f"{value}, " if i+1 < lenght else f"{value}"    
 
-        query += variables +") VALUES ("+ values +");"	 
+        query += f"{variables} ) VALUES ({values});"	 
 
         return await self.query(query)
 

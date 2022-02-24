@@ -59,7 +59,7 @@ class Me(commands.Cog, name="me", command_attrs=dict(hidden=False)):
 	async def show_me_message(self, ctx, user:discord.Member):
 		response = await self.database.lookup(me_data["table"], "user_me", "user_id", str(user.id))
 		message = " ".join(response[0]) if len(response) else "No description provided.."
-		await ctx.send("• **"+ user.display_name + "** *" + message+"*")
+		await ctx.send("• **"+ user.display_name + "**" + message)
 
 
 
