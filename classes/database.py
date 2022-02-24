@@ -4,7 +4,7 @@ import asyncio
 
 class DataSQL():
     def __init__(self, host:str = "127.0.0.1", port:int = 3306, loop:asyncio.AbstractEventLoop = None) -> None:
-        self.loop, self.host, self.port = loop, host, port
+        self.loop, self.host, self.port, self.connector = loop, host, port, None
 
     async def auth(self, user:str="root", password:str='', database:str="mysql", autocommit:bool = True) -> None:
         self.__authUser, self.__authPassword, self.__authDatabase, self.__authAutocommit = user, password, database, autocommit
@@ -53,9 +53,9 @@ class DataSQL():
             
             variables += "`"+ str(variable) +"`, " if i+1 < lenght else "`"+ str(variable) +"`"
 
-            if isinstance(value, (str)): value = f"'{value}'"
-            elif isinstance(value, (date)): value = f"'{value.strftime('%Y-%m-%d')}'"
-            elif isinstance(value, (datetime)): value = f"'{value.strftime('%Y-%m-%d %H:%M:%S')}'"
+            kindFormat = self.__toKindFormat(value)
+            if kindFormat: value = kindFormat
+            
             values += f"{value}, " if i+1 < lenght else f"{value}"    
 
         query += f"{variables} ) VALUES ({values});"	 
@@ -63,10 +63,20 @@ class DataSQL():
         return await self.query(query)
 
     async def update(self, table:str, variable:str, value:any, condition:str) -> query:
-        if isinstance(value, (str)): value = "'"+value+"'"
+        kindFormat = self.__toKindFormat(value)
+        if kindFormat: value = kindFormat
+
         query = "UPDATE "+ table +" SET `"+ variable +"` = "+ str(value)
         if condition: query += " WHERE "+ condition
         return await self.query(query + ';')
+
+    def __toKindFormat(self, value:any = None) -> any:
+        keeper = value
+        if isinstance(value, (str)): value = f"'{value}'"
+        elif isinstance(value, date): value = f"'{value.strftime('%Y-%m-%d')}'"
+        elif isinstance(value, datetime): value = f"'{value.strftime('%Y-%m-%d %H:%M:%S')}'"
+
+        if value != keeper: return value
 
     def close(self) -> None:
         self.connector.close()

@@ -33,7 +33,7 @@ class Me(commands.Cog, name="me", command_attrs=dict(hidden=False)):
 
 	@commands.command(name='me', aliases=['description'])
 	@commands.cooldown(1, 10, commands.BucketType.user)
-	async def next_cake(self, ctx, *args:str):
+	async def me(self, ctx, *args:str):
 		"""Allows you to set or show a brief description of yourself."""
 		if len(args):
 			try:
@@ -56,10 +56,10 @@ class Me(commands.Cog, name="me", command_attrs=dict(hidden=False)):
 		if not user: user = ctx.author
 		await self.show_me_message(ctx, user)
 
-	async def show_me_message(self, ctx, user:discord.Member):
+	async def show_me_message(self, ctx, user:discord.Member) -> None:
 		response = await self.database.lookup(me_data["table"], "user_me", "user_id", str(user.id))
 		message = " ".join(response[0]) if len(response) else "No description provided.."
-		await ctx.send("• **"+ user.display_name + "**" + message)
+		await ctx.send("• **"+ user.display_name + "** " + message)
 
 
 
