@@ -22,6 +22,12 @@ class Birthday(commands.Cog, name="birthday"):
 		self.bot.loop.create_task(self.initBirthday())
 		self.daily_birthday.start()
 
+	def help_custom(self):
+		emoji = '🎁'
+		label = "Birthday"
+		description = "Maybe I'll wish you soon a happy birthday!"
+		return emoji, label, description
+
 	async def initBirthday(self):
 		self.database = DataSQL(database_data["host"], database_data["port"])
 		await self.database.auth(database_data["user"], database_data["password"], birthday_data["database"])
