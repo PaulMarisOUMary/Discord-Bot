@@ -9,49 +9,104 @@
 - [About the project](#about-the-project)
 	- [Built with](#built-with)
 - [Getting started](#getting-started)
-	- [Prerequisites](#prerequisites)
-	- [Installation](#installation)
+	- [Python prerequisites](#python-prerequisites)
+	- [Discord developper configuration](#discord-developper-configuration)
+	- [Configure the bot](#configure-the-bot)
+- [SQL](#sql)
+	- [SQL tables structure](#sql-tables-structure)
 - [Available commands](#available-commands)
 - [Images](#images)
 ## About the project
 
-This discord bot was made for Algosup in 2020. It has a lot of features such translator, events manager, utils, and more. Made by a student for students.
+This discord bot was made for Algosup in 2020. It has a lot of features such translator, events manager, utils, and more. Made by student(s) for students.
 
 ### Built with
 
-- [Python](https://python.org/)
-- [discord.py](https://discordpy.readthedocs.io)
+- [Python](https://python.org/) >= 3.8
+- [discord.py](https://discordpy.readthedocs.io) >= 2.0.0a
+- SQL
+	- MariaDB (or MySQL)
 
 ## Getting started
 
-### Prerequisites
+### Python Prerequisites
 
-Install few packages with pip and the v 2.0.0a of discord.py
-- pip 
+Install python packages with:
+- pip
 ```bash
-$ python3 -m pip install -U matplotlib
-$ python3 -m pip install -U O365
-$ python3 -m pip install -U Pillow
-$ python3 -m pip install -U googletrans==4.0.0-rc1
-$ python3 -m pip install -U tzlocal==2.1
+$ pip install -r requirements.txt
 ```
+Install `discord.py` version 2.0.0a:
 - git
 ```bash
 $ git clone https://github.com/Rapptz/discord.py
 $ cd discord.py
+
+# Windows
 $ python3 -m pip install -U .[voice]
+# Linux / MacOS
+$ python3 -m pip install -U ".[voice]"
 ```
 
-### Installation
-1. Create a application on  [Discord Developpers](https://discord.com/developers/applications)
+### Discord developper configuration
+1. Create a application on [Discord Developpers](https://discord.com/developers/applications)
 
-2. Enable the bot status in  [Discord Developpers/applications/bot](https://discord.com/developers/applications/YOUR_APP_ID/bot)
+2. Enable the bot status in [Discord Developpers/applications/YOUR_APP_ID/bot](https://discord.com/developers/applications/YOUR_APP_ID/bot)
 
-3. Please make sure you have activated each `Privileged Gateway Intents` in [Discord Developpers/applications/bot](https://discord.com/developers/applications) for your application.
+3. Please make sure you have activated each `Privileged Gateway Intents` in [Discord Developpers/applications/YOUR_APP_ID/bot #Privileged Gateway Intents](https://discord.com/developers/applications) for your application.
 
-4. Paste your BOT token in `auth/token.dat`.
+4. Copy the token bot from [Discord Developpers/applications/YOUR_APP_ID/bot #Token](https://discord.com/developers/applications/YOUR_APP_ID/bot)
 
-5. (Optional) Edit line `10` in `bot.py` to change the bot prefix : `command_prefix=commands.when_mentioned_or("`*PREFIX_HERE*`")`.
+### Configure the bot
+
+1. Paste your dicord bot token in the `"token"` field inside `auth/auth.json`.
+
+2. (Optional) If you're using the database, you need to configure the database field `auth/auth.json`.
+
+3. (Optional) Edit line `10` in `bot.py` to change the bot prefix : `command_prefix=commands.when_mentioned_or("`*PREFIX_HERE*`")`.
+
+## SQL
+
+### SQL tables structure
+- `table_birthday`
+```sql
+CREATE TABLE IF NOT EXISTS `table_birthday`
+(
+    `user_id`           BIGINT unsigned NOT NULL,
+    `user_birth`        DATE NOT NULL,
+UNIQUE(`user_id`)
+)
+ENGINE = InnoDB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_unicode_ci;
+```
+
+- `table_fridaycake`
+```sql
+CREATE TABLE IF NOT EXISTS `table_fridaycake`
+(
+    `user_isin`         BOOLEAN NOT NULL,
+    `user_id`           BIGINT unsigned NOT NULL,
+    `user_name`         varchar(32) NOT NULL,
+UNIQUE(`user_id`)
+)
+ENGINE = InnoDB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_unicode_ci;
+```
+
+- `table_me`
+```sql
+CREATE TABLE IF NOT EXISTS `table_me`
+(
+    `user_id`           BIGINT unsigned NOT NULL,
+    `user_me`           varchar(1024),
+UNIQUE(`user_id`)
+)
+ENGINE = InnoDB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_unicode_ci;
+```
 
 ## Available commands
 
@@ -112,6 +167,24 @@ $ python3 -m pip install -U .[voice]
 ?ping
 
 []
+
+```
+
+
+
+- BIRTHDAY:
+
+```c#
+
+?birthday
+
+["bd", "setbirthday", "setbirth", "birth"]
+
+  
+
+?showbirthday
+
+['showbirth', 'sbd']
 
 ```
 

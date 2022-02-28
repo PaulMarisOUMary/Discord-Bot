@@ -1,0 +1,16 @@
+# -- Usage -- 
+# $ pip install -r requirements.txt
+
+# -- Show each installed package --
+# $ pip freeze
+
+aiomysql
+requests
+
+tzlocal==2.1
+
+matplotlib
+pillow
+
+#Require this specific version to use the cog traductor
+googletrans == 4.0.0-rc1
