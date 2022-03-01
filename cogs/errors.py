@@ -22,6 +22,8 @@ class Errors(commands.Cog, name="errors", command_attrs=dict(hidden=True)):
 				await message.edit("🕳️ Command `"+str(error).split(' ')[1]+"` not found !")
 			elif isinstance(error, commands.errors.NotOwner):
 				await message.edit("🕳️ You must own this bot to run this command.")
+			elif isinstance(error, commands.errors.NoPrivateMessage):
+				await message.edit("🕳️ This command cannot be used in a private message.")
 			elif isinstance(error, commands.errors.CommandOnCooldown):
 				await message.edit("🕳️ Command is on cooldown, wait `"+str(error).split(' ')[7]+"` !")
 			elif isinstance(error, commands.errors.MissingRequiredArgument):

@@ -44,10 +44,10 @@ class Info(commands.Cog, name="info", command_attrs=dict(hidden=False)):
 			if i == 0 : i += 1
 			value = "`<:"+str(emoji.name)+":"+str(emoji.id)+">`" if not emoji.animated else "`<a:"+str(emoji.name)+":"+str(emoji.id)+">`"
 			embed.add_field(name=str(self.bot.get_emoji(emoji.id))+" - **:"+str(emoji.name)+":** - (*"+str(i)+"*)",value=value)
-			if i%6.25 == 400%6.25 and i != 0:
+			if len(embed.fields) == 25:
 				embed_list.append(embed)
 				embed = discord.Embed()
-		embed_list.append(embed)
+		if len(embed.fields) > 0: embed_list.append(embed)
 
 		for message in embed_list:
 			await ctx.send(embed=message)
@@ -67,7 +67,7 @@ class Info(commands.Cog, name="info", command_attrs=dict(hidden=False)):
 		plt.savefig(image_binary, transparent=True)
 		image_binary.seek(0)
 		
-		embed = discord.Embed(title="Current server stats ({})".format(data['members']),description="<:offline:698246924138184836> : **`{}`** (Offline)\n<:idle:698246924058361898> : **`{}`** (AFK)\n<:dnd:698246924528254986> : **`{}`** (dnd)\n<:online:698246924465340497> : **`{}`** (Online)\n<:streaming:699381397898395688> : **`{}`** (Streaming)\n<:phone0:698257015578951750> : **`{}`** (on mobile)\n<:isbot:698250069165473852> : **`{}`** (Robot)".format(data['offline'], data['idle'], data['dnd'], data['online'], data['streaming'], data['mobile'], data['bot']))
+		embed = discord.Embed(title="Current server stats ({})".format(data['members']),description="<:offline:698246924138184836> : **`{}`** (Offline)\n<:idle:698246924058361898> : **`{}`** (AFK)\n<:dnd:698246924528254986> : **`{}`** (dnd)\n<:online:698246924465340497> : **`{}`** (Online)\n<:streaming:699381397898395688> : **`{}`** (Streaming)\n<:phone:948279755248111756> : **`{}`** (on mobile)\n<:isbot:698250069165473852> : **`{}`** (Robot)".format(data['offline'], data['idle'], data['dnd'], data['online'], data['streaming'], data['mobile'], data['bot']))
 		embed.set_image(url='attachment://stat.png')
 		embed.set_footer(text="Requested by : "+str(ctx.message.author)+" at "+str(time.strftime('%H:%M:%S')), icon_url=ctx.message.author.display_avatar.url)
 		await ctx.send(file=discord.File(fp=image_binary, filename='stat.png'), embed=embed)
@@ -96,12 +96,13 @@ class Info(commands.Cog, name="info", command_attrs=dict(hidden=False)):
 		elif member.status == discord.Status.idle: embed.add_field(name="Status", value=f"<:idle:698246924058361898> Idle", inline=True)
 		elif member.status == discord.Status.dnd: embed.add_field(name="Status", value=f"<:dnd:698246924528254986> Do not disturb", inline=True)
 		else: embed.add_field(name="Status", value=f"<:offline:698246924138184836> Offline", inline=True)
-		embed.add_field(name="Is a bot?", value=f"<:isbot:698250069165473852> {yes if member.bot else no}", inline=True)
-		embed.add_field(name="Is on mobile?", value=f"<:phone0:698257015578951750> {yes if member.is_on_mobile() else no}", inline=True)
-		embed.add_field(name="Checked?", value=f"{no if member.pending else yes}", inline=True)
-		embed.add_field(name="Account created at:", value=f"<t:{round(datetime.timestamp(member.created_at))}:F>", inline=True)
-		embed.add_field(name="Joined the server at:", value=f"<t:{round(datetime.timestamp(member.joined_at))}:F>", inline=True)
-		embed.add_field(name="Nitro booster:", value=f"<t:{round(datetime.timestamp(member.premium_since))}:F>" if member.premium_since else no, inline=True)
+		embed.add_field(name="᲼", value="᲼", inline=False)
+		embed.add_field(name="<:isbot:698250069165473852> Is a bot?", value=f"{yes if member.bot else no}", inline=True)
+		embed.add_field(name="<:phone:948279755248111756> Is on mobile?", value=f"{yes if member.is_on_mobile() else no}", inline=True)
+		embed.add_field(name="<a:nitro:948271095566434357> Is a booster?", value=f"<t:{round(datetime.timestamp(member.premium_since))}:F>" if member.premium_since else no, inline=True)
+		embed.add_field(name="᲼", value="᲼", inline=False)
+		embed.add_field(name="<:plus:948272417304883270> Account created at:", value=f"<t:{round(datetime.timestamp(member.created_at))}:F>", inline=True)
+		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"<t:{round(datetime.timestamp(member.joined_at))}:F>", inline=True)
 		embed.set_thumbnail(url=member.display_avatar.url)
 		embed.set_footer(text=f"(The discord profile picture next to the 'lookup' text is your default profile picture.)\nRequested by : {ctx.message.author} at {time.strftime('%H:%M:%S')}", icon_url=ctx.message.author.display_avatar.url)
 		await ctx.send(embed=embed)

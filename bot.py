@@ -23,5 +23,17 @@ if __name__ == '__main__':
 async def on_ready():
 	print("Logged in as: "+str(bot.user)+"\nVersion: "+str(discord.__version__))
 
+@bot.event
+async def on_connect():
+	print("Connected to Discord.")
+
+@bot.event
+async def on_disconnect():
+	print("Disconnected")
+
+@bot.event
+async def on_resumed():
+	print("Resumed")
+
 with open(os.path.join(current_directory, "auth", "auth.json"), "r") as data: token = json.load(data)["token"]
 bot.run(token, reconnect=True)
