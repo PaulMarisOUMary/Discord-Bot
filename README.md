@@ -36,11 +36,6 @@ Install python packages with:
 ```bash
 $ pip install -r requirements.txt
 ```
-Install `discord.py` version 2.0.0a:
-- git
-```bash
-$ git clone https://github.com/Rapptz/discord.py
-$ cd discord.py
 
 # Windows
 $ python3 -m pip install -U .[voice]

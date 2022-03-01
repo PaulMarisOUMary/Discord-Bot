@@ -1,8 +1,11 @@
 # -- Usage -- 
 # $ pip install -r requirements.txt
 
-# -- Show each installed package --
+# -- Show each installed package(s) --
 # $ pip freeze
+
+# -- Uninstall all package(s) --
+# $ pip freeze | xargs pip uninstall -y
 
 aiomysql
 requests
@@ -14,3 +17,5 @@ pillow
 
 #Require this specific version to use the cog traductor
 googletrans == 4.0.0-rc1
+
+git+https://github.com/Rapptz/discord.py
