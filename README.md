@@ -215,6 +215,29 @@ COLLATE utf8mb4_unicode_ci;
 
 
 
+- INFO:
+
+```c#
+
+?emojilist
+
+["ce", "el"]
+
+?lookup {user}
+
+["lk"]
+
+?profilepicture
+
+["pp"]
+
+?stat
+
+['status','graph','gs','sg']
+
+```
+
+
 - ME:
 
 ```c#
@@ -278,14 +301,6 @@ COLLATE utf8mb4_unicode_ci;
 - USEFULL:
 
 ```c#
-
-?emojilist
-
-["ce", "el"]
-
-?profilepicture
-
-["pp"]
 
 ?strawpoll
 

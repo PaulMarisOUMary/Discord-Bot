@@ -22,27 +22,5 @@ class Usefull(commands.Cog, name="usefull", command_attrs=dict(hidden=False)):
 		await message.add_reaction(emoji=checkmark)
 		await message.add_reaction(emoji=crossmark)
 
-	@commands.command(name='profilepicture', aliases=['pp'])
-	async def profilepicture(self, ctx, member : discord.Member = None):
-		"""Show the profile picture of the selected member."""
-		author = member if member else ctx.message.author
-		await ctx.send(author.display_avatar.url)
-
-	@commands.command(name='emojilist', aliases=['ce', 'el'], pass_context=True)
-	async def getcustomemojis(self, ctx):
-		"""Return a list of each cutom emojis from the current server."""
-		embed_list, embed = [], discord.Embed(title="Custom Emojis List ("+str(len(ctx.guild.emojis))+") :")
-		for i, emoji in enumerate(ctx.guild.emojis, start=1):
-			if i == 0 : i += 1
-			value = "`<:"+str(emoji.name)+":"+str(emoji.id)+">`" if not emoji.animated else "`<a:"+str(emoji.name)+":"+str(emoji.id)+">`"
-			embed.add_field(name=str(self.bot.get_emoji(emoji.id))+" - **:"+str(emoji.name)+":** - (*"+str(i)+"*)",value=value)
-			if i%6.25 == 400%6.25 and i != 0:
-				embed_list.append(embed)
-				embed = discord.Embed()
-		embed_list.append(embed)
-
-		for message in embed_list:
-			await ctx.send(embed=message)
-
 def setup(bot):
 	bot.add_cog(Usefull(bot))
