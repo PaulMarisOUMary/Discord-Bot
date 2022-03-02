@@ -17,7 +17,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 		description = "Show the list of admin commands."
 		return emoji, label, description
 
-	async def reload_views(self):
+	async def reload_views(self) -> list[str]:
 		modules, infants = [], []
 		for module in sys.modules.items():
 			if isinstance(module[1], types.ModuleType):
@@ -32,7 +32,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 
 		return infants
 
-	async def reload_cogs(self, cogs):
+	async def reload_cogs(self, cogs) -> list[str]:
 		victims = []
 		for cog in cogs:
 			norm_cog = self.bot.get_cog(cog[5:len(cog)])

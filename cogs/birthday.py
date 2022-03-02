@@ -1,25 +1,18 @@
-import os
-import json
 import time
 import random
 import asyncio
 import discord
 
-from classes.database import DataSQL
-
 from datetime import datetime, date
 from discord.ext import commands, tasks
-
-auth_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "auth", "auth.json")
-with open(auth_directory, "r") as data: database_data = json.load(data)["database"]
-birthday_data = database_data["birthday"]
 
 class Birthday(commands.Cog, name="birthday"):
 	"""I'll wish you soon a happy birthday!"""
 	def __init__(self, bot):
 		self.bot = bot
 
-		self.bot.loop.create_task(self.initBirthday())
+		self.birthday_data = self.bot.database_data["birthday"]
+
 		self.daily_birthday.start()
 
 	def help_custom(self):
@@ -28,20 +21,16 @@ class Birthday(commands.Cog, name="birthday"):
 		description = "Maybe I'll wish you soon a happy birthday!"
 		return emoji, label, description
 
-	async def initBirthday(self):
-		self.database = DataSQL(database_data["host"], database_data["port"])
-		await self.database.auth(database_data["user"], database_data["password"], birthday_data["database"])
-
 	def cog_unload(self):
 		self.daily_birthday.cancel()
 
 	@tasks.loop(hours=1)
 	async def daily_birthday(self):
 		if datetime.now().hour == 9:
-			guild = self.bot.get_guild(int(birthday_data["guild_id"]))
-			channel = guild.get_channel(int(birthday_data["channel_id"]))
+			guild = self.bot.get_guild(int(self.birthday_data["guild_id"]))
+			channel = guild.get_channel(int(self.birthday_data["channel_id"]))
 
-			response = await self.database.select(birthday_data["table"], "*")
+			response = await self.bot.database.select(self.birthday_data["table"], "*")
 			for data in response:
 				user_id, user_birth = data[0], data[1]
 
@@ -62,7 +51,7 @@ class Birthday(commands.Cog, name="birthday"):
 	@daily_birthday.before_loop
 	async def before_daily_birthday(self):
 		await self.bot.wait_until_ready()
-		while self.database.connector is None: await asyncio.sleep(0.01) #wait_for initBirthday
+		while self.bot.database.connector is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
 	@commands.command(name='birthday', aliases=['bd', 'setbirthday', 'setbirth', 'birth'])
 	@commands.cooldown(1, 10, commands.BucketType.user)
@@ -73,9 +62,9 @@ class Birthday(commands.Cog, name="birthday"):
 				dataDate = datetime.strptime(date, "%d/%m/%Y").date()
 				if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: raise commands.CommandError("Please provide your real year of birth.")
 				# Insert
-				await self.database.insert(birthday_data["table"], {"user_id": ctx.author.id, "user_birth": dataDate})
+				await self.bot.database.insert(self.birthday_data["table"], {"user_id": ctx.author.id, "user_birth": dataDate})
 				# Update
-				await self.database.update(birthday_data["table"], "user_birth", dataDate, "user_id = "+str(ctx.author.id))
+				await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, "user_id = "+str(ctx.author.id))
 
 				await self.show_birthday_message(ctx, ctx.author)
 			except ValueError:
@@ -93,7 +82,7 @@ class Birthday(commands.Cog, name="birthday"):
 		await self.show_birthday_message(ctx, user)
 
 	async def show_birthday_message(self, ctx, user:discord.Member) -> None:
-		response = await self.database.lookup(birthday_data["table"], "user_birth", "user_id", str(user.id))
+		response = await self.bot.database.lookup(self.birthday_data["table"], "user_birth", "user_id", str(user.id))
 		if response:
 			dataDate : date = response[0][0]
 			timestamp = round(time.mktime(dataDate.timetuple()))

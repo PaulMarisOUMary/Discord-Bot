@@ -1,7 +1,4 @@
-import discord
-
 from discord.ext import commands
-from discord.ext.commands import errors
 
 class Errors(commands.Cog, name="errors", command_attrs=dict(hidden=True)):
 	"""Errors handler"""

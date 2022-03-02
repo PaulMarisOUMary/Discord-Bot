@@ -1,5 +1,3 @@
-import discord
-
 from discord.ext import commands
 
 class Usefull(commands.Cog, name="usefull", command_attrs=dict(hidden=False)):

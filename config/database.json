@@ -1,0 +1,25 @@
+{
+    "server": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "user": "user",
+        "password": "********",
+        "database": "database"
+    },
+    "birthday": {
+        "table": "table_birthday",
+
+        "guild_id": 332234497078853644,
+        "channel_id": 332234497078853644
+    },
+    "fridaycake": {
+        "table": "table_fridaycake",
+
+        "seed": 2
+    },
+    "me": {
+        "table": "table_me",
+
+        "max_length": 255
+    }
+}

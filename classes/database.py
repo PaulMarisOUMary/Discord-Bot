@@ -1,6 +1,7 @@
-from datetime import datetime, date
 import aiomysql
 import asyncio
+
+from datetime import datetime, date
 
 class DataSQL():
     def __init__(self, host:str = "127.0.0.1", port:int = 3306, loop:asyncio.AbstractEventLoop = None) -> None:
