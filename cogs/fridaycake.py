@@ -1,11 +1,8 @@
-import os
-import json
 import random
 import discord
 import asyncio
 
 from views import fridaycake
-from classes.database import DataSQL
 
 from datetime import date, timedelta, datetime
 from discord.ext import commands
@@ -13,11 +10,6 @@ from copy import deepcopy
 
 holidays = [(date(2022, 2, 12), date(2022, 2, 19)), (date(2022, 4, 10), date(2022, 4, 23))] #Saturday -> Saturday
 start = date(2022, 2, 4)#date(2021, 10, 8)#date(2021, 2, 7) #year #month #day (first friday)
-seed = 2
-
-auth_directory = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "auth", "auth.json")
-with open(auth_directory, "r") as data: database_data = json.load(data)["database"]
-fridaycake_data = database_data["fridaycake"]
 
 def isDateInHole(date : datetime, holes : list) -> bool:
     for hole in holes:
@@ -52,10 +44,19 @@ def mix_participants(participants : list, seed : int, n_group : int) -> list[lis
 class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=False)):
 	"""FridayCake's event commands."""
 	def __init__(self, bot):
-		self.bot, self.seed = bot, seed
+		self.bot = bot
 		self.cakes = ['🎂', '🥮', '🥧', '🥯', '🧁', '🫓', '🧇', '🍞', '🍮', '🍰', '🥐']
 
+		self.fridaycake_data = self.bot.database_data["fridaycake"]
+		self.seed = self.fridaycake_data["seed"]
+
 		self.bot.loop.create_task(self.initFridaycake())
+
+	async def initFridaycake(self):
+		participants = await self.bot.database.select(self.fridaycake_data["table"], "user_id, user_name", "user_isin = 1")
+		participants = [[*row] for row in participants] #convert tuple of tuples to list of lists
+		self.participants = mix_participants(participants, self.seed, 2)
+		self.nparticipants = len(participants) #mandatory in fridaycake view
 
 	def help_custom(self):
 		emoji = random.choice(self.cakes)
@@ -63,17 +64,6 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		description = "Commands relative to the FridayCake event !"
 		return emoji, label, description
 
-	def cog_unload(self) -> None:
-		self.database.close()
-
-	async def initFridaycake(self):
-		self.database = DataSQL(database_data["host"], database_data["port"])
-		await self.database.auth(database_data["user"], database_data["password"], database_data["fridaycake"]["database"])
-
-		participants = await self.database.select(fridaycake_data["table"], "user_id, user_name", "user_isin = 1")
-		participants = [[*row] for row in participants] #convert tuple of tuples to list of lists
-		self.participants = mix_participants(participants, seed, 2)
-		self.nparticipants = len(participants) #mandatory in fridaycake view
 
 	def all(self, ctx):
 		author = ctx.message.author
