@@ -36,23 +36,27 @@ class DataSQL():
                 return e
     
     async def select(self, table:str, target:str, condition:str = '', order:str = '') -> query:
-        query = "SELECT "+ target +" FROM `"+ table +"`"
-        if condition: query += " WHERE "+ condition
-        if order: query += " ORDER BY "+ order
+        query = f"SELECT {target} FROM `{table}`"
+        if condition: query += f" WHERE {condition}"
+        if order: query += f" ORDER BY {order}"
         return await self.query(query + ';')
 
     async def count(self, table:str, what:str, condition:str = '') -> select:
-        return await self.select(table, "COUNT("+what+")", condition)
+        return await self.select(table, f"COUNT({what})", condition)
 
     async def lookup(self, table:str, target:str, what:str, which:str) -> select:
-        return await self.select(table, target, what+" REGEXP '"+which+"'")
+        return await self.select(table, target, f"{what} REGEXP '{which}'")
+    
+    async def exist(self, table:str, target:str, condition:str = '') -> bool:
+        response = await self.count(table, target, condition)
+        return response[0][0] > 0
 
     async def insert(self, table:str, args:dict) -> query:
         query, variables, values, lenght = f"INSERT INTO `{table}` (", '', '', len(args)
         for i, items in enumerate(args.items()):
             variable, value = items[0], items[1]
             
-            variables += "`"+ str(variable) +"`, " if i+1 < lenght else "`"+ str(variable) +"`"
+            variables += f"`{variable}`, " if i+1 < lenght else f"`{variable}`"
 
             kindFormat = self.__toKindFormat(value)
             if kindFormat: value = kindFormat
@@ -67,8 +71,8 @@ class DataSQL():
         kindFormat = self.__toKindFormat(value)
         if kindFormat: value = kindFormat
 
-        query = "UPDATE "+ table +" SET `"+ variable +"` = "+ str(value)
-        if condition: query += " WHERE "+ condition
+        query = f"UPDATE {table} SET `{variable}` = {value}"
+        if condition: query += f" WHERE {condition}"
         return await self.query(query + ';')
 
     def __toKindFormat(self, value:any = None) -> any:
