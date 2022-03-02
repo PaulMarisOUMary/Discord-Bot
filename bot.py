@@ -27,7 +27,7 @@ async def initBot() -> None:
 			if actual[1] == '.py':
 				bot.load_extension('cogs.'+actual[0])
 
-bot = commands.Bot(command_prefix=commands.when_mentioned_or(bot_data["bot_prefix"]), description=bot_data["bot_description"], intents=discord.Intents.all(), help_command=None)
+bot = commands.Bot(command_prefix=commands.when_mentioned_or(bot_data["bot_prefix"]), description=bot_data["bot_description"], case_insensitive=True, intents=discord.Intents.all(), help_command=None)
 bot.loop.create_task(initBot())
 
 @bot.event
