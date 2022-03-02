@@ -149,7 +149,7 @@ cython_debug/
 .vscode/
 
 # Project
-auth/auth.json
+config
 
 # MacOS (should be included in your local .gitignore)
 .DS_Store

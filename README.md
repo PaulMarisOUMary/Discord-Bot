@@ -55,9 +55,9 @@ $ python3 -m pip install -U ".[voice]"
 
 1. Paste your dicord bot token in the `"token"` field inside `auth/auth.json`.
 
-2. (Optional) If you're using the database, you need to configure the database field `auth/auth.json`.
+2. Configure the prefix in the `config\bot.json`.
 
-3. (Optional) Edit line `10` in `bot.py` to change the bot prefix : `command_prefix=commands.when_mentioned_or("`*PREFIX_HERE*`")`.
+3. If you're using the database, you need to configure the `config\database.json` file.
 
 ## SQL
 
