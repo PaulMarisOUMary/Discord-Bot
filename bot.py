@@ -4,16 +4,17 @@ import discord
 
 from discord.ext import commands
 
-intents = discord.Intents.default()
-intents.presences = True
-intents.members = True
+intents = discord.Intents.all()
 
 bot = commands.Bot(command_prefix=commands.when_mentioned_or("?"), description='Algobot', intents=intents, help_command=None)
 
-current_directory = os.path.dirname(os.path.abspath(__file__))
+base_directory = os.path.dirname(os.path.abspath(__file__))
+auth_file = os.path.join(base_directory, "auth", "auth.json")
+
+with open(auth_file, "r") as data: json_data = json.load(data)
 
 if __name__ == '__main__':
-	cogs_directory = os.path.join(current_directory, "cogs")
+	cogs_directory = os.path.join(base_directory, "cogs")
 	for cog in os.listdir(cogs_directory):
 		actual = os.path.splitext(cog)
 		if actual[1] == '.py':
@@ -23,17 +24,4 @@ if __name__ == '__main__':
 async def on_ready():
 	print("Logged in as: "+str(bot.user)+"\nVersion: "+str(discord.__version__))
 
-@bot.event
-async def on_connect():
-	print("Connected to Discord.")
-
-@bot.event
-async def on_disconnect():
-	print("Disconnected")
-
-@bot.event
-async def on_resumed():
-	print("Resumed")
-
-with open(os.path.join(current_directory, "auth", "auth.json"), "r") as data: token = json.load(data)["token"]
-bot.run(token, reconnect=True)
+bot.run(json_data["token"], reconnect=True)
