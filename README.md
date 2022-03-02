@@ -41,7 +41,6 @@ $ pip install -r requirements.txt
 $ python3 -m pip install -U .[voice]
 # Linux / MacOS
 $ python3 -m pip install -U ".[voice]"
-```
 
 ### Discord developper configuration
 1. Create a application on [Discord Developpers](https://discord.com/developers/applications)
