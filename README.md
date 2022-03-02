@@ -37,11 +37,6 @@ Install python packages with:
 $ pip install -r requirements.txt
 ```
 
-# Windows
-$ python3 -m pip install -U .[voice]
-# Linux / MacOS
-$ python3 -m pip install -U ".[voice]"
-
 ### Discord developper configuration
 1. Create a application on [Discord Developpers](https://discord.com/developers/applications)
 
@@ -58,6 +53,7 @@ $ python3 -m pip install -U ".[voice]"
 2. Configure the prefix in the `config\bot.json`.
 
 3. If you're using the database, you need to configure the `config\database.json` file.
+
 :warning: If you're NOT using any database, delete the following cogs: `fridaycake`, `me` & `birthday`.
 
 ## SQL
