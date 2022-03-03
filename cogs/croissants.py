@@ -15,6 +15,8 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		self.EMOJI = '🥐'
 		self.REGEX = re.compile("^(J[e']? ?pa[iy]e? ?(les)? ?(crois|🥐))", re.IGNORECASE)
 
+		self.cooldown : dict = {} #{key=user_id : value=datetime}
+
 		self.croissants_data = self.bot.database_data["croissants"]
 
 	def help_custom(self):
@@ -25,16 +27,9 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 
 	@commands.Cog.listener('on_message')
 	async def on_receive_message(self, message : discord.Message):
-		content = message.content
-		author = message.author
-		if not author.bot and self.REGEX.match(content):
-			answer_message = await message.reply(
-				content=f'{author.mention} took out the credit card! ' + self.EMOJI,
-				file=self.__get_screenshot(author, content)
-			)
-
-			count = await self.__increment_croissants_counter(author.id)
-			await answer_message.edit(content=f"{author.mention} took out the credit card ! And this is the `{count}` time, he's so generous! " + self.EMOJI)
+		if not message.author.bot and self.REGEX.match(message.content):
+			if not self.__is_on_cooldown(message.author): await self.__send_croissants(message)
+			else: await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
 
 	@commands.command(name="croissants", aliases=["rankcroissants", "croissantsrank", "rc"])
 	@commands.cooldown(1, 10, commands.BucketType.user)
@@ -48,6 +43,15 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 			embed.add_field(name=f"Top {self.__rank_emoji(rank)} `{user_count} {self.EMOJI}`", value=f"<@{user_id}>", inline=rank <= 3)
 
 		await ctx.send(embed=embed)
+
+	async def __send_croissants(self, message) -> None:
+		answer_message = await message.reply(
+			content=f'{message.author.mention} took out the credit card! ' + self.EMOJI,
+			file=self.__get_screenshot(message.author, message.content)
+		)
+
+		count = await self.__increment_croissants_counter(message.author.id)
+		await answer_message.edit(content=f"{message.author.mention} took out the credit card ! And this is the `{count}` time, he's so generous! " + self.EMOJI)
 
 	async def __increment_croissants_counter(self, user_id : int) -> int:
 		exist = await self.bot.database.exist(self.croissants_data["table"], "*", f"user_id={user_id}")
@@ -89,6 +93,13 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 			img_bin.seek(0)
 			file = discord.File(img_bin, "croissants.png")
 		return file
+
+	def __is_on_cooldown(self, user) -> bool:
+		if user.id in self.cooldown:
+			if self.cooldown[user.id].second - datetime.now().second < self.bot.database_data["croissants"]["cooldown"]:
+				return True
+		self.cooldown[user.id] = datetime.now()
+		return False
 
 	def __rank_emoji(self, rank):
 		if rank == 1:
