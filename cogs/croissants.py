@@ -36,6 +36,19 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 			count = await self.__increment_croissants_counter(author.id)
 			await answer_message.edit(content=f"{author.mention} took out the credit card ! And this is the `{count}` time, he's so generous! " + self.EMOJI)
 
+	@commands.command(name="croissants", aliases=["rankcroissants", "croissantsrank", "rc"])
+	@commands.cooldown(1, 10, commands.BucketType.user)
+	async def croissants_rank(self, ctx):
+		"""Get the global croissants rank."""
+		response = await self.bot.database.select(self.croissants_data["table"], "*", order="user_count DESC", limit=10)
+		
+		embed = discord.Embed(title=f"🏆 Croissants rank {self.EMOJI}", color=0xD3A779)
+		for rank, data in enumerate(response, start=1):
+			user_id, user_count = data
+			embed.add_field(name=f"Top {self.__rank_emoji(rank)} `{user_count} {self.EMOJI}`", value=f"<@{user_id}>", inline=rank <= 3)
+
+		await ctx.send(embed=embed)
+
 	async def __increment_croissants_counter(self, user_id : int) -> int:
 		exist = await self.bot.database.exist(self.croissants_data["table"], "*", f"user_id={user_id}")
 		if exist:
@@ -76,6 +89,16 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 			img_bin.seek(0)
 			file = discord.File(img_bin, "croissants.png")
 		return file
+
+	def __rank_emoji(self, rank):
+		if rank == 1:
+			return '🥇'
+		elif rank == 2:
+			return '🥈'
+		elif rank == 3:
+			return '🥉'
+		else:
+			return rank
 
 def setup(bot):
 	bot.add_cog(Croissants(bot))
