@@ -9,12 +9,13 @@ from PIL import Image, ImageDraw, ImageFont
 
 class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True)):
 	"""Don't leave your computer unlocked!"""
-
-	EMOJI = '🥐'
-	REGEX = re.compile("^(J[e']? ?pa[iy]e? ?(les)? ?(crois|🥐))", re.IGNORECASE)
-
 	def __init__(self, bot):
 		self.bot = bot
+
+		self.EMOJI = '🥐'
+		self.REGEX = re.compile("^(J[e']? ?pa[iy]e? ?(les)? ?(crois|🥐))", re.IGNORECASE)
+
+		self.croissants_data = self.bot.database_data["croissants"]
 
 	def help_custom(self):
 		emoji = '🥐'
@@ -27,21 +28,26 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		content = message.content
 		author = message.author
 		if not author.bot and self.REGEX.match(content):
-			await message.reply(
-				content=f'Merci pour les croissants {author.mention}! ' + self.EMOJI,
+			answer_message = await message.reply(
+				content=f'{author.mention} took out the credit card! ' + self.EMOJI,
 				file=self.__get_screenshot(author, content)
 			)
 
-	@commands.command(name='croissants')
-	async def croissants(self, ctx : commands.context.Context):
-		author = ctx.message.author
-		await ctx.send(
-			content=author.mention + " paye les " + self.EMOJI,
-			file=self.__get_screenshot(author, ctx.message.content)
-		)
+			count = await self.__increment_croissants_counter(author.id)
+			await answer_message.edit(content=f"{author.mention} took out the credit card ! And this is the `{count}` time, he's so generous! " + self.EMOJI)
+
+	async def __increment_croissants_counter(self, user_id : int) -> int:
+		exist = await self.bot.database.exist(self.croissants_data["table"], "*", f"user_id={user_id}")
+		if exist:
+			response = await self.bot.database.select(self.croissants_data["table"], "user_count", f"user_id={user_id}")
+			count = response[0][0] + 1
+			await self.bot.database.update(self.croissants_data["table"], "user_count", count, f"user_id={user_id}")
+			return count
+		else:
+			await self.bot.database.insert(self.croissants_data["table"], {"user_id": user_id, "user_count": 1})
+			return 1
 
 	def __get_screenshot(self, author : discord.Member, content : str) -> discord.File:
-
 		name_font = ImageFont.truetype("fonts/Whitney-Medium.ttf", 24)
 		timestamp_font = ImageFont.truetype("fonts/Whitney-Medium.ttf", 18)
 		content_font = ImageFont.truetype("fonts/Whitney-Book.ttf", 24)

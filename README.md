@@ -40,11 +40,13 @@ $ pip install -r requirements.txt
 ### Discord developper configuration
 1. Create a application on [Discord Developpers](https://discord.com/developers/applications)
 
-2. Enable the bot status in [Discord Developpers/applications/YOUR_APP_ID/bot](https://discord.com/developers/applications/YOUR_APP_ID/bot)
+2. Enable the bot status in [Discord Developpers/applications/{YOUR_APP_ID}/bot](https://discord.com/developers/applications/{YOUR_APP_ID}/bot)
 
-3. Please make sure you have activated each `Privileged Gateway Intents` in [Discord Developpers/applications/YOUR_APP_ID/bot #Privileged Gateway Intents](https://discord.com/developers/applications) for your application.
+3. Please make sure you have activated each `Privileged Gateway Intents` in [Discord Developpers/applications/{YOUR_APP_ID}/bot #Privileged Gateway Intents](https://discord.com/developers/applications{YOUR_APP_ID}/bot) for your application.
 
-4. Copy the token bot from [Discord Developpers/applications/YOUR_APP_ID/bot #Token](https://discord.com/developers/applications/YOUR_APP_ID/bot)
+4. Copy the token bot from [Discord Developpers/applications/{YOUR_APP_ID}/bot #Token](https://discord.com/developers/applications/{YOUR_APP_ID}/bot)
+
+:warning: In URL replace `{YOUR_APP_ID}` with your own app/bot ID.
 
 ### Configure the bot
 
@@ -54,7 +56,7 @@ $ pip install -r requirements.txt
 
 3. If you're using the database, you need to configure the `config\database.json` file.
 
-:warning: If you're NOT using any database, delete the following cogs: `fridaycake`, `me` & `birthday`.
+:warning: If you're NOT using any database, delete the following cogs: `fridaycake`, `me`, `croissants` & `birthday`.
 
 ## SQL
 
@@ -65,6 +67,19 @@ CREATE TABLE IF NOT EXISTS `table_birthday`
 (
     `user_id`           BIGINT unsigned NOT NULL,
     `user_birth`        DATE NOT NULL,
+UNIQUE(`user_id`)
+)
+ENGINE = InnoDB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_unicode_ci;
+```
+
+- `table_croissants`
+```sql
+CREATE TABLE IF NOT EXISTS `table_croissants`
+(
+    `user_id`           BIGINT unsigned NOT NULL,
+    `user_count`        SMALLINT unsigned,
 UNIQUE(`user_id`)
 )
 ENGINE = InnoDB,
