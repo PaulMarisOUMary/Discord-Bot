@@ -35,10 +35,11 @@ class DataSQL():
             except Exception as e:
                 return e
     
-    async def select(self, table:str, target:str, condition:str = '', order:str = '') -> query:
+    async def select(self, table:str, target:str, condition:str = '', order:str = '', limit:str='') -> query:
         query = f"SELECT {target} FROM `{table}`"
         if condition: query += f" WHERE {condition}"
         if order: query += f" ORDER BY {order}"
+        if limit: query += f" LIMIT {limit}"
         return await self.query(query + ';')
 
     async def count(self, table:str, what:str, condition:str = '') -> select:
