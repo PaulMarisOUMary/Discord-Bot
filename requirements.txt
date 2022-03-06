@@ -15,7 +15,8 @@ tzlocal==2.1
 matplotlib
 pillow
 
-#Require this specific version to use the cog traductor
+#Require this specific version (internal package error, issue #299 of github.com/ssut/py-googletrans)
 googletrans == 4.0.0-rc1
 
-git+https://github.com/Rapptz/discord.py
+#discordpy 2.0.0a "alpha stable" version (Aug 28, 2021)
+git+https://github.com/Rapptz/discord.py@45d498c1b76deaf3b394d17ccf56112fa691d160
