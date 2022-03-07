@@ -42,7 +42,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			self.bot.reload_extension(cog)
 		return victims
 
-	@commands.command(name='reloadall', aliases=['rell', 'relall'])
+	@commands.command(name="reloadall", aliases=["rell", "relall"])
 	@commands.is_owner()
 	async def reload_all(self, ctx):
 		"""Reload the bot, includes: cogs, loops and views."""
@@ -53,39 +53,60 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			victims = await self.reload_cogs(cogs)
 			infants = await self.reload_views()
 		except commands.ExtensionError as e:
-			await ctx.send(f'{e.__class__.__name__}: {e}')
+			await ctx.send(f"{e.__class__.__name__}: {e}")
 		else:
-			succes_text = '💪 All cogs reloaded ! | ☠️ __`' + str(len(victims)) + ' task(s) killed`__ : '
-			for victim in victims: succes_text += "`"+str(victim).replace('cogs.', '')+"` "
-			succes_text += "| 🔄 __`"+str(len(infants))+" view(s) reloaded`__ : "
-			for infant in infants: succes_text += "`"+str(infant).replace('views.', '')+"` "
+			succes_text = f"💪 All cogs reloaded ! | ☠️ __`{len(victims)} task(s) killed`__ : "
+			for victim in victims: succes_text += f"`{victim.replace('cogs.', '')}` "
+			succes_text += f"| 🔄 __`{len(infants)} view(s) reloaded`__ : "
+			for infant in infants: succes_text += f"`{infant.replace('views.', '')}` "
 			await ctx.send(succes_text)
 
-	@commands.command(name='reload', aliases=['rel'], require_var_positional=True)
+	@commands.command(name="reload", aliases=["rel"], require_var_positional=True)
 	@commands.is_owner()
 	async def reload_cog(self, ctx, cog):
 		"""Reload a specific cog."""
 		try:
-			victims = await self.reload_cogs(['cogs.'+str(cog)])
+			victims = await self.reload_cogs([f"cogs.{cog}"])
 		except commands.ExtensionError as e:
-			await ctx.send(f'{e.__class__.__name__}: {e}')
+			await ctx.send(f"{e.__class__.__name__}: {e}")
 		else:
-			await ctx.send('🤘 '+cog+' reloaded ! | ☠️ __`' + str(len(victims)) + ' task killed`__ | 🔄 __`views reloaded`__')
+			await ctx.send(f"🤘 {cog} reloaded ! | ☠️ __`{len(victims)} task killed`__ | 🔄 __`view(s) reloaded`__")
 
-	@commands.command(name='reloadviews', aliases=['rmod', 'rview', 'rviews'])
+	@commands.command(name="reloadlatest", aliases=["rl"])
+	@commands.is_owner()
+	async def reload_latest(self, ctx):
+		"""Reload the latest edited cog."""
+		base_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+		cogs_directory = os.path.join(base_directory, "cogs")
+		latest_cog = (None, 0)
+		for file in os.listdir(cogs_directory):
+			actual = os.path.splitext(file)
+			if actual[1] == ".py":
+				file_path = os.path.join(cogs_directory, file)
+				latest_edit = os.path.getmtime(file_path)
+				if latest_edit > latest_cog[1]: latest_cog = (actual[0], latest_edit)
+
+		try:
+			victims = await self.reload_cogs([f"cogs.{latest_cog[0]}"])
+		except commands.ExtensionError as e:
+			await ctx.send(f"{e.__class__.__name__}: {e}")
+		else:
+			await ctx.send(f"🤘 {latest_cog[0]} reloaded ! | ☠️ __`{len(victims)} task killed`__ | 🔄 __`view(s) reloaded`__")
+
+	@commands.command(name="reloadviews", aliases=["rview", "rviews"])
 	@commands.is_owner()
 	async def reload_view(self, ctx):
 		"""Reload each registered views."""
 		try:
 			infants = await self.reload_views()
 		except commands.ExtensionError as e:
-			await ctx.send(f'{e.__class__.__name__}: {e}')
+			await ctx.send(f"{e.__class__.__name__}: {e}")
 		else:
-			succes_text = '👌 All views reloaded ! | 🔄 __`'+str(len(infants))+' view(s) reloaded`__ : '
-			for infant in infants: succes_text += "`"+str(infant).replace('views.', '')+"` "
+			succes_text = f"👌 All views reloaded ! | 🔄 __`{len(infants)} view(s) reloaded`__ : "
+			for infant in infants: succes_text += f"`{infant.replace('views.', '')}` "
 			await ctx.send(succes_text)
 
-	@commands.command(name='killloop', aliases=['kill'], require_var_positional=True)
+	@commands.command(name="killloop", aliases=["kill"], require_var_positional=True)
 	@commands.is_owner()
 	async def kill_loop(self, ctx, cog):
 		"""Kill loops running in background in a specific cog."""
@@ -95,7 +116,7 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			await ctx.send("Task successfully killed")
 		else : await ctx.send("Task not found..")
 
-	@commands.command(name='deletechannel', aliases=['delc'], require_var_positional=True)
+	@commands.command(name="deletechannel", aliases=["delc"], require_var_positional=True)
 	@commands.is_owner()
 	async def delete_channel(self, ctx, channel_name):
 		"""Delete the provided channel."""
