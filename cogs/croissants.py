@@ -28,7 +28,9 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 	@commands.Cog.listener('on_message')
 	async def on_receive_message(self, message : discord.Message):
 		if not message.author.bot and self.REGEX.match(message.content):
-			if not self.__is_on_cooldown(message.author): await self.__send_croissants(message)
+			if not self.__is_on_cooldown(message.author):
+				self.cooldown[message.author.id] = datetime.now()
+				await self.__send_croissants(message)
 			else: await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
 
 	@commands.command(name="croissants", aliases=["rankcroissants", "croissantsrank", "rc"])
@@ -69,7 +71,7 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		timestamp_font = ImageFont.truetype("fonts/Whitney-Medium.ttf", 18)
 		content_font = ImageFont.truetype("fonts/Whitney-Book.ttf", 24)
 
-		name_color = author.roles[-1].color.to_rgb()
+		name_color = tuple(int(str(author.color)[i+1:i+3], 16) for i in (0, 2, 4))
 		timestamp_color = (114, 118, 125)
 		content_color = (220, 221, 222)
 		bg_color = (54, 57, 63)
@@ -95,11 +97,7 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		return file
 
 	def __is_on_cooldown(self, user) -> bool:
-		if user.id in self.cooldown:
-			if self.cooldown[user.id].second - datetime.now().second < self.bot.database_data["croissants"]["cooldown"]:
-				return True
-		self.cooldown[user.id] = datetime.now()
-		return False
+		return user.id in self.cooldown and datetime.now().timestamp() - self.cooldown[user.id].timestamp() < self.bot.database_data["croissants"]["cooldown"]
 
 	def __rank_emoji(self, rank):
 		if rank == 1:
