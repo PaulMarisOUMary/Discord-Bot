@@ -31,7 +31,7 @@ jobs:
         run: |
           apt-get install jq -y
           jq '.token = "${{ secrets.DISCORD_TOKEN }}"' config/bot.json > tmp.$$.json && mv tmp.$$.json config/bot.json
-          jq '.server.host = "${{ secrets.DATABASE_HOST }}" | .server.user = "${{ secrets.DATABASE_USER }}" | .server.password = "${{ secrets.DATABASE_PASSWORD }}"' config/database.json > tmp.$$.json && mv tmp.$$.json config/database.json
+          jq '.server.host = "${{ secrets.DATABASE_HOST }}" | .server.user = "${{ secrets.DATABASE_USER }}" | .server.password = "${{ secrets.DATABASE_PASSWORD }}" | .server.database = "${{ secrets.DATABASE_DATABASE }}"' config/database.json > tmp.$$.json && mv tmp.$$.json config/database.json
           echo "Setup Credentials: Success"
       - name: Restart Bot
         id: restart-bot
