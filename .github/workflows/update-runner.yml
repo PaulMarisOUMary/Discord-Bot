@@ -17,4 +17,5 @@ jobs:
 
       - name: Run script
         run: |
-          /home/warrior/actions-runner/svc.sh status
+          cd /home/warrior/actions-runner
+          ./svc.sh status
