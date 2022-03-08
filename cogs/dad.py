@@ -7,7 +7,7 @@ class Dad(commands.Cog, name="dad", command_attrs=dict(hidden=True)):
     
     def __init__(self, bot):
         self.bot = bot
-        self.settings = bot.database_data["dad"]
+        self.settings = bot.bot_data["dad"]
         self.pattern = re.compile(r"""
                                   ^(.*?[\s])?         # Some text
                                   (im|i\ am|i\'m)[\s] # The "i'm" and a whitespace
