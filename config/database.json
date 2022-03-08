@@ -26,5 +26,8 @@
         "table": "table_me",
 
         "max_length": 255
+    },
+    "dad": {
+        "probability": 0.1
     }
 }
