@@ -117,6 +117,19 @@ CHARACTER SET utf8mb4,
 COLLATE utf8mb4_unicode_ci;
 ```
 
+- `table_prefix`
+```sql
+CREATE TABLE IF NOT EXISTS `table_prefix`
+(
+    `guild_id`           BIGINT unsigned NOT NULL,
+    `guild_prefix`       varchar(256),
+UNIQUE(`guild_id`)
+)
+ENGINE = InnoDB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_unicode_ci;
+```
+
 ## Available commands
 
 <details>
@@ -130,6 +143,11 @@ COLLATE utf8mb4_unicode_ci;
 - ADMIN:
 
 ```c#
+
+?changeprefix {new_prefix}
+["cp"]
+
+
 
 ?deletechannel {name}
 

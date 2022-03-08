@@ -20,10 +20,12 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 	@commands.command(name='help', aliases=['?', 'h', 'commands'])
 	async def help(self, ctx, *input):
 		"""Show the help menu."""
+		if ctx.guild.id in self.bot.prefixes: guild_prefix = self.bot.prefixes[ctx.guild.id]
+		else: guild_prefix = self.bot.bot_data['bot_default_prefix']
 		if not input:
 			allowed = 5
 			close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
-			embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = "`Welcome to the help page.`\n\nUse `help command` for more info on a command.\nUse `help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+			embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = f"`Welcome to the help page.`\n\n**The prefix on this server is**: `{guild_prefix}`.\n\nUse `help command` for more info on a command.\nUse `help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Algosup-Discord')
 			embed.add_field(name="Time remaining :", value="This help session will end <t:"+str(close_in)+":R>.\nType `help` to open a new session.\n\u200b", inline=False)
 			embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*. Made for Algosup in 2020.\nI have a lot of features such translator, events manager, utils, and more.\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Algosup-Discord) !")
 
