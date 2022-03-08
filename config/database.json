@@ -26,5 +26,8 @@
         "table": "table_me",
 
         "max_length": 255
+    },
+    "prefix": {
+        "table": "table_prefix"
     }
 }
