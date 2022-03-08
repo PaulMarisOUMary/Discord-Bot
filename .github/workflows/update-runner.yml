@@ -16,21 +16,26 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Runner Status
+        id: runner-status
         run: |
           cd /home/warrior/actions-runner
           ./svc.sh status
           echo "Runner Status: Success"
       - name: Dependencies Update
+        id: dependencies-update
         run: |
           pip3 install -r requirements.txt
           echo "Dependencies Update: Success"
       - name: Setup Credentials
+        id: setup-credentials
         run: |
           apt-get install jq -y
           jq '.token = "${{ secrets.DISCORD_TOKEN }}"' config/bot.json > tmp.$$.json && mv tmp.$$.json config/bot.json
-          jq '.server.user = "${{ secrets.DATABASE_USER }}" | .server.password = "${{ secrets.DATABASE_PASSWORD }}"' config/database.json > tmp.$$.json && mv tmp.$$.json config/database.json
+          jq '.server.host = "${{ secrets.DATABASE_HOST }}" | .server.user = "${{ secrets.DATABASE_USER }}" | .server.password = "${{ secrets.DATABASE_PASSWORD }}"' config/database.json > tmp.$$.json && mv tmp.$$.json config/database.json
           echo "Setup Credentials: Success"
       - name: Restart Bot
+        id: restart-bot
+        if: steps.setup-credentials.outputs.conclusion == 'success'
         run: |
           systemctl restart discord-bot.service
           systemctl status discord-bot.service
