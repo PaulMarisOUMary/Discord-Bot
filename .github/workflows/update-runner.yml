@@ -35,7 +35,7 @@ jobs:
           echo "Setup Credentials: Success"
       - name: Restart Bot
         id: restart-bot
-        if: steps.setup-credentials.outputs.conclusion == 'success'
+        if: success()
         run: |
           systemctl restart discord-bot.service
           systemctl status discord-bot.service
