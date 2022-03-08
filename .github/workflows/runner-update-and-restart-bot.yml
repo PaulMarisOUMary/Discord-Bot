@@ -1,0 +1,43 @@
+# auto-run github-runner on boot/startup: https://docs.github.com/en/actions/hosting-your-own-runners/configuring-the-self-hosted-runner-application-as-a-service
+name: Update files & Restart bot on Linux server
+
+on:
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  update-and-restart:
+    runs-on: self-hosted
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Dependencies Update
+        id: dependencies-update
+        run: |
+          apt-get install python3-pip -y
+          pip3 install -r requirements.txt
+          echo "Dependencies Update: Success"
+      - name: Setup Credentials
+        id: setup-credentials
+        run: |
+          apt-get install jq -y
+          jq '.token = "${{ secrets.DISCORD_TOKEN }}"' config/bot.json > tmp.$$.json && mv tmp.$$.json config/bot.json
+          jq '.server.host = "${{ secrets.DATABASE_HOST }}" | .server.user = "${{ secrets.DATABASE_USER }}" | .server.password = "${{ secrets.DATABASE_PASSWORD }}" | .server.database = "${{ secrets.DATABASE_DATABASE }}"' config/database.json > tmp.$$.json && mv tmp.$$.json config/database.json
+          echo "Setup Credentials: Success"
+      - name: Restart Bot
+        id: restart-bot
+        if: success()
+        run: |
+          systemctl restart discord-bot.service
+          systemctl status discord-bot.service
+          echo "Restart Bot: Success"
+      - name: Runner Status
+        id: runner-status
+        run: |
+          cd /home/warrior/actions-runner
+          ./svc.sh status
+          echo "Runner Status: Success"
