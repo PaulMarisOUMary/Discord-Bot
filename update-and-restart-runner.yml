@@ -1,5 +1,5 @@
 # auto-run github-runner on boot/startup: https://docs.github.com/en/actions/hosting-your-own-runners/configuring-the-self-hosted-runner-application-as-a-service
-name: Update files on Linux server
+name: Update files & Restart bot on Linux server
 
 on:
   push:
@@ -9,21 +9,16 @@ on:
   workflow_dispatch:
 
 jobs:
-  update:
+  update-and-restart:
     runs-on: self-hosted
 
     steps:
       - uses: actions/checkout@v2
 
-      - name: Runner Status
-        id: runner-status
-        run: |
-          cd /home/warrior/actions-runner
-          ./svc.sh status
-          echo "Runner Status: Success"
       - name: Dependencies Update
         id: dependencies-update
         run: |
+          apt-get install python3-pip -y
           pip3 install -r requirements.txt
           echo "Dependencies Update: Success"
       - name: Setup Credentials
@@ -40,3 +35,9 @@ jobs:
           systemctl restart discord-bot.service
           systemctl status discord-bot.service
           echo "Restart Bot: Success"
+      - name: Runner Status
+        id: runner-status
+        run: |
+          cd /home/warrior/actions-runner
+          ./svc.sh status
+          echo "Runner Status: Success"
