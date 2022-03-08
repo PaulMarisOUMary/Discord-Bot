@@ -1,4 +1,4 @@
 /*.py @PaulMarisOuMary
 /requirements.txt @PaulMarisOUMary
 
-/.github/workflows/** @PaulMarisOUMary
+/.github/workflows/*.yml @PaulMarisOUMary
