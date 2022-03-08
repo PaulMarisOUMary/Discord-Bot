@@ -27,7 +27,7 @@
 
         "max_length": 255
     },
-    "dad": {
-        "probability": 0.1
+    "prefix": {
+        "table": "table_prefix"
     }
 }
