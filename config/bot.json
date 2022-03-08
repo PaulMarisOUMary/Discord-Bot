@@ -1,5 +1,8 @@
 {
     "token": "*************************************.******.**********************",
     "bot_description": "Algobot",
-    "bot_default_prefix": "?"
+    "bot_default_prefix": "?",
+    "dad": {
+        "probability": 0.1
+    }
 }
