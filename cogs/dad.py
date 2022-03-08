@@ -9,7 +9,7 @@ class Dad(commands.Cog, name="dad", command_attrs=dict(hidden=True)):
         self.bot = bot
         self.settings = bot.database_data["dad"]
         self.pattern = re.compile(r"""
-                                  (.*?[\s])?          # Some text
+                                  ^(.*?[\s])?         # Some text
                                   (im|i\ am|i\'m)[\s] # The "i'm" and a whitespace
                                   (?P<name>.+)        # The name
                                   """, re.VERBOSE + re.IGNORECASE)
