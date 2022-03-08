@@ -17,6 +17,4 @@ jobs:
 
       - name: Run script
         run: |
-          whoami
-          echo Done
-          sudo <<< ${{ secrets.SUDOER_PASSWORD }} /home/warrior/actions-runner/svc.sh status
+          /home/warrior/actions-runner/svc.sh status
