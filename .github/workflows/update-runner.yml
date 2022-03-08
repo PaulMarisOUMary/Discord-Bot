@@ -15,7 +15,14 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Run script
+      - name: Runner Status
         run: |
           cd /home/warrior/actions-runner
           ./svc.sh status
+      - name: Dependencies Update
+        run: |
+          ls
+          pip3 install -r requirements.txt
+      - name: Restart Bot
+        run: |
+          echo "Restart.."
