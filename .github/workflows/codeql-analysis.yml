@@ -3,17 +3,17 @@ name: "CodeQL"
 on:
   push:
     paths:
-      - "/*.py"
-      - "/classes/**"
-      - "/cogs/**"
-      - "/views/**"
+      - "*.py"
+      - "classes/**"
+      - "cogs/**"
+      - "views/**"
     branches: [ main ]
   pull_request:
     paths:
-      - "/*.py"
-      - "/classes/**"
-      - "/cogs/**"
-      - "/views/**"
+      - "*.py"
+      - "classes/**"
+      - "cogs/**"
+      - "views/**"
     branches: [ main ]
   schedule:
   #Runs at 00:30 UTC on the 1st of every month.
