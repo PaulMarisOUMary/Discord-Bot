@@ -53,7 +53,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		self.bot.loop.create_task(self.initFridaycake())
 
 	async def initFridaycake(self):
-		participants = await self.bot.database.select(self.fridaycake_data["table"], "user_id, user_name", "user_isin = 1")
+		participants = await self.bot.database.select(self.fridaycake_data["table"], "user_id, user_name", "user_isin = 1", "user_name ASC")
 		participants = [[*row] for row in participants] #convert tuple of tuples to list of lists
 		self.participants = mix_participants(participants, self.seed, 2)
 		self.nparticipants = len(participants) #mandatory in fridaycake view
