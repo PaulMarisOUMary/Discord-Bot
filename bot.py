@@ -13,9 +13,10 @@ with open(bot_file, "r") as bdata, open(database_file, "r") as ddata:
 	bot_data, database_data = json.load(bdata), json.load(ddata)
 
 def get_prefix(client, message) -> str:
-	guild_id = message.guild.id
-	if guild_id in client.prefixes: return client.prefixes[guild_id]
-	return bot_data["bot_default_prefix"]
+	guild_id, prefix = message.guild.id, None
+	if guild_id in client.prefixes: prefix = client.prefixes[guild_id]
+	else: prefix = bot_data["bot_default_prefix"]
+	return commands.when_mentioned_or(prefix)(client, message)
 
 async def initBot() -> None:
 	"""Initialize the bot."""
