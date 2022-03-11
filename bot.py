@@ -9,7 +9,7 @@ base_directory = os.path.dirname(os.path.abspath(__file__))
 bot_file = os.path.join(base_directory, "config", "bot.json")
 database_file = os.path.join(base_directory, "config", "database.json")
 
-with open(bot_file, "r") as bdata, open(database_file, "r") as ddata: 
+with open(bot_file, 'r') as bdata, open(database_file, 'r') as ddata: 
 	bot_data, database_data = json.load(bdata), json.load(ddata)
 
 def get_prefix(client, message) -> str:
@@ -41,6 +41,6 @@ if __name__ == '__main__':
 
 	@bot.event
 	async def on_ready():
-		print("Logged in as: "+str(bot.user)+"\nVersion: "+str(discord.__version__))
+		print(f"Logged in as: {bot.user}\nVersion: {discord.__version__}")
 
 	bot.run(bot_data["token"], reconnect=True)
