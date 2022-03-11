@@ -16,6 +16,7 @@
 	- [Python prerequisites](#python-prerequisites)
 	- [Discord developper configuration](#discord-developper-configuration)
 	- [Configure the bot](#configure-the-bot)
+- [Workflows](#worflows)
 - [SQL](#sql)
 	- [SQL tables structure](#sql-tables-structure)
 - [Available commands](#available-commands)
@@ -61,6 +62,41 @@ $ pip install -r requirements.txt
 3. If you're using the database, you need to configure the `config\database.json` file.
 
 :warning: If you're NOT using any database, delete the following cogs: `fridaycake`, `me`, `croissants` & `birthday`.
+
+## Workflows
+
+### Update and restart discord bot
+
+Github setup: 
+- On Github.com go on [your project repository](https://github.com/{USER_NAME}/{PROJECT_NAME}/settings/actions/runners)
+- Then click on `Settings` > `Actions` > `Runners` > `New self-hosted runner`.
+- Then select the right `runner-image` related to your machine and the right `architecture`.
+- Then follow the `Download` and the `Configure` instructions.
+
+Server setup:
+- If you want to start the self-runner on boot, you can follow [this guide](https://docs.github.com/en/actions/hosting-your-own-runners/configuring-the-self-hosted-runner-application-as-a-service).
+:warning: The self-hosted runner should have the following permissions, `install apps` and `start/restart services`. (install the service as --user usernameWithPermissions)
+
+Discord bot service:
+This step is made for linux only.
+- Create a service file in `/etc/systemd/system/your-service-name.service` with the following content:
+```bash
+[Unit]
+Description=Discord bot startup service
+After=multi-user.target
+
+[Service]
+Type=simple
+Restart=no
+User={usernameWithPermissions}
+WorkingDirectory=/home/{username}/actions-runner/_work/Algosup-Discord/Algosup-Discord
+ExecStart=python3 /home/{username}/actions-runner/_work/Algosup-Discord/Algosup-Discord/bot.py
+
+[Install]
+WantedBy=multi-user.target
+```
+:warning: Replace `{username}` & `{usernameWithPermissions}` with your username and `Algosup-Discord/Algosup-Discord` with your project name.
+- Then enable the service with `systemctl enable your-service-name.service` 
 
 ## SQL
 
