@@ -16,7 +16,7 @@
 	- [Python prerequisites](#python-prerequisites)
 	- [Discord developper configuration](#discord-developper-configuration)
 	- [Configure the bot](#configure-the-bot)
-- [Workflows](#worflows)
+- [Workflows](#workflows)
 - [SQL](#sql)
 	- [SQL tables structure](#sql-tables-structure)
 - [Available commands](#available-commands)
