@@ -5,7 +5,7 @@ import re
 from datetime import datetime
 from discord.ext import commands
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
 class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True)):
 	"""Don't leave your computer unlocked!"""
@@ -75,25 +75,33 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		timestamp_color = (114, 118, 125)
 		content_color = (220, 221, 222)
 		bg_color = (54, 57, 63)
+		pfp_size = (60, 60)
 
-		img = Image.new("RGB", (500, 100), bg_color)
-		pfp = Image.open(BytesIO(requests.get(author.display_avatar.url).content)).resize((60, 60))
+		pfp_content = Image.open(BytesIO(requests.get(author.display_avatar.url).content))
+		images_sequence = []
+		for frame in ImageSequence.Iterator(pfp_content):
+			img = Image.new("RGBA", size=(500, 100), color=bg_color)
+			resized_pfp = frame.resize(pfp_size)
+			pfp = resized_pfp.convert("RGBA")
 
-		mask = Image.new('L', pfp.size, 0)
-		ImageDraw.Draw(mask).ellipse((0, 0) + pfp.size, fill=255)
-		pfp.putalpha(mask)
-		img.paste(pfp, (16, 16), pfp)
+			mask = Image.new("L", pfp_size, 0)
+			ImageDraw.Draw(mask).ellipse((0, 0) + pfp_size, fill=255)
+			pfp.putalpha(mask)
+			img.paste(pfp, (16, 16), pfp)
 
-		draw = ImageDraw.Draw(img)
-		draw.text((100, 15), author.display_name, name_color, name_font)
-		offset = draw.textsize(author.display_name, name_font)[0] + 110
-		draw.text((offset, 20), datetime.now().strftime("Today at %I:%M %p").replace(" 0", " "), timestamp_color, timestamp_font)
-		draw.text((99, 48), content, content_color, content_font)
+			draw = ImageDraw.Draw(img)
+			draw.text((100, 15), author.display_name, name_color, name_font)
+			offset = draw.textsize(author.display_name, name_font)[0] + 110
+			draw.text((offset, 20), datetime.now().strftime("Today at %I:%M %p").replace(" 0", " "), timestamp_color, timestamp_font)
+			draw.text((99, 48), content, content_color, content_font)
 
+			images_sequence.append(img)
+
+		image = images_sequence[0]
 		with BytesIO() as img_bin:
-			img.save(img_bin, "PNG")
+			image.save(img_bin, save_all=True, append_images=images_sequence, optimize=False, format="GIF", loop=0)
 			img_bin.seek(0)
-			file = discord.File(img_bin, "croissants.png")
+			file = discord.File(img_bin, "croissants.gif")
 		return file
 
 	def __is_on_cooldown(self, user) -> bool:
