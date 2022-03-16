@@ -78,8 +78,11 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		pfp_size = (60, 60)
 
 		pfp_content = Image.open(BytesIO(requests.get(author.display_avatar.url).content))
-		images_sequence = []
+		images_sequence, duration_array = [], []
 		for frame in ImageSequence.Iterator(pfp_content):
+			try: duration_array.append(frame.info['duration'])
+			except: duration_array.append(0)
+
 			img = Image.new("RGBA", size=(500, 100), color=bg_color)
 			resized_pfp = frame.resize(pfp_size)
 			pfp = resized_pfp.convert("RGBA")
@@ -98,8 +101,9 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 			images_sequence.append(img)
 
 		image = images_sequence[0]
+		duration_array.insert(0, duration_array[0])
 		with BytesIO() as img_bin:
-			image.save(img_bin, save_all=True, append_images=images_sequence, optimize=False, format="GIF", loop=0)
+			image.save(img_bin, save_all=True, append_images=images_sequence, optimize=False, format="GIF", loop=0, duration= duration_array)
 			img_bin.seek(0)
 			file = discord.File(img_bin, "croissants.gif")
 		return file
