@@ -10,10 +10,10 @@ class Dropdown(discord.ui.Select):
 
 		choices = []
 		for option in options:
-			if not option['emoji']:
-				choices.append(discord.SelectOption(label=option['label'], description=option['description']))
+			if not option["emoji"]:
+				choices.append(discord.SelectOption(label=option["label"], description=option["description"]))
 			else:
-				choices.append(discord.SelectOption(label=option['label'], description=option['description'], emoji=option['emoji']))
+				choices.append(discord.SelectOption(label=option["label"], description=option["description"], emoji=option["emoji"]))
 
 		super().__init__(placeholder = placeholder, min_values = min_val, max_values = max_val, options = choices)
 
@@ -25,7 +25,7 @@ class Dropdown(discord.ui.Select):
 			elif self.values[0] == "Home":
 				await interaction.response.edit_message(embed=self.embed, view=self.view)
 			else:
-				embed = discord.Embed(color=0xf7346b, title = "⚙️ Fridaycake · Can I trust you ?", description = "`The main concept of the algorithm explained.`\n\u200b", url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+				embed = discord.Embed(color=0xf7346b, title = "⚙️ Fridaycake · Can I trust you ?", description = "`The main concept of the algorithm explained.`\n\u200b", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
 				embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
 				embed.add_field(name="How do you get the list of participants ?", value=f"There is a file named `participants.dat` in the `data/` folder.\nInside I have arranged each volunteers by promotion and then by alphabetical order.\n\u200b", inline=False)
 				embed.add_field(name="How am I mixed up ?", value="I'm using a __seed__ to shuffle randomly the list of participants.\nThe point is, it doesn't matter on which computer or when the calculation is performed, it always return the same result as long we doesn't change the seed (it means also you can try at home it will return exactly the same result as Algobot).\n\u200b", inline=False)
