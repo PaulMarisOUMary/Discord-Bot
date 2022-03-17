@@ -37,7 +37,7 @@ class Birthday(commands.Cog, name="birthday"):
 				if user_birth.month == datetime.now().month and user_birth.day == datetime.now().day:
 					timestamp = round(time.mktime(user_birth.timetuple()))
 
-					message = f"Remembed this date because it's <@{str(user_id)}>'s birthday !\nHe was born <t:{timestamp}:R> !"
+					message = f"Remembed this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
 					images = [
 						"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
 						"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
@@ -53,7 +53,7 @@ class Birthday(commands.Cog, name="birthday"):
 		await self.bot.wait_until_ready()
 		while self.bot.database.connector is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
-	@commands.command(name='birthday', aliases=['bd', 'setbirthday', 'setbirth', 'birth'])
+	@commands.command(name="birthday", aliases=["bd", "setbirthday", "setbirth", "birth"], require_var_positional=True)
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def birthday(self, ctx, date: str = None):
 		"""Allows you to set/show your birthday."""
@@ -64,7 +64,7 @@ class Birthday(commands.Cog, name="birthday"):
 				# Insert
 				await self.bot.database.insert(self.birthday_data["table"], {"user_id": ctx.author.id, "user_birth": dataDate})
 				# Update
-				await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, "user_id = "+str(ctx.author.id))
+				await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, f"user_id = {ctx.author.id}")
 
 				await self.show_birthday_message(ctx, ctx.author)
 			except ValueError:
@@ -74,9 +74,9 @@ class Birthday(commands.Cog, name="birthday"):
 		else:
 			await self.show_birthday(ctx, ctx.author)
 
-	@commands.command(name='showbirthday', aliases=['showbirth', 'sbd'])
+	@commands.command(name="showbirthday", aliases=["showbirth", "sbd"])
 	@commands.cooldown(1, 5, commands.BucketType.user)
-	async def show_birthday(self, ctx, user:discord.Member = None):
+	async def show_birthday(self, ctx, user: discord.Member = None):
 		"""Allows you to show the birthday of other users."""
 		if not user: user = ctx.author
 		await self.show_birthday_message(ctx, user)

@@ -27,9 +27,9 @@ class Dad(commands.Cog, name="dad", command_attrs=dict(hidden=True)):
                 name = im.group("name").strip()
                 id_ = re.search("<@!?(?P<id>\d{17,19})>", name) # https://github.com/discordjs/discord.js/blob/2f6f365098cbab397cda124711c4bb08da850a17/src/structures/MessageMentions.js#L221
                 if id_ and int(id_.group("id")) != author_id:
-                    await channel.send("No you are " + message.author.mention)
+                    await channel.send(f"No you are {message.author.mention}")
                 else:
-                    await channel.send("Hi " + name + ", I'm " + self.bot.user.mention)
+                    await channel.send(f"Hi {name}, I'm {self.bot.user.mention}")
 
 def setup(bot):
     bot.add_cog(Dad(bot))

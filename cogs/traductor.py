@@ -5,7 +5,7 @@ import re
 from discord.ext import commands
 from googletrans import Translator #pip install googletrans==4.0.0-rc1
 
-class Traductor(commands.Cog, name="traductor", command_attrs=dict(hidden=True)):
+class Traductor(commands.Cog, name="traductor"):
 	"""A Cog to translate each non-English messages"""
 	def __init__(self, bot):
 		self.bot = bot
@@ -16,7 +16,7 @@ class Traductor(commands.Cog, name="traductor", command_attrs=dict(hidden=True))
 		description = "Informations about the Traductor."
 		return emoji, label, description"""
 
-	@commands.Cog.listener('on_message')
+	@commands.Cog.listener("on_message")
 	async def on_receive_message(self, message: discord.Message):
 		convert_emoji = '🔀'
 		converted_emoji = '⤵'
@@ -30,8 +30,8 @@ class Traductor(commands.Cog, name="traductor", command_attrs=dict(hidden=True))
 			try:
 				analysis: str = Translator().detect(content).lang
 
-				if not analysis == 'en':
-					translated = Translator().translate(content, dest='en', src=analysis).text
+				if not analysis == "en":
+					translated = Translator().translate(content, dest="en", src=analysis).text
 					flag_emoji = str(chr(127365 + (ord(analysis[0]))))+str(chr(127365 + (ord(analysis[1]))))
 					
 					for regex in [mention_regex, channel_regex, emote_regex]:
@@ -47,7 +47,7 @@ class Traductor(commands.Cog, name="traductor", command_attrs=dict(hidden=True))
 						def check(reaction, user) -> bool:
 							return not user.bot and reaction.message.id == message.id and reaction.emoji == convert_emoji
 						
-						await self.bot.wait_for('reaction_add', timeout=25, check=check)
+						await self.bot.wait_for("reaction_add", timeout=25, check=check)
 					except asyncio.exceptions.TimeoutError:
 						await message.clear_reaction(convert_emoji)
 					except: pass
