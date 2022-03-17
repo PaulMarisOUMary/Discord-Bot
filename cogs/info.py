@@ -79,7 +79,7 @@ class Info(commands.Cog, name="info"):
 		await ctx.send(member.display_avatar.url)
 
 	@commands.command(name="bannerpicture", aliases=["bp"])
-	async def profilepicture(self, ctx, member : discord.Member = None):
+	async def bannerpicture(self, ctx, member : discord.Member = None):
 		"""Show the banner picture of the selected member."""
 		if not member: member = ctx.author
 		user = await self.bot.fetch_user(member.id)

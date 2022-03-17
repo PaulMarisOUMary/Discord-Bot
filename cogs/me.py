@@ -16,7 +16,7 @@ class Me(commands.Cog, name="me"):
 		description = "Set and show a brief description of yourself."
 		return emoji, label, description
 
-	@commands.command(name="me", aliases=["description"], require_var_positional=True)
+	@commands.command(name="me", aliases=["description"])
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def me(self, ctx, *args: str):
 		"""Allows you to set or show a brief description of yourself."""
