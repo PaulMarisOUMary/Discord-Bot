@@ -6,7 +6,7 @@ from discord.ext import commands
 from datetime import datetime, timedelta
 from views import help as vhelp
 
-class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
+class Basic(commands.Cog, name="basic"):
 	"""Basic commands, like help, ping, ..."""
 	def __init__(self, bot):
 		self.bot = bot
@@ -17,16 +17,16 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 		description = "Basic commands, like help, ping, etc.."
 		return emoji, label, description
 
-	@commands.command(name='help', aliases=['?', 'h', 'commands'])
-	async def help(self, ctx, *input):
+	@commands.command(name="help", aliases=['?', 'h', "commands"])
+	async def help(self, ctx, *input: str):
 		"""Show the help menu."""
 		if ctx.guild.id in self.bot.prefixes: guild_prefix = self.bot.prefixes[ctx.guild.id]
-		else: guild_prefix = self.bot.bot_data['bot_default_prefix']
+		else: guild_prefix = self.bot.bot_data["bot_default_prefix"]
 		if not input:
 			allowed = 5
 			close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
 			embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = f"`Welcome to the help page.`\n\n**The prefix on this server is**: `{guild_prefix}`.\n\nUse `help command` for more info on a command.\nUse `help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Algosup-Discord')
-			embed.add_field(name="Time remaining :", value="This help session will end <t:"+str(close_in)+":R>.\nType `help` to open a new session.\n\u200b", inline=False)
+			embed.add_field(name="Time remaining :", value=f"This help session will end <t:{close_in}:R>.\nType `help` to open a new session.\n\u200b", inline=False)
 			embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*. Made for Algosup in 2020.\nI have a lot of features such translator, events manager, utils, and more.\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Algosup-Discord) !")
 
 			view = vhelp.View(bot=self.bot, ctx=ctx, homeembed=embed, ui=2)
@@ -47,21 +47,21 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 
 			if search_cog:
 				if "help_custom" in dir(search_cog):
-					emoji, label, description = search_cog.help_custom()
-					embed = discord.Embed(title = str(emoji)+" Help · "+str(label),description='`'+str(search_cog.__doc__)+'`', url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+					emoji, label, _ = search_cog.help_custom()
+					embed = discord.Embed(title = f"{emoji} Help · {label}",description=f"`{search_cog.__doc__}`", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
 					for command in search_cog.get_commands():
 						params = ""
-						for param in command.clean_params: params += " <"+str(param)+">"
-						embed.add_field(name=str(command.name)+str(params), value=str(command.help)+"\n\u200b", inline=False)
+						for param in command.clean_params: params += f" <{param}>"
+						embed.add_field(name=f"{command.name}{params}", value=f"{command.help}\n\u200b", inline=False)
 			elif search_command:
 				cog = search_command.cog
 				if "help_custom" in dir(cog):
-					emoji, label, description = cog.help_custom()
-					embed = discord.Embed(title = str(emoji)+" Help · "+str(label)+" : "+str(search_command.name), description="**Command** : "+str(search_command.name)+"\n"+str(search_command.help), url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+					emoji, label, _ = cog.help_custom()
+					embed = discord.Embed(title = f"{emoji} Help · {label} : {search_command.name}", description=f"**Command** : {search_command.name}\n{search_command.help}", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
 				params = ""
-				for param in search_command.clean_params: params += " <"+str(param)+">"
-				embed.add_field(name="Usage", value=str(search_command.name)+str(params), inline=False)
-				embed.add_field(name="Aliases", value='`'+str(search_command.aliases)+'`')
+				for param in search_command.clean_params: params += f" <{param}>"
+				embed.add_field(name="Usage", value=f"{search_command.name}{params}", inline=False)
+				embed.add_field(name="Aliases", value=f"{search_command.aliases}`")
 			else:
 				raise commands.CommandError("Nothing found.")
 			
@@ -71,7 +71,7 @@ class Basic(commands.Cog, name="basic", command_attrs=dict(hidden=False)):
 		elif len(input) > 1:
 			raise commands.CommandError("Too many arguments.")
 
-	@commands.command(name='ping', pass_context=True)
+	@commands.command(name="ping")
 	async def ping(self, ctx):
 		"""Show latency in seconds & milliseconds"""
 		before = time.monotonic()

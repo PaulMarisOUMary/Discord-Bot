@@ -6,7 +6,7 @@ import os
 from discord.ext import commands
 from importlib import reload
 
-class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
+class Admin(commands.Cog, name="admin"):
 	"""Admin commands, you probably don't have the permission to use them."""
 	def __init__(self, bot):
 		self.bot = bot
@@ -124,10 +124,10 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 		while channel:
 			await channel.delete()
 			channel = discord.utils.get(ctx.guild.channels, name=channel_name)
-		await ctx.send("All channels named `"+str(channel_name)+"` as been succesfuly deleted")
-
-	@commands.command(name="changeprefix", aliases=["cp"])
-	@commands.is_owner()
+		await ctx.send(f"All channels named `{channel_name}` as been succesfuly deleted")
+	
+	@commands.command(name="changeprefix", aliases=["cp"], require_var_positional=True)
+	@commands.has_guild_permissions(administrator=True)
 	async def change_guild_prefix(self, ctx, new_prefix):
 		"""Change the guild prefix."""
 		try:
@@ -141,5 +141,8 @@ class Admin(commands.Cog, name="admin", command_attrs=dict(hidden=True)):
 			await ctx.send(f":warning: Prefix changed to `{new_prefix}`")
 		except Exception as e:
 			await ctx.send(f"Error: {e}")
+
+
+
 def setup(bot):
 	bot.add_cog(Admin(bot))

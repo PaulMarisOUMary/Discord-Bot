@@ -73,7 +73,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		for participants, _date in zip(self.participants, get_dates(start, holidays, len(self.participants))): 
 			string = "`"
 			for _id, names in participants:
-				string += names + "` & `" if not int(_id) == author.id else names + "` [ᐊ](https://github.com/PaulMarisOUMary/Algosup-Discord) & `"
+				string += f"{names}` & `" if not int(_id) == author.id else f"{names}` [ᐊ](https://github.com/PaulMarisOUMary/Algosup-Discord) & `"
 			embed.add_field(name=f"Friday {_date.strftime('%d %B, %Y')}", value=f"~~{string[0:-4]}~~" if date.today() >= _date else f"{string[0:-4]}", inline=False)
 		return embed
 

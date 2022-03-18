@@ -18,7 +18,7 @@ class View(discord.ui.View):
 			self.value = value
 			await interaction.response.defer()
 			await interaction.delete_original_message()
-			message = "✅ Confirmed"if self.value else "❌ Canceled"
+			message = "✅ Confirmed" if self.value else "❌ Canceled"
 			await self.source.reply(message)
 		else:
 			await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)

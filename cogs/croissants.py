@@ -20,12 +20,12 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		self.croissants_data = self.bot.database_data["croissants"]
 
 	def help_custom(self):
-		emoji = '🥐'
+		emoji = self.EMOJI
 		label = "Croissants"
 		description = "For when someone left their computer unlocked."
 		return emoji, label, description
 
-	@commands.Cog.listener('on_message')
+	@commands.Cog.listener("on_message")
 	async def on_receive_message(self, message : discord.Message):
 		if not message.author.bot and self.REGEX.match(message.content):
 			if not self.__is_on_cooldown(message.author):
@@ -48,12 +48,12 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 
 	async def __send_croissants(self, message) -> None:
 		answer_message = await message.reply(
-			content=f'{message.author.mention} took out the credit card! ' + self.EMOJI,
+			content=f"{message.author.mention} took out the credit card! {self.EMOJI}",
 			file=self.__get_screenshot(message.author, message.content)
 		)
 
 		count = await self.__increment_croissants_counter(message.author.id)
-		await answer_message.edit(content=f"{message.author.mention} took out the credit card ! And this is the `{count}` time, he's so generous! " + self.EMOJI)
+		await answer_message.edit(content=f"{message.author.mention} took out the credit card ! And this is the `{count}` time, he's so generous! {self.EMOJI}")
 
 	async def __increment_croissants_counter(self, user_id : int) -> int:
 		exist = await self.bot.database.exist(self.croissants_data["table"], "*", f"user_id={user_id}")
@@ -80,7 +80,7 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		pfp_content = Image.open(BytesIO(requests.get(author.display_avatar.url).content))
 		images_sequence, duration_array = [], []
 		for frame in ImageSequence.Iterator(pfp_content):
-			try: duration_array.append(frame.info['duration'])
+			try: duration_array.append(frame.info["duration"])
 			except: duration_array.append(0)
 
 			img = Image.new("RGBA", size=(500, 100), color=bg_color)

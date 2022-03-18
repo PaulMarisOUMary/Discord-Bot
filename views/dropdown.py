@@ -7,10 +7,10 @@ class Dropdown(discord.ui.Select):
 
         choices = []
         for option in options:
-            if not option['emoji']:
-                choices.append(discord.SelectOption(label=option['label'], description=option['description']))
+            if not option["emoji"]:
+                choices.append(discord.SelectOption(label=option["label"], description=option["description"]))
             else:
-                choices.append(discord.SelectOption(label=option['label'], description=option['description'], emoji=option['emoji']))
+                choices.append(discord.SelectOption(label=option["label"], description=option["description"], emoji=option["emoji"]))
 
         super().__init__(placeholder = placeholder, min_values = min_val, max_values = max_val, options = choices)
 
@@ -18,7 +18,7 @@ class Dropdown(discord.ui.Select):
         if self.invoker == interaction.user:
             message = "Selected languages : "
             for value in self.values:
-                message += '`'+value+"` "
+                message += f"`{value}` "
             await interaction.response.defer()
             await interaction.delete_original_message()
             await self.source.reply(message)
