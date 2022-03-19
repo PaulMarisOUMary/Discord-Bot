@@ -17,8 +17,8 @@ class Basic(commands.Cog, name="basic"):
 		description = "Basic commands, like help, ping, etc.."
 		return emoji, label, description
 
-	@commands.command(name="help", aliases=['?', 'h', "commands"])
-	async def help(self, ctx, *input: str):
+	@commands.command(name="ahelp")
+	async def ancient_help(self, ctx, *input: str):
 		"""Show the help menu."""
 		if ctx.guild.id in self.bot.prefixes: guild_prefix = self.bot.prefixes[ctx.guild.id]
 		else: guild_prefix = self.bot.bot_data["bot_default_prefix"]
