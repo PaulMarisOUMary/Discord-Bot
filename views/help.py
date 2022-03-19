@@ -34,9 +34,9 @@ class Buttons(discord.ui.Button):
 			await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
 
 class View(discord.ui.View):
-	def __init__(self, bot : discord.ext.commands.bot.Bot, ctx : discord.ext.commands.context.Context, homeembed : discord.embeds.Embed, ui : int):
+	def __init__(self, mapping: dict, ctx: discord.ext.commands.context.Context, homeembed: discord.embeds.Embed, ui: int):
 		super().__init__()
-		self.ctx, self.bot, self.home = ctx, bot, homeembed
+		self.mapping, self.ctx, self.home = mapping, ctx, homeembed
 		self.index, self.buttons = 0, None
 
 		self.options, self.embeds = self.gen_embeds()
@@ -67,8 +67,8 @@ class View(discord.ui.View):
 
 	def get_cogs(self):
 		cogs = []
-		for cog in self.bot.extensions:
-			cogs.append(self.bot.get_cog(cog[5:len(cog)]))
+		for cog in self.mapping.keys():
+			cogs.append(cog)
 		return cogs
 
 	def gen_embeds(self):

@@ -31,7 +31,7 @@ class Info(commands.Cog, name="info"):
 	def help_custom(self):
 		emoji = '📊'
 		label = "Info"
-		description = "Commands about additionals informations."
+		description = "Commands about additionals informations such as stats."
 		return emoji, label, description
 
 	@commands.command(name="emojilist", aliases=["ce", "el"])

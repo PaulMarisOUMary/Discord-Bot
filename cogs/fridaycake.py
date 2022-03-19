@@ -64,7 +64,6 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		description = "Commands relative to the FridayCake event !"
 		return emoji, label, description
 
-
 	def all(self, ctx):
 		author = ctx.message.author
 		embed = discord.Embed(title=f"{random.choice(self.cakes)} Fridaycake · All", description="`Show your personnal order of passage.`\n\u200b" ,colour=0xf7346b, url='https://github.com/PaulMarisOUMary/Algosup-Discord')

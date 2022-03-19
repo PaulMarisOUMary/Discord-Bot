@@ -1,14 +1,14 @@
 from discord.ext import commands
 
 class Errors(commands.Cog, name="errors"):
-	"""Errors handler"""
+	"""Errors handler."""
 	def __init__(self, bot):
 		self.bot = bot
 
 	"""def help_custom(self):
-		emoji = '<a:crossmark:842800737221607474>'
+		emoji = "<a:crossmark:842800737221607474>"
 		label = "Error"
-		description = "A custom errors handler."
+		description = "A custom errors handler. Nothing to see here."
 		return emoji, label, description"""
 
 	@commands.Cog.listener("on_error")

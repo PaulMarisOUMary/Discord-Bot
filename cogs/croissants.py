@@ -8,7 +8,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
 class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True)):
-	"""Don't leave your computer unlocked!"""
+	"""Don't leave your computer unlocked !"""
 	def __init__(self, bot):
 		self.bot = bot
 

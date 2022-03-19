@@ -6,7 +6,7 @@ from views import dropdown
 from views import link
 
 class Views(commands.Cog, name="views"):
-	"""Experimental cog, new features such buttons, dropdown or whispering"""
+	"""Experimental cog, new features such buttons, dropdown or whispering."""
 	def __init__(self, bot):
 		self.bot = bot
 

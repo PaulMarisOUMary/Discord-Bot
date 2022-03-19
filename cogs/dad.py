@@ -5,7 +5,7 @@ from discord.ext import commands
 from random import random
 
 class Dad(commands.Cog, name="dad", command_attrs=dict(hidden=True)):
-    
+    """Dad's jokes."""
     def __init__(self, bot):
         self.bot = bot
         self.settings = bot.bot_data["dad"]
@@ -14,6 +14,12 @@ class Dad(commands.Cog, name="dad", command_attrs=dict(hidden=True)):
                                     (im|i\ am|i\'m)[\s] # The "i'm" and a whitespace
                                     (?P<name>.+)        # The name
                                     """, re.VERBOSE + re.IGNORECASE)
+
+    def help_custom(self):
+        emoji = '👨‍🦳'
+        label = "Dad's jokes"
+        description = "Ahah, it was a good one!"
+        return emoji, label, description
 
     @commands.Cog.listener("on_message")
     async def on_receive_message(self, message : discord.Message):

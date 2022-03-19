@@ -93,7 +93,7 @@ class Admin(commands.Cog, name="admin"):
 		else:
 			await ctx.send(f"🤘 {latest_cog[0]} reloaded ! | ☠️ __`{len(victims)} task killed`__ | 🔄 __`view(s) reloaded`__")
 
-	@commands.command(name="reloadviews", aliases=["rview", "rviews"])
+	@commands.command(name="reloadviews", aliases=["rview", "rviews", "rv"])
 	@commands.is_owner()
 	async def reload_view(self, ctx):
 		"""Reload each registered views."""
