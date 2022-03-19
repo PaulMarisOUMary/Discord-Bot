@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 
 class Me(commands.Cog, name="me"):
-	"""FridayCake's event commands."""
+	"""Like minecraft set your own /me !"""
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -11,7 +11,7 @@ class Me(commands.Cog, name="me"):
 		self.max_lenght_me = self.me_data["max_length"]
 
 	def help_custom(self):
-		emoji = '🤸'
+		emoji = '🤙'
 		label = "Me"
 		description = "Set and show a brief description of yourself."
 		return emoji, label, description

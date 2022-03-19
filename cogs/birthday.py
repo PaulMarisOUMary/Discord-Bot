@@ -7,7 +7,7 @@ from datetime import datetime, date
 from discord.ext import commands, tasks
 
 class Birthday(commands.Cog, name="birthday"):
-	"""I'll wish you soon a happy birthday!"""
+	"""I'll wish you soon a happy birthday !"""
 	def __init__(self, bot):
 		self.bot = bot
 
@@ -18,7 +18,7 @@ class Birthday(commands.Cog, name="birthday"):
 	def help_custom(self):
 		emoji = '🎁'
 		label = "Birthday"
-		description = "Maybe I'll wish you soon a happy birthday!"
+		description = "Maybe I'll wish you soon a happy birthday !"
 		return emoji, label, description
 
 	def cog_unload(self):

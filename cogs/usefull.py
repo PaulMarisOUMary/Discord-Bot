@@ -1,7 +1,7 @@
 from discord.ext import commands
 
 class Usefull(commands.Cog, name="usefull"):
-	"""Usefull commands for Devs & more"""
+	"""Usefull commands for Devs & more."""
 	def __init__(self, bot):
 		self.bot = bot
 

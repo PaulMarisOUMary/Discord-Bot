@@ -6,7 +6,7 @@ from discord.ext import commands
 from googletrans import Translator #pip install googletrans==4.0.0-rc1
 
 class Traductor(commands.Cog, name="traductor"):
-	"""A Cog to translate each non-English messages"""
+	"""A Cog to translate each non-English messages."""
 	def __init__(self, bot):
 		self.bot = bot
 

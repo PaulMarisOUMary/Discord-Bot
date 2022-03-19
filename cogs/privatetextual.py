@@ -22,7 +22,7 @@ def get_created_roles(cont):
 	return wrong_roles
 
 class PrivateTextual(commands.Cog, name="privatetextual"):
-	"""Create and manage private textual channels"""
+	"""Create and manage private textual channels."""
 	def __init__(self, bot):
 		self.bot = bot
 
