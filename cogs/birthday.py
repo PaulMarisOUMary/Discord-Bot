@@ -7,18 +7,18 @@ from datetime import datetime, date
 from discord.ext import commands, tasks
 
 class Birthday(commands.Cog, name="birthday"):
-	"""I'll wish you soon a happy birthday!"""
-	def __init__(self, bot):
+	"""I'll wish you soon a happy birthday !"""
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
 		self.birthday_data = self.bot.database_data["birthday"]
 
 		self.daily_birthday.start()
 
-	def help_custom(self):
+	def help_custom(self) -> tuple[str]:
 		emoji = '🎁'
 		label = "Birthday"
-		description = "Maybe I'll wish you soon a happy birthday!"
+		description = "Maybe I'll wish you soon a happy birthday !"
 		return emoji, label, description
 
 	def cog_unload(self):
@@ -37,12 +37,13 @@ class Birthday(commands.Cog, name="birthday"):
 				if user_birth.month == datetime.now().month and user_birth.day == datetime.now().day:
 					timestamp = round(time.mktime(user_birth.timetuple()))
 
-					message = f"Remembed this date because it's <@{str(user_id)}>'s birthday !\nHe was born <t:{timestamp}:R> !"
+					message = f"Remembed this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
 					images = [
 						"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
 						"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
 						"https://winkgo.com/wp-content/uploads/2018/08/101-Best-Happy-Birthday-Memes-01-720x720.jpg",
-						"https://www.the-best-wishes.com/wp-content/uploads/2022/01/success-kid-cute-birthday-meme-for-her.jpg"]
+						"https://www.the-best-wishes.com/wp-content/uploads/2022/01/success-kid-cute-birthday-meme-for-her.jpg"
+					]
 
 					embed = discord.Embed(title="🎉 Happy birthday !", description=message, colour=discord.Colour.dark_gold())
 					embed.set_image(url=images[random.randint(0, len(images)-1)])
@@ -53,18 +54,19 @@ class Birthday(commands.Cog, name="birthday"):
 		await self.bot.wait_until_ready()
 		while self.bot.database.connector is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
-	@commands.command(name='birthday', aliases=['bd', 'setbirthday', 'setbirth', 'birth'])
+	@commands.command(name="birthday", aliases=["bd", "setbirthday", "setbirth", "birth"], require_var_positional=True)
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def birthday(self, ctx, date: str = None):
 		"""Allows you to set/show your birthday."""
 		if date:
 			try:
 				dataDate = datetime.strptime(date, "%d/%m/%Y").date()
-				if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: raise commands.CommandError("Please provide your real year of birth.")
+				if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: 
+					raise commands.CommandError("Please provide your real year of birth.")
 				# Insert
 				await self.bot.database.insert(self.birthday_data["table"], {"user_id": ctx.author.id, "user_birth": dataDate})
 				# Update
-				await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, "user_id = "+str(ctx.author.id))
+				await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, f"user_id = {ctx.author.id}")
 
 				await self.show_birthday_message(ctx, ctx.author)
 			except ValueError:
@@ -74,11 +76,12 @@ class Birthday(commands.Cog, name="birthday"):
 		else:
 			await self.show_birthday(ctx, ctx.author)
 
-	@commands.command(name='showbirthday', aliases=['showbirth', 'sbd'])
+	@commands.command(name="showbirthday", aliases=["showbirth", "sbd"])
 	@commands.cooldown(1, 5, commands.BucketType.user)
-	async def show_birthday(self, ctx, user:discord.Member = None):
+	async def show_birthday(self, ctx, user: discord.Member = None):
 		"""Allows you to show the birthday of other users."""
-		if not user: user = ctx.author
+		if not user: 
+			user = ctx.author
 		await self.show_birthday_message(ctx, user)
 
 	async def show_birthday_message(self, ctx, user:discord.Member) -> None:

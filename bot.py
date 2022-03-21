@@ -37,7 +37,7 @@ async def initBot() -> None:
 
 if __name__ == '__main__':
 	#If you're not using any database replace the "command_prefix" with : commands.when_mentioned_or(bot_data["bot_default_prefix"])
-	bot = commands.Bot(command_prefix=get_prefix, description=bot_data["bot_description"], case_insensitive=True, intents=discord.Intents.all(), help_command=None)
+	bot = commands.Bot(command_prefix=get_prefix, description=bot_data["bot_description"], case_insensitive=True, intents=discord.Intents.all())
 	bot.loop.create_task(initBot())
 
 	@bot.event

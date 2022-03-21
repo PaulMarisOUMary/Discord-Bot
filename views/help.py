@@ -3,7 +3,7 @@ import functools
 
 class Dropdown(discord.ui.Select):
 	def __init__(self, ctx, options):
-		super().__init__(placeholder='Select a category...', min_values=1, max_values=1, options=options)
+		super().__init__(placeholder="Select a category...", min_values=1, max_values=1, options=options)
 		self.invoker = ctx.author
 
 	async def callback(self, interaction: discord.Interaction):
@@ -34,9 +34,9 @@ class Buttons(discord.ui.Button):
 			await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
 
 class View(discord.ui.View):
-	def __init__(self, bot : discord.ext.commands.bot.Bot, ctx : discord.ext.commands.context.Context, homeembed : discord.embeds.Embed, ui : int):
+	def __init__(self, mapping: dict, ctx: discord.ext.commands.context.Context, homeembed: discord.embeds.Embed, ui: int):
 		super().__init__()
-		self.ctx, self.bot, self.home = ctx, bot, homeembed
+		self.mapping, self.ctx, self.home = mapping, ctx, homeembed
 		self.index, self.buttons = 0, None
 
 		self.options, self.embeds = self.gen_embeds()
@@ -67,8 +67,8 @@ class View(discord.ui.View):
 
 	def get_cogs(self):
 		cogs = []
-		for cog in self.bot.extensions:
-			cogs.append(self.bot.get_cog(cog[5:len(cog)]))
+		for cog in self.mapping.keys():
+			cogs.append(cog)
 		return cogs
 
 	def gen_embeds(self):
@@ -79,13 +79,13 @@ class View(discord.ui.View):
 			if "help_custom" in dir(cog):
 				emoji, label, description = cog.help_custom()
 				options.append(discord.SelectOption(label=label, description=description, emoji=emoji))
-				embed = discord.Embed(title = str(emoji)+" Help · "+str(label),description='`'+str(cog.__doc__)+'`', url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+				embed = discord.Embed(title = f"{emoji} Help · {label}",description=f"`{cog.__doc__}`", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
 				embed.set_footer(text="Remind : Hooks such as <> must not be used when executing commands.", icon_url=self.ctx.message.author.display_avatar.url)
 
 				for command in cog.get_commands():
 					params = ""
-					for param in command.clean_params: params += " <"+str(param)+">"
-					embed.add_field(name=str(command.name)+str(params), value=str(command.help)+"\n\u200b", inline=False)
+					for param in command.clean_params: params += f" <{param}>"
+					embed.add_field(name=f"{command.name}{params}", value=f"{command.help}\n\u200b", inline=False)
 				embeds.append(embed)
 		return options, embeds
 

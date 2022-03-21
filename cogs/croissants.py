@@ -5,11 +5,11 @@ import re
 from datetime import datetime
 from discord.ext import commands
 from io import BytesIO
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
 class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True)):
-	"""Don't leave your computer unlocked!"""
-	def __init__(self, bot):
+	"""Don't leave your computer unlocked !"""
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
 		self.EMOJI = '🥐'
@@ -19,13 +19,13 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 
 		self.croissants_data = self.bot.database_data["croissants"]
 
-	def help_custom(self):
-		emoji = '🥐'
+	def help_custom(self) -> tuple[str]:
+		emoji = self.EMOJI
 		label = "Croissants"
 		description = "For when someone left their computer unlocked."
 		return emoji, label, description
 
-	@commands.Cog.listener('on_message')
+	@commands.Cog.listener("on_message")
 	async def on_receive_message(self, message : discord.Message):
 		if not message.author.bot and self.REGEX.match(message.content):
 			if not self.__is_on_cooldown(message.author):
@@ -48,12 +48,12 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 
 	async def __send_croissants(self, message) -> None:
 		answer_message = await message.reply(
-			content=f'{message.author.mention} took out the credit card! ' + self.EMOJI,
+			content=f"{message.author.mention} took out the credit card! {self.EMOJI}",
 			file=self.__get_screenshot(message.author, message.content)
 		)
 
 		count = await self.__increment_croissants_counter(message.author.id)
-		await answer_message.edit(content=f"{message.author.mention} took out the credit card ! And this is the `{count}` time, he's so generous! " + self.EMOJI)
+		await answer_message.edit(content=f"{message.author.mention} took out the credit card ! And this is the `{count}` time, he's so generous! {self.EMOJI}")
 
 	async def __increment_croissants_counter(self, user_id : int) -> int:
 		exist = await self.bot.database.exist(self.croissants_data["table"], "*", f"user_id={user_id}")
@@ -75,31 +75,45 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		timestamp_color = (114, 118, 125)
 		content_color = (220, 221, 222)
 		bg_color = (54, 57, 63)
+		pfp_size = (60, 60)
 
-		img = Image.new("RGB", (500, 100), bg_color)
-		pfp = Image.open(BytesIO(requests.get(author.display_avatar.url).content)).resize((60, 60))
+		pfp_content = Image.open(BytesIO(requests.get(author.display_avatar.url).content))
+		images_sequence, duration_array = [], []
+		for frame in ImageSequence.Iterator(pfp_content):
+			try: 
+				duration_array.append(frame.info["duration"])
+			except: 
+				duration_array.append(0)
 
-		mask = Image.new('L', pfp.size, 0)
-		ImageDraw.Draw(mask).ellipse((0, 0) + pfp.size, fill=255)
-		pfp.putalpha(mask)
-		img.paste(pfp, (16, 16), pfp)
+			img = Image.new("RGBA", size=(500, 100), color=bg_color)
+			resized_pfp = frame.resize(pfp_size)
+			pfp = resized_pfp.convert("RGBA")
 
-		draw = ImageDraw.Draw(img)
-		draw.text((100, 15), author.display_name, name_color, name_font)
-		offset = draw.textsize(author.display_name, name_font)[0] + 110
-		draw.text((offset, 20), datetime.now().strftime("Today at %I:%M %p").replace(" 0", " "), timestamp_color, timestamp_font)
-		draw.text((99, 48), content, content_color, content_font)
+			mask = Image.new("L", pfp_size, 0)
+			ImageDraw.Draw(mask).ellipse((0, 0) + pfp_size, fill=255)
+			pfp.putalpha(mask)
+			img.paste(pfp, (16, 16), pfp)
 
+			draw = ImageDraw.Draw(img)
+			draw.text((100, 15), author.display_name, name_color, name_font)
+			offset = draw.textsize(author.display_name, name_font)[0] + 110
+			draw.text((offset, 20), datetime.now().strftime("Today at %I:%M %p").replace(" 0", " "), timestamp_color, timestamp_font)
+			draw.text((99, 48), content, content_color, content_font)
+
+			images_sequence.append(img)
+
+		image = images_sequence[0]
+		duration_array.insert(0, duration_array[0])
 		with BytesIO() as img_bin:
-			img.save(img_bin, "PNG")
+			image.save(img_bin, save_all=True, append_images=images_sequence, optimize=False, format="GIF", loop=0, duration= duration_array)
 			img_bin.seek(0)
-			file = discord.File(img_bin, "croissants.png")
+			file = discord.File(img_bin, "croissants.gif")
 		return file
 
 	def __is_on_cooldown(self, user) -> bool:
 		return user.id in self.cooldown and datetime.now().timestamp() - self.cooldown[user.id].timestamp() < self.bot.database_data["croissants"]["cooldown"]
 
-	def __rank_emoji(self, rank):
+	def __rank_emoji(self, rank) -> str:
 		if rank == 1:
 			return '🥇'
 		elif rank == 2:
