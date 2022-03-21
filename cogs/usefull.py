@@ -2,10 +2,10 @@ from discord.ext import commands
 
 class Usefull(commands.Cog, name="usefull"):
 	"""Usefull commands for Devs & more."""
-	def __init__(self, bot):
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
-	def help_custom(self):
+	def help_custom(self) -> tuple[str]:
 		emoji = '🚩'
 		label = "Usefull"
 		description = "Usefull commands."
@@ -20,6 +20,8 @@ class Usefull(commands.Cog, name="usefull"):
 		message = await ctx.send(f"__*{ctx.message.author.mention}*__ : {context}")
 		await message.add_reaction(emoji=checkmark)
 		await message.add_reaction(emoji=crossmark)
+
+
 
 def setup(bot):
 	bot.add_cog(Usefull(bot))

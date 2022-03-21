@@ -2,7 +2,7 @@ from discord.ext import commands
 
 class Errors(commands.Cog, name="errors"):
 	"""Errors handler."""
-	def __init__(self, bot):
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
 	"""def help_custom(self):
@@ -31,7 +31,8 @@ class Errors(commands.Cog, name="errors"):
 				await message.edit(f"🕳️ Command is on cooldown, wait `{str(error).split(' ')[7]}` !")
 			elif isinstance(error, commands.errors.MissingRequiredArgument):
 				command, params = ctx.command, ""
-				for param in command.clean_params: params += " {"+str(param)+'}'
+				for param in command.clean_params: 
+					params += " {"+str(param)+'}'
 				await message.edit(f"🕳️ Something is missing. `?{command}{params}`")
 			elif isinstance(error, commands.errors.MemberNotFound):
 				await message.edit(f"🕳️ Member `{str(error).split(' ')[1]}` not found ! Don't hesitate to ping the requested member.")
@@ -44,6 +45,8 @@ class Errors(commands.Cog, name="errors"):
 			await ctx.message.add_reaction(emoji='<a:crossmark:842800737221607474>') #❌
 		except Exception as e:
 			print(f"! Cogs.errors get_command_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
+
+
 
 def setup(bot):
 	bot.add_cog(Errors(bot))

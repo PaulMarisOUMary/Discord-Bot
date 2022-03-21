@@ -36,7 +36,8 @@ class HelpCommand(commands.HelpCommand):
             view.stop()
             await message.delete()
             await self.context.message.add_reaction("<a:checkmark_a:842800730049871892>")
-        except: pass
+        except: 
+            pass
 
     async def send_command_help(self, command):
         cog = command.cog
@@ -68,7 +69,7 @@ class HelpCommand(commands.HelpCommand):
 
 class Help(commands.Cog, name="help"):
     """Help commands."""
-    def __init__(self, bot):
+    def __init__(self, bot) -> None:
         self._original_help_command = bot.help_command
 
         attributes = {
@@ -80,10 +81,10 @@ class Help(commands.Cog, name="help"):
         bot.help_command = HelpCommand(command_attrs=attributes)
         bot.help_command.cog = self
         
-    def cog_unload(self):
+    def cog_unload(self) -> None:
         self.bot.help_command = self._original_help_command
 
-    def help_custom(self):
+    def help_custom(self) -> tuple[str]:
         emoji = '🆘'
         label = "Help"
         description = "Help utilities."

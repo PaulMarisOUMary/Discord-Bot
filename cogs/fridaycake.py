@@ -43,7 +43,7 @@ def mix_participants(participants : list, seed : int, n_group : int) -> list[lis
 
 class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=False)):
 	"""FridayCake's event commands."""
-	def __init__(self, bot):
+	def __init__(self, bot) -> None:
 		self.bot = bot
 		self.cakes = ['🎂', '🥮', '🥧', '🥯', '🧁', '🫓', '🧇', '🍞', '🍮', '🍰', '🥐']
 
@@ -52,19 +52,19 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 
 		self.bot.loop.create_task(self.initFridaycake())
 
-	async def initFridaycake(self):
+	async def initFridaycake(self) -> None:
 		participants = await self.bot.database.select(self.fridaycake_data["table"], "user_id, user_name", "user_isin = 1", "user_name ASC")
 		participants = [[*row] for row in participants] #convert tuple of tuples to list of lists
 		self.participants = mix_participants(participants, self.seed, 2)
 		self.nparticipants = len(participants) #mandatory in fridaycake view
 
-	def help_custom(self):
+	def help_custom(self) -> tuple[str]:
 		emoji = random.choice(self.cakes)
 		label = "FridayCake"
 		description = "Commands relative to the FridayCake event !"
 		return emoji, label, description
 
-	def all(self, ctx):
+	def all(self, ctx) -> discord.Embed:
 		author = ctx.message.author
 		embed = discord.Embed(title=f"{random.choice(self.cakes)} Fridaycake · All", description="`Show your personnal order of passage.`\n\u200b" ,colour=0xf7346b, url='https://github.com/PaulMarisOUMary/Algosup-Discord')
 		embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
@@ -76,7 +76,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 			embed.add_field(name=f"Friday {_date.strftime('%d %B, %Y')}", value=f"~~{string[0:-4]}~~" if date.today() >= _date else f"{string[0:-4]}", inline=False)
 		return embed
 
-	def next(self, ctx):
+	def next(self, ctx) -> discord.Embed:
 		author, pin = ctx.message.author, []
 		for participants, _date in zip(self.participants, get_dates(start, holidays, len(self.participants))):
 			if date.today() <= _date:
@@ -94,11 +94,12 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 			embed.add_field(name="👥 Participants :", value=participants, inline=False)
 			return embed
 
-	def when(self, author):
+	def when(self, author) -> discord.Embed:
 		pin = None
 		for participants, _date in zip(self.participants, get_dates(start, holidays, len(self.participants))): 
 			for participant in participants: 
-				if int(participant[0]) == author.id: pin = (participants, _date)
+				if int(participant[0]) == author.id: 
+					pin = (participants, _date)
 		if not pin:
 			raise commands.CommandError("You are not registered for the FridayCake.")
 		else:
@@ -138,7 +139,8 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 			view.stop()
 			await message.delete()
 			await ctx.message.add_reaction("<a:checkmark_a:842800730049871892>")
-		except: pass
+		except: 
+			pass
 
 	@commands.command(name='next', aliases=['n', 'fn'])
 	async def next_cake(self, ctx):

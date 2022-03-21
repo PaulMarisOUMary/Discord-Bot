@@ -5,10 +5,10 @@ from discord.ext import commands
 
 class Spotify(commands.Cog, name="spotify"):
 	"""Show Spotify songs."""
-	def __init__(self, bot):
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
-	def help_custom(self):
+	def help_custom(self) -> tuple[str]:
 		emoji = "<:spotify:880896591756656641>"
 		label = "Spotify"
 		description = "Spotify status commands."
@@ -18,7 +18,8 @@ class Spotify(commands.Cog, name="spotify"):
 	async def actual_calendar(self, ctx, user: discord.Member = None):
 		"""Show the current Spotify song."""
 		keeper = True
-		if not user: user = ctx.author
+		if not user: 
+			user = ctx.author
 		for activity in user.activities:
 			if str(activity) == "Spotify":
 				embed, keeper = discord.Embed(colour=activity.colour), False
@@ -27,7 +28,10 @@ class Spotify(commands.Cog, name="spotify"):
 				embed.set_thumbnail(url=activity.album_cover_url)
 				embed.set_footer(text=f"{str(activity.duration)[2:-7]} | Requested by : {ctx.message.author.name} at {time.strftime('%H:%M:%S')}", icon_url=ctx.message.author.display_avatar.url)
 				await ctx.send(embed=embed)
-		if keeper: await ctx.send(f"{user.name} is not currently listening to Spotify")
+		if keeper: 
+			await ctx.send(f"{user.name} is not currently listening to Spotify")
+
+
 
 def setup(bot):
 	bot.add_cog(Spotify(bot))

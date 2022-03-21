@@ -6,7 +6,7 @@ from random import random
 
 class Dad(commands.Cog, name="dad", command_attrs=dict(hidden=True)):
     """Dad's jokes."""
-    def __init__(self, bot):
+    def __init__(self, bot) -> None:
         self.bot = bot
         self.settings = bot.bot_data["dad"]
         self.pattern = re.compile(r"""
@@ -15,7 +15,7 @@ class Dad(commands.Cog, name="dad", command_attrs=dict(hidden=True)):
                                     (?P<name>.+)        # The name
                                     """, re.VERBOSE + re.IGNORECASE)
 
-    def help_custom(self):
+    def help_custom(self) -> tuple[str]:
         emoji = '👨‍🦳'
         label = "Dad's jokes"
         description = "Ahah, it was a good one!"

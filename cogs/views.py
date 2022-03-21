@@ -7,10 +7,10 @@ from views import link
 
 class Views(commands.Cog, name="views"):
 	"""Experimental cog, new features such buttons, dropdown or whispering."""
-	def __init__(self, bot):
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
-	def help_custom(self):
+	def help_custom(self) -> tuple[str]:
 		emoji = '🔘'
 		label = "Views"
 		description = "Demo : New discord features."
@@ -61,6 +61,8 @@ class Views(commands.Cog, name="views"):
 		"""Discover button link with this feature."""
 		view = link.View(label="Source code on Github", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
 		await ctx.send("Find out what is behind Algobot !", view=view)
+
+
 
 def setup(bot):
 	bot.add_cog(Views(bot))
