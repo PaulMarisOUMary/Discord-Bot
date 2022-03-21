@@ -12,6 +12,7 @@ class Usefull(commands.Cog, name="usefull"):
 		return emoji, label, description
 
 	@commands.command(name="strawpoll", aliases=["straw", "stp", "sond", "sondage"], require_var_positional=True)
+	@commands.guild_only()
 	async def strawpool(self, ctx, *, context):
 		"""Ask a sondage, and add 2 reactions to vote with your community."""
 		crossmark, checkmark = self.bot.get_emoji(842800737221607474), self.bot.get_emoji(842800730049871892)

@@ -118,6 +118,7 @@ class Admin(commands.Cog, name="admin"):
 
 	@commands.command(name="deletechannel", aliases=["delc"], require_var_positional=True)
 	@commands.is_owner()
+	@commands.guild_only()
 	async def delete_channel(self, ctx, channel_name):
 		"""Delete the provided channel."""
 		channel = discord.utils.get(ctx.guild.channels, name=channel_name)
@@ -128,6 +129,7 @@ class Admin(commands.Cog, name="admin"):
 	
 	@commands.command(name="changeprefix", aliases=["cp"], require_var_positional=True)
 	@commands.has_guild_permissions(administrator=True)
+	@commands.guild_only()
 	async def change_guild_prefix(self, ctx, new_prefix):
 		"""Change the guild prefix."""
 		try:

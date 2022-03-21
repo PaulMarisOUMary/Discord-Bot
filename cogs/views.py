@@ -17,12 +17,14 @@ class Views(commands.Cog, name="views"):
 		return emoji, label, description
 
 	@commands.command(name="bool")
+	@commands.guild_only()
 	async def boo(self, ctx):
 		"""Discover buttons feature with this command."""
 		view = bool.View(flabel="Agree", slabel="Disagree", sstyle=discord.ButtonStyle.red, emojis = True, source=ctx)
 		await ctx.send("Buttons demo right there !", view=view)
 
 	@commands.command(name="dropdown")
+	@commands.guild_only()
 	async def dro(self, ctx):
 		"""Discover select menu feature with this command."""
 		options = [
@@ -54,6 +56,7 @@ class Views(commands.Cog, name="views"):
 		await ctx.send("Dropdown demo right there !", view=view)
 
 	@commands.command(name="link")
+	@commands.guild_only()
 	async def lin(self, ctx):
 		"""Discover button link with this feature."""
 		view = link.View(label="Source code on Github", url="https://github.com/PaulMarisOUMary/Algosup-Discord")

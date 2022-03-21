@@ -34,6 +34,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 
 	@commands.command(name="createprivate", aliases=["create", '+'], require_var_positional=True)
 	@commands.cooldown(1, 10, commands.BucketType.user)
+	@commands.guild_only()
 	async def create_private_channel(self, ctx, *members : discord.Member):
 		"""Create a private textual channel."""
 		users, mentions, down_role = [ctx.message.author], "", discord.utils.get(ctx.guild.roles, name="🎓Student")
@@ -59,6 +60,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 		await ctx.message.add_reaction(emoji="<a:checkmark_a:842800730049871892>")
 	
 	@commands.command(name="deleteprivate", aliases=["delete", '-'])
+	@commands.guild_only()
 	async def delete_private_channel(self, ctx):
 		"""Delete your private textual channel."""
 		channel, roles = ctx.channel, get_created_roles(ctx)
@@ -69,6 +71,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 			raise commands.CommandError("You can't delete a non-team channel.")
 
 	@commands.command(name="renameprivate", aliases=["rename", '_'], require_var_positional=True)
+	@commands.guild_only()
 	async def rename_private_channel(self, ctx, custom_name : str):
 		"""Rename your private textual channel."""
 		channel, roles = ctx.channel, get_created_roles(ctx)
@@ -81,6 +84,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 		if forbidden: raise commands.CommandError(f"You can't use `{forbidden}` to rename a channel.")
 
 	@commands.command(name="addprivate", aliases=["add", '>'], require_var_positional=True)
+	@commands.guild_only()
 	async def addd_to_private_channel(self, ctx, *members : discord.Member):
 		"""Join a specified member to your team channel."""
 		roles = get_created_roles(ctx)
