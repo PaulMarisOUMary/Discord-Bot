@@ -1,13 +1,14 @@
 import time
+from tkinter import NONE
 
 from discord.ext import commands
 
 class Basic(commands.Cog, name="basic"):
 	"""Basic commands, like ping."""
-	def __init__(self, bot):
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
-	def help_custom(self):
+	def help_custom(self) -> tuple[str]:
 		emoji = '📙'
 		label = "Basic"
 		description = "Basic commands, like ping."

@@ -4,13 +4,13 @@ from discord.ext import commands
 
 class Me(commands.Cog, name="me"):
 	"""Like minecraft set your own /me !"""
-	def __init__(self, bot):
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
 		self.me_data = self.bot.database_data["me"]
 		self.max_lenght_me = self.me_data["max_length"]
 
-	def help_custom(self):
+	def help_custom(self) -> tuple[str]:
 		emoji = '🤙'
 		label = "Me"
 		description = "Set and show a brief description of yourself."
@@ -23,7 +23,8 @@ class Me(commands.Cog, name="me"):
 		if len(args):
 			try:
 				text = " ".join(args).replace("'", "''")
-				if len(text) > self.max_lenght_me: raise commands.CommandError(f"The max-lenght of your *me* is set to: __{self.max_lenght_me}__ (yours is {len(text)}).")
+				if len(text) > self.max_lenght_me: 
+					raise commands.CommandError(f"The max-lenght of your *me* is set to: __{self.max_lenght_me}__ (yours is {len(text)}).")
 				# Insert
 				await self.bot.database.insert(self.me_data["table"], {"user_id": ctx.author.id, "user_me": text})
 				# Update
@@ -38,7 +39,8 @@ class Me(commands.Cog, name="me"):
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	async def show_me(self, ctx, user: discord.Member = None):
 		"""Allows you to show the description of other users."""
-		if not user: user = ctx.author
+		if not user: 
+			user = ctx.author
 		await self.show_me_message(ctx, user)
 
 	async def show_me_message(self, ctx, user: discord.Member) -> None:

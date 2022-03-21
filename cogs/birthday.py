@@ -8,14 +8,14 @@ from discord.ext import commands, tasks
 
 class Birthday(commands.Cog, name="birthday"):
 	"""I'll wish you soon a happy birthday !"""
-	def __init__(self, bot):
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
 		self.birthday_data = self.bot.database_data["birthday"]
 
 		self.daily_birthday.start()
 
-	def help_custom(self):
+	def help_custom(self) -> tuple[str]:
 		emoji = '🎁'
 		label = "Birthday"
 		description = "Maybe I'll wish you soon a happy birthday !"
@@ -42,7 +42,8 @@ class Birthday(commands.Cog, name="birthday"):
 						"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
 						"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
 						"https://winkgo.com/wp-content/uploads/2018/08/101-Best-Happy-Birthday-Memes-01-720x720.jpg",
-						"https://www.the-best-wishes.com/wp-content/uploads/2022/01/success-kid-cute-birthday-meme-for-her.jpg"]
+						"https://www.the-best-wishes.com/wp-content/uploads/2022/01/success-kid-cute-birthday-meme-for-her.jpg"
+					]
 
 					embed = discord.Embed(title="🎉 Happy birthday !", description=message, colour=discord.Colour.dark_gold())
 					embed.set_image(url=images[random.randint(0, len(images)-1)])
@@ -60,7 +61,8 @@ class Birthday(commands.Cog, name="birthday"):
 		if date:
 			try:
 				dataDate = datetime.strptime(date, "%d/%m/%Y").date()
-				if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: raise commands.CommandError("Please provide your real year of birth.")
+				if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: 
+					raise commands.CommandError("Please provide your real year of birth.")
 				# Insert
 				await self.bot.database.insert(self.birthday_data["table"], {"user_id": ctx.author.id, "user_birth": dataDate})
 				# Update
@@ -78,7 +80,8 @@ class Birthday(commands.Cog, name="birthday"):
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	async def show_birthday(self, ctx, user: discord.Member = None):
 		"""Allows you to show the birthday of other users."""
-		if not user: user = ctx.author
+		if not user: 
+			user = ctx.author
 		await self.show_birthday_message(ctx, user)
 
 	async def show_birthday_message(self, ctx, user:discord.Member) -> None:

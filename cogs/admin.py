@@ -8,10 +8,10 @@ from importlib import reload
 
 class Admin(commands.Cog, name="admin"):
 	"""Admin commands, you probably don't have the permission to use them."""
-	def __init__(self, bot):
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
-	def help_custom(self):
+	def help_custom(self) -> tuple[str]:
 		emoji = '⚙️'
 		label = "Admin"
 		description = "Show the list of admin commands."
@@ -28,7 +28,8 @@ class Admin(commands.Cog, name="admin"):
 				if os.path.basename(os.path.dirname(module.__file__)) == "views":
 					reload(module)
 					infants.append(module.__name__)
-			except: pass
+			except: 
+				pass
 
 		return infants
 
@@ -56,9 +57,11 @@ class Admin(commands.Cog, name="admin"):
 			await ctx.send(f"{e.__class__.__name__}: {e}")
 		else:
 			succes_text = f"💪 All cogs reloaded ! | ☠️ __`{len(victims)} task(s) killed`__ : "
-			for victim in victims: succes_text += f"`{victim.replace('cogs.', '')}` "
+			for victim in victims: 
+				succes_text += f"`{victim.replace('cogs.', '')}` "
 			succes_text += f"| 🔄 __`{len(infants)} view(s) reloaded`__ : "
-			for infant in infants: succes_text += f"`{infant.replace('views.', '')}` "
+			for infant in infants: 
+				succes_text += f"`{infant.replace('views.', '')}` "
 			await ctx.send(succes_text)
 
 	@commands.command(name="reload", aliases=["rel"], require_var_positional=True)
@@ -84,7 +87,8 @@ class Admin(commands.Cog, name="admin"):
 			if actual[1] == ".py":
 				file_path = os.path.join(cogs_directory, file)
 				latest_edit = os.path.getmtime(file_path)
-				if latest_edit > latest_cog[1]: latest_cog = (actual[0], latest_edit)
+				if latest_edit > latest_cog[1]: 
+					latest_cog = (actual[0], latest_edit)
 
 		try:
 			victims = await self.reload_cogs([f"cogs.{latest_cog[0]}"])
@@ -103,7 +107,8 @@ class Admin(commands.Cog, name="admin"):
 			await ctx.send(f"{e.__class__.__name__}: {e}")
 		else:
 			succes_text = f"👌 All views reloaded ! | 🔄 __`{len(infants)} view(s) reloaded`__ : "
-			for infant in infants: succes_text += f"`{infant.replace('views.', '')}` "
+			for infant in infants: 
+				succes_text += f"`{infant.replace('views.', '')}` "
 			await ctx.send(succes_text)
 
 	@commands.command(name="killloop", aliases=["kill"], require_var_positional=True)
@@ -114,10 +119,12 @@ class Admin(commands.Cog, name="admin"):
 		if "return_loop_task" in dir(cogs):
 			cogs.return_loop_task().cancel()
 			await ctx.send("Task successfully killed")
-		else : await ctx.send("Task not found..")
+		else: 
+			await ctx.send("Task not found..")
 
 	@commands.command(name="deletechannel", aliases=["delc"], require_var_positional=True)
 	@commands.is_owner()
+	@commands.guild_only()
 	async def delete_channel(self, ctx, channel_name):
 		"""Delete the provided channel."""
 		channel = discord.utils.get(ctx.guild.channels, name=channel_name)
@@ -128,6 +135,7 @@ class Admin(commands.Cog, name="admin"):
 	
 	@commands.command(name="changeprefix", aliases=["cp"], require_var_positional=True)
 	@commands.has_guild_permissions(administrator=True)
+	@commands.guild_only()
 	async def change_guild_prefix(self, ctx, new_prefix):
 		"""Change the guild prefix."""
 		try:

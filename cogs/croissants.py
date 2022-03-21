@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
 class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True)):
 	"""Don't leave your computer unlocked !"""
-	def __init__(self, bot):
+	def __init__(self, bot) -> None:
 		self.bot = bot
 
 		self.EMOJI = '🥐'
@@ -19,7 +19,7 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 
 		self.croissants_data = self.bot.database_data["croissants"]
 
-	def help_custom(self):
+	def help_custom(self) -> tuple[str]:
 		emoji = self.EMOJI
 		label = "Croissants"
 		description = "For when someone left their computer unlocked."
@@ -80,8 +80,10 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		pfp_content = Image.open(BytesIO(requests.get(author.display_avatar.url).content))
 		images_sequence, duration_array = [], []
 		for frame in ImageSequence.Iterator(pfp_content):
-			try: duration_array.append(frame.info["duration"])
-			except: duration_array.append(0)
+			try: 
+				duration_array.append(frame.info["duration"])
+			except: 
+				duration_array.append(0)
 
 			img = Image.new("RGBA", size=(500, 100), color=bg_color)
 			resized_pfp = frame.resize(pfp_size)
@@ -111,7 +113,7 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 	def __is_on_cooldown(self, user) -> bool:
 		return user.id in self.cooldown and datetime.now().timestamp() - self.cooldown[user.id].timestamp() < self.bot.database_data["croissants"]["cooldown"]
 
-	def __rank_emoji(self, rank):
+	def __rank_emoji(self, rank) -> str:
 		if rank == 1:
 			return '🥇'
 		elif rank == 2:
