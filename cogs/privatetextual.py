@@ -103,5 +103,5 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 
 
 
-def setup(bot):
-	bot.add_cog(PrivateTextual(bot))
+async def setup(bot):
+	await bot.add_cog(PrivateTextual(bot))

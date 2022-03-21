@@ -1,5 +1,4 @@
 import time
-from tkinter import NONE
 
 from discord.ext import commands
 
@@ -22,5 +21,5 @@ class Basic(commands.Cog, name="basic"):
 		ping = (time.monotonic() - before) * 1000
 		await message.edit(content=f":ping_pong: Pong ! in `{float(round(ping/1000.0,3))}s` ||{int(ping)}ms||")
 
-def setup(bot):
-	bot.add_cog(Basic(bot))
+async def setup(bot):
+	await bot.add_cog(Basic(bot))

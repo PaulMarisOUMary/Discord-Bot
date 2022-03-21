@@ -90,5 +90,5 @@ class Help(commands.Cog, name="help"):
         description = "Help utilities."
         return emoji, label, description
 
-def setup(bot):
-	bot.add_cog(Help(bot))
+async def setup(bot):
+	await bot.add_cog(Help(bot))

@@ -23,5 +23,5 @@ class Usefull(commands.Cog, name="usefull"):
 
 
 
-def setup(bot):
-	bot.add_cog(Usefull(bot))
+async def setup(bot):
+	await bot.add_cog(Usefull(bot))

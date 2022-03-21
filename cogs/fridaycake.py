@@ -163,5 +163,5 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 
 
 
-def setup(bot):
-	bot.add_cog(FridayCake(bot))
+async def setup(bot):
+	await bot.add_cog(FridayCake(bot))

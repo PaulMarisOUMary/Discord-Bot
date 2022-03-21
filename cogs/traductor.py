@@ -61,5 +61,5 @@ class Traductor(commands.Cog, name="traductor"):
 
 
 
-def setup(bot):
-	bot.add_cog(Traductor(bot))
+async def setup(bot):
+	await bot.add_cog(Traductor(bot))

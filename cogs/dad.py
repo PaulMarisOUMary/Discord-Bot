@@ -37,5 +37,5 @@ class Dad(commands.Cog, name="dad", command_attrs=dict(hidden=True)):
                 else:
                     await channel.send(f"Hi {name}, I'm {self.bot.user.mention}")
 
-def setup(bot):
-    bot.add_cog(Dad(bot))
+async def setup(bot):
+    await bot.add_cog(Dad(bot))

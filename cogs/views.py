@@ -64,5 +64,5 @@ class Views(commands.Cog, name="views"):
 
 
 
-def setup(bot):
-	bot.add_cog(Views(bot))
+async def setup(bot):
+	await bot.add_cog(Views(bot))
