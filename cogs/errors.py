@@ -2,7 +2,7 @@ from discord.ext import commands
 
 class Errors(commands.Cog, name="errors"):
 	"""Errors handler."""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
 	"""def help_custom(self):
@@ -17,7 +17,7 @@ class Errors(commands.Cog, name="errors"):
 		print(f"! Unexpected Internal Error: (event) {event}, (args) {args}, (kwargs) {kwargs}.")
 
 	@commands.Cog.listener("on_command_error")
-	async def get_command_error(self, ctx, error):
+	async def get_command_error(self, ctx: commands.Context, error):
 		"""Command Error handler"""
 		try:
 			message = await ctx.send("🕳️ There is an error.")
@@ -42,7 +42,7 @@ class Errors(commands.Cog, name="errors"):
 				await message.edit("🕳️ This command is disabled.")
 			else:
 				await message.edit(f"🕳️ `{type(error).__name__}` : {error}")
-			await ctx.message.add_reaction(emoji='<a:crossmark:842800737221607474>') #❌
+			await ctx.message.add_reaction("<a:crossmark:842800737221607474>")
 		except Exception as e:
 			print(f"! Cogs.errors get_command_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
 

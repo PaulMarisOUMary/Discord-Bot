@@ -28,7 +28,6 @@ async def cogs_manager(bot: commands.Bot, mode: str, cogs: str) -> None:
             else:
                 raise ValueError("Invalid mode.")
         except Exception as e:
-            print(f"{mode} {cog} failed: {e}")
             raise e
 
 def reload_views():

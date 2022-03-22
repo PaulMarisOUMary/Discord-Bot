@@ -5,7 +5,7 @@ from discord.ext import commands
 
 class Status(commands.Cog, name="status"):
 	"""A loop to set the current status of the bot."""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
 	"""def help_custom(self) -> tuple[str]:

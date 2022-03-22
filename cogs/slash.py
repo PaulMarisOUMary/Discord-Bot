@@ -6,7 +6,8 @@ from discord.app_commands import Choice
 from typing import List
 
 class Slash(commands.Cog):
-    def __init__(self, bot):
+    """Slash commands example."""
+    def __init__(self, bot: commands.Bot):
         self.bot = bot
 
     async def fruits_autocomplete(self, _: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
