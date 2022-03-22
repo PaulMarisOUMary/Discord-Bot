@@ -10,6 +10,7 @@ class Slash(commands.Cog):
     def __init__(self, bot: commands.Bot):
         self.bot = bot
 
+    """
     async def fruits_autocomplete(self, _: discord.Interaction, current: str) -> List[app_commands.Choice[str]]:
         fruits = ['Banana', 'Pineapple', 'Apple', 'Watermelon', 'Melon', 'Cherry']
         return [
@@ -41,7 +42,7 @@ class Slash(commands.Cog):
         if not user:
             user = interaction.user
         await interaction.response.send_message(user.display_avatar.url)
-
+    """
 
 
 async def setup(bot):
