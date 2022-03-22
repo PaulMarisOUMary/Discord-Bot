@@ -23,7 +23,7 @@ def get_created_roles(cont) -> list:
 
 class PrivateTextual(commands.Cog, name="privatetextual"):
 	"""Create and manage private textual channels."""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
 	def help_custom(self) -> tuple[str]:

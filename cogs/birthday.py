@@ -8,7 +8,7 @@ from discord.ext import commands, tasks
 
 class Birthday(commands.Cog, name="birthday"):
 	"""I'll wish you soon a happy birthday !"""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
 		self.birthday_data = self.bot.database_data["birthday"]

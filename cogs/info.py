@@ -27,7 +27,7 @@ def statServer(guild) -> dict:
 
 class Info(commands.Cog, name="info"):
 	"""Info & statistics."""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
 	def help_custom(self) -> tuple[str]:
