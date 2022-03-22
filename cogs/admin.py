@@ -3,8 +3,9 @@ import types
 import sys
 import os
 
+from classes.utilities import cogs_manager, reload_views, cogs_directory
+
 from discord.ext import commands
-from importlib import reload
 
 class Admin(commands.Cog, name="admin"):
 	"""Admin commands, you probably don't have the permission to use them."""
@@ -17,99 +18,68 @@ class Admin(commands.Cog, name="admin"):
 		description = "Show the list of admin commands."
 		return emoji, label, description
 
-	async def reload_views(self) -> list[str]:
-		modules, infants = [], []
-		for module in sys.modules.items():
-			if isinstance(module[1], types.ModuleType):
-				modules.append(module[1])
-
-		for module in modules:
-			try:
-				if os.path.basename(os.path.dirname(module.__file__)) == "views":
-					reload(module)
-					infants.append(module.__name__)
-			except: 
-				pass
-
-		return infants
-
-	async def reload_cogs(self, cogs) -> list[str]:
-		victims = []
-		for cog in cogs:
-			norm_cog = self.bot.get_cog(cog[5:len(cog)])
-			if "return_loop_task" in dir(norm_cog): 
-				norm_cog.return_loop_task().cancel()
-				victims.append(cog)
-			self.bot.reload_extension(cog)
-		return victims
-
-	@commands.command(name="reloadall", aliases=["rell", "relall"])
+	@commands.command(name="loadcog")
 	@commands.is_owner()
-	async def reload_all(self, ctx):
-		"""Reload the bot, includes: cogs, loops and views."""
-		try:
-			cogs = []
-			for cog in self.bot.extensions:
-				cogs.append(cog)
-			victims = await self.reload_cogs(cogs)
-			infants = await self.reload_views()
-		except commands.ExtensionError as e:
-			await ctx.send(f"{e.__class__.__name__}: {e}")
-		else:
-			succes_text = f"💪 All cogs reloaded ! | ☠️ __`{len(victims)} task(s) killed`__ : "
-			for victim in victims: 
-				succes_text += f"`{victim.replace('cogs.', '')}` "
-			succes_text += f"| 🔄 __`{len(infants)} view(s) reloaded`__ : "
-			for infant in infants: 
-				succes_text += f"`{infant.replace('views.', '')}` "
-			await ctx.send(succes_text)
+	async def load_cog(self, ctx: commands.Context, cog: str):
+		"""Load a cog."""
+		await cogs_manager(self.bot, "load", [f"cogs.{cog}"])
+		await ctx.send(f":point_right: Cog {cog} loaded!")
+
+	@commands.command(name="unloadcog")
+	@commands.is_owner()
+	async def unload_cog(self, ctx: commands.Context, cog: str):
+		"""Unload a cog."""
+		await cogs_manager(self.bot, "unload", [f"cogs.{cog}"])
+		await ctx.send(f":point_left: Cog {cog} unloaded!")
+
+	@commands.command(name="reloadallcogs", aliases=["rell"])
+	@commands.is_owner()
+	async def reload_all_cogs(self, ctx: commands.Context):
+		"""Reload all cogs."""
+		cogs = [cog for cog in self.bot.extensions]
+		await cogs_manager(self.bot, "reload", cogs)	
+
+		await ctx.send(f":muscle: All cogs reloaded: `{len(cogs)}`!")
 
 	@commands.command(name="reload", aliases=["rel"], require_var_positional=True)
 	@commands.is_owner()
-	async def reload_cog(self, ctx, cog):
-		"""Reload a specific cog."""
-		try:
-			victims = await self.reload_cogs([f"cogs.{cog}"])
-		except commands.ExtensionError as e:
-			await ctx.send(f"{e.__class__.__name__}: {e}")
-		else:
-			await ctx.send(f"🤘 {cog} reloaded ! | ☠️ __`{len(victims)} task killed`__ | 🔄 __`view(s) reloaded`__")
+	async def reload_cogs(self, ctx: commands.Context, *cogs: str):
+		"""Reload specific cogs."""
+		cogs = [f"cogs.{cog}" for cog in cogs]
+		await cogs_manager(self.bot, "reload", cogs)
+
+		await ctx.send(f":thumbsup: `{'` `'.join(cogs)}` reloaded!")
 
 	@commands.command(name="reloadlatest", aliases=["rl"])
 	@commands.is_owner()
-	async def reload_latest(self, ctx):
-		"""Reload the latest edited cog."""
-		base_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-		cogs_directory = os.path.join(base_directory, "cogs")
-		latest_cog = (None, 0)
+	async def reload_latest_cogs(self, ctx: commands.Context, n_cogs: int = 1):
+		"""Reload the latest edited n cogs."""
+		def sort_cogs(cogs_last_edit):
+			return sorted(cogs_last_edit, reverse = True, key = lambda x: x[1])
+		
+		cogs = []
 		for file in os.listdir(cogs_directory):
 			actual = os.path.splitext(file)
 			if actual[1] == ".py":
 				file_path = os.path.join(cogs_directory, file)
 				latest_edit = os.path.getmtime(file_path)
-				if latest_edit > latest_cog[1]: 
-					latest_cog = (actual[0], latest_edit)
+				cogs.append([actual[0], latest_edit])
 
-		try:
-			victims = await self.reload_cogs([f"cogs.{latest_cog[0]}"])
-		except commands.ExtensionError as e:
-			await ctx.send(f"{e.__class__.__name__}: {e}")
-		else:
-			await ctx.send(f"🤘 {latest_cog[0]} reloaded ! | ☠️ __`{len(victims)} task killed`__ | 🔄 __`view(s) reloaded`__")
+		sorted_cogs = sort_cogs(cogs)
+		cogs = [f"cogs.{cog[0]}" for cog in sorted_cogs[:n_cogs]]
+		await cogs_manager(self.bot, "reload", cogs)
 
-	@commands.command(name="reloadviews", aliases=["rview", "rviews", "rv"])
+		await ctx.send(f":point_down: `{'` `'.join(cogs)}` reloaded!")
+		
+	@commands.command(name="reloadviews", aliases=["rv"])
 	@commands.is_owner()
-	async def reload_view(self, ctx):
+	async def reload_view(self, ctx: commands.Context):
 		"""Reload each registered views."""
-		try:
-			infants = await self.reload_views()
-		except commands.ExtensionError as e:
-			await ctx.send(f"{e.__class__.__name__}: {e}")
-		else:
-			succes_text = f"👌 All views reloaded ! | 🔄 __`{len(infants)} view(s) reloaded`__ : "
-			for infant in infants: 
-				succes_text += f"`{infant.replace('views.', '')}` "
-			await ctx.send(succes_text)
+		infants = reload_views()
+		succes_text = f"👌 All views reloaded ! | 🔄 __`{sum(1 for _ in infants)} view(s) reloaded`__ : "
+		for infant in infants: 
+			succes_text += f"`{infant.replace('views.', '')}` "
+		await ctx.send(succes_text)
 
 	@commands.command(name="killloop", aliases=["kill"], require_var_positional=True)
 	@commands.is_owner()

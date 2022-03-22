@@ -1,37 +1,33 @@
 import os
-import json
 import discord
 
 from classes.database import DataSQL
+from classes.utilities import cogs_manager, cogs_directory, bot_data, database_data
+
 from discord.ext import commands
-
-base_directory = os.path.dirname(os.path.abspath(__file__))
-bot_file = os.path.join(base_directory, "config", "bot.json")
-database_file = os.path.join(base_directory, "config", "database.json")
-
-with open(bot_file, 'r') as bdata, open(database_file, 'r') as ddata: 
-	bot_data, database_data = json.load(bdata), json.load(ddata)
-
-def get_prefix(client, message):
-	guild_id, prefix = message.guild.id, None
-	if guild_id in client.prefixes: prefix = client.prefixes[guild_id]
-	else: prefix = bot_data["bot_default_prefix"]
-	return commands.when_mentioned_or(prefix)(client, message)
 
 class Bot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix=get_prefix, description=bot_data["bot_description"], case_insensitive=True, intents=discord.Intents.all())
+		super().__init__(command_prefix=self.__get_prefix, description=bot_data["bot_description"], case_insensitive=True, intents=discord.Intents.all())
+
+	def __get_prefix(self, client, message):
+		guild_id = message.guild.id
+		if guild_id in client.prefixes: 
+			prefix = client.prefixes[guild_id]
+		else: 
+			prefix = bot_data["bot_default_prefix"]
+		return commands.when_mentioned_or(prefix)(client, message)
+
+	async def on_ready(self):
+		print(f"Logged as: {self.user} | discord.py{discord.__version__}\nGuilds: {len(self.guilds)} Users: {len(self.users)}")
 
 	async def startup(self):
 		"""Sync application commands"""
 		await self.wait_until_ready()
-		tree = await self.tree.sync()
-		print(tree)
+		global_tree = await self.tree.sync()
 
 		tree_guild = await self.tree.sync(guild=discord.Object(id=332234497078853644))
-		print(tree_guild)
-
-		print(f"Logged as: {self.user} with Discord.py{discord.__version__}")
+		print(tree_guild, global_tree)
 
 	async def setup_hook(self):
 		"""Initialize the db, prefixes & cogs."""
@@ -47,15 +43,8 @@ class Bot(commands.Bot):
 			self.prefixes[data[0]] = data[1]
 
 		# Cogs loader
-		cogs_directory = os.path.join(base_directory, "cogs")
-		check_counter_cogs = 0
-		for filename in os.listdir(cogs_directory):
-			if filename.endswith(".py"): 
-				try:
-					await self.load_extension(f"cogs.{filename[:-3]}")
-					check_counter_cogs += 1
-				except Exception as e:
-					print(f"! Failed to load {filename}. | {type(e)} {e}")
+		cogs = [f"cogs.{filename[:-3]}" for filename in os.listdir(cogs_directory) if filename.endswith(".py")]
+		await cogs_manager(self, "load", cogs)
 
 		# Sync application commands & show logging informations 
 		self.loop.create_task(self.startup())

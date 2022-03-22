@@ -1,10 +1,9 @@
-import string
 import discord
 import asyncio
 
 from discord.ext import commands
 from datetime import datetime, timedelta
-from views import help as vhelp #need big refactor
+from views import help as vhelp
 
 class HelpCommand(commands.HelpCommand):
     """Help command"""
