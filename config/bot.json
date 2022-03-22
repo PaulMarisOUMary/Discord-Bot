@@ -2,6 +2,10 @@
     "token": "*************************************.******.**********************",
     "bot_description": "Algobot",
     "bot_default_prefix": "?",
+    "bot_status": [
+        "slash incoming",
+        "?help"
+    ],
     "dad": {
         "probability": 0.1
     }

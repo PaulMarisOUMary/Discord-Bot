@@ -1,6 +1,4 @@
 import discord
-import types
-import sys
 import os
 
 from classes.utilities import cogs_manager, reload_views, cogs_directory
@@ -80,28 +78,6 @@ class Admin(commands.Cog, name="admin"):
 		for infant in infants: 
 			succes_text += f"`{infant.replace('views.', '')}` "
 		await ctx.send(succes_text)
-
-	@commands.command(name="killloop", aliases=["kill"], require_var_positional=True)
-	@commands.is_owner()
-	async def kill_loop(self, ctx, cog):
-		"""Kill loops running in background in a specific cog."""
-		cogs = self.bot.get_cog(cog)
-		if "return_loop_task" in dir(cogs):
-			cogs.return_loop_task().cancel()
-			await ctx.send("Task successfully killed")
-		else: 
-			await ctx.send("Task not found..")
-
-	@commands.command(name="deletechannel", aliases=["delc"], require_var_positional=True)
-	@commands.is_owner()
-	@commands.guild_only()
-	async def delete_channel(self, ctx, channel_name):
-		"""Delete the provided channel."""
-		channel = discord.utils.get(ctx.guild.channels, name=channel_name)
-		while channel:
-			await channel.delete()
-			channel = discord.utils.get(ctx.guild.channels, name=channel_name)
-		await ctx.send(f"All channels named `{channel_name}` as been succesfuly deleted")
 	
 	@commands.command(name="changeprefix", aliases=["cp"], require_var_positional=True)
 	@commands.has_guild_permissions(administrator=True)

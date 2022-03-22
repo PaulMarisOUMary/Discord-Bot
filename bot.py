@@ -1,9 +1,9 @@
-import os
 import discord
 
 from classes.database import DataSQL
 from classes.utilities import cogs_manager, cogs_directory, bot_data, database_data
 
+from os import listdir
 from discord.ext import commands
 
 class Bot(commands.Bot):
@@ -43,7 +43,7 @@ class Bot(commands.Bot):
 			self.prefixes[data[0]] = data[1]
 
 		# Cogs loader
-		cogs = [f"cogs.{filename[:-3]}" for filename in os.listdir(cogs_directory) if filename.endswith(".py")]
+		cogs = [f"cogs.{filename[:-3]}" for filename in listdir(cogs_directory) if filename.endswith(".py")]
 		await cogs_manager(self, "load", cogs)
 
 		# Sync application commands & show logging informations 
