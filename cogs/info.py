@@ -37,26 +37,6 @@ class Info(commands.Cog, name="info"):
 		description = "Commands about additionals informations such as stats."
 		return emoji, label, description
 
-	@commands.command(name="emojilist", aliases=["ce", "el"])
-	@commands.cooldown(1, 10, commands.BucketType.user)
-	@commands.guild_only()
-	async def getcustomemojis(self, ctx):
-		"""Return a list of each cutom emojis from the current server."""
-		embed_list, embed = [], discord.Embed(title=f"Custom Emojis List ({len(ctx.guild.emojis)}) :")
-		for i, emoji in enumerate(ctx.guild.emojis, start=1):
-			if i == 0 : 
-				i += 1
-			value = f"`<:{emoji.name}:{emoji.id}>`" if not emoji.animated else f"`<a:{emoji.name}:{emoji.id}>`"
-			embed.add_field(name=f"{self.bot.get_emoji(emoji.id)} - **:{emoji.name}:** - (*{i}*)",value=value)
-			if len(embed.fields) == 25:
-				embed_list.append(embed)
-				embed = discord.Embed()
-		if len(embed.fields) > 0: 
-			embed_list.append(embed)
-
-		for message in embed_list:
-			await ctx.send(embed=message)
-
 	@commands.command(name="stat", aliases=["status","graph","gs","sg"])
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.guild_only()
