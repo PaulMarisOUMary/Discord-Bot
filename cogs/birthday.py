@@ -57,31 +57,27 @@ class Birthday(commands.Cog, name="birthday"):
 		await self.bot.wait_until_ready()
 		while self.bot.database.connector is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
-	async def year_suggest(self, _: discord.Interaction, current: int):
+	async def year_suggest(self, _: discord.Interaction, current: str):
 		years = [str(i) for i in range(datetime.now().year - 99, datetime.now().year - 15)]
-		if not current:
-			return [
-				app_commands.Choice(name=i, value=i)
-				for i in range(datetime.now().year - 30, datetime.now().year - 15)
-			]
+		if not current: 
+			out = [app_commands.Choice(name=i, value=i) for i in range(datetime.now().year - 30, datetime.now().year - 15)]
 		else:
-			return [
-				app_commands.Choice(name=year, value=int(year))
-				for year in years if str(current) in year
-			]
+			out = [app_commands.Choice(name=year, value=int(year)) for year in years if str(current) in year]
+		if len(out) > 25:
+			return out[:25]
+		else:
+			return out
 
-	async def day_suggest(self, _: discord.Interaction, current: int):
+	async def day_suggest(self, _: discord.Interaction, current: str):
 		days = [str(i) for i in range(1, 32)]
 		if not current:
-			return [ 
-				app_commands.Choice(name=i, value=i)
-				for i in range(1, 16)
-			]
+			out = [app_commands.Choice(name=i, value=i) for i in range(1, 16)]
 		else:
-			return [
-				app_commands.Choice(name=day, value=int(day))
-				for day in days if str(current) in day
-			]
+			out = [app_commands.Choice(name=day, value=int(day)) for day in days if str(current) in day]
+		if len(out) > 25:
+			return out[:25]
+		else:
+			return out
 
 	@app_commands.command(name="birthday", description="Set your own birthday.")
 	@app_commands.describe(month="Your month of birth.", day="Your day of birth.", year="Your year of birth.")
@@ -107,8 +103,6 @@ class Birthday(commands.Cog, name="birthday"):
 			await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, f"user_id = {interaction.user.id}")
 
 			await self.show_birthday_message(interaction, interaction.user)
-		except ValueError:
-			raise commands.CommandError("Invalid date format, try : `dd/mm/yyyy`.\nExample : `26/12/1995`")
 		except Exception as e:
 			raise commands.CommandError(str(e))
 		else:
