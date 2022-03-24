@@ -1,9 +1,13 @@
+import discord
+
+from typing import Optional, Union
 from discord.ext import commands
 
 class Errors(commands.Cog, name="errors"):
 	"""Errors handler."""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
+		bot.tree.error(self.get_app_command_error)
 
 	"""def help_custom(self):
 		emoji = "<a:crossmark:842800737221607474>"
@@ -46,7 +50,10 @@ class Errors(commands.Cog, name="errors"):
 		except Exception as e:
 			print(f"! Cogs.errors get_command_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
 
+	async def get_app_command_error(self, interaction: discord.Interaction, command: Optional[Union[discord.app_commands.Command, discord.app_commands.ContextMenu]], error: discord.app_commands.AppCommandError):
+		print(type(error))
 
+		
 
 async def setup(bot):
 	await bot.add_cog(Errors(bot))
