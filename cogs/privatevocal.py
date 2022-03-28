@@ -6,19 +6,24 @@ from discord.utils import get
 class PrivateVocal(commands.Cog, name="privatevocal"):
 	"""Create and manage private textual channels.
 		Require intents.voice_states intent."""
-
-	MAIN_NAME = "➕"
-	PRIVATE_NAME = "Private Vocal N°{}"
 	
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 		self.tracker = dict()
+		self.MAIN_NAME = bot.config["privatevocal"]["main_name"]
+		self.PRIVATE_NAME = bot.config["privatevocal"]["private_name"]
 
 	def help_custom(self) -> tuple[str]:
 		emoji = '💭'
 		label = "Private Vocal"
 		description = "Create and manage private vocals channels."
 		return emoji, label, description
+
+	def __update_tracker(self, channel: discord.VoiceChannel) -> None:
+		"""Update the tracker by adding the main channel if needed."""
+		if channel is None or channel.guild.id in self.tracker or channel.name != self.MAIN_NAME:
+			return
+		self.tracker[channel.guild.id] = [channel.id]
 
 	def __is_private(self, channel: discord.VoiceChannel) -> bool:
 		"""Check if the channel is private."""
@@ -31,7 +36,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 		return False
 
 	async def __move_privates(self, before_channel: discord.VoiceChannel) -> None:
-		"""Delete a private channel and rename the following ones"""
+		"""Delete a private channel and rename the following ones."""
 		guild_id = before_channel.guild.id
 		guild_data = self.tracker[guild_id]
 		start_index = guild_data.index(before_channel.id)
@@ -42,27 +47,33 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 			channel = self.bot.get_channel(channel_id)
 			await channel.edit(name=self.PRIVATE_NAME.format(i))
 
-	@commands.Cog.listener("on_voice_state_update")
-	async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
-		if not member.guild.id in self.tracker:
-			if not self.__is_private(after.channel):
-				return
-			self.tracker[member.guild.id] = [after.channel.id]
-		guild_data = self.tracker[member.guild.id]
+	async def __on_connect(self, channel: discord.VoiceChannel) -> None:
+		"""Create a private channel if needed."""
+		if channel is not None and self.__is_private(channel) and len(channel.members) == 1:
 
-		if after.channel is not None and self.__is_private(after.channel) and len(after.channel.members) == 1:
-
+			guild_data = self.tracker[channel.guild.id]
 			name = self.PRIVATE_NAME.format(len(guild_data))
-			channel = await after.channel.category.create_voice_channel(name = name)
-			guild_data.append(channel.id)
+			root = channel.category or channel.guild
+			new_channel = await root.create_voice_channel(name = name)
+			guild_data.append(new_channel.id)
+	
+	async def __on_disconnect(self, channel: discord.VoiceChannel) -> None:
+		"""Delete a private channel if needed."""
+		if channel is not None and channel.guild.id in self.tracker and self.__is_private(channel) and len(channel.members) == 0:
 
-		if before.channel is not None and self.__is_private(before.channel) and len(before.channel.members) == 0:
-
-			if before.channel.id == guild_data[0]:
+			guild_data = self.tracker[channel.guild.id]
+			if channel.id == guild_data[0]:
 				channel = self.bot.get_channel(guild_data.pop())
 				await channel.delete()
 			else:
-				await self.__move_privates(before.channel)
+				await self.__move_privates(channel)
+
+	@commands.Cog.listener("on_voice_state_update")
+	async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+		"""Update privates channels when a member joins or leaves a channel."""
+		self.__update_tracker(after.channel)
+		await self.__on_connect(after.channel)
+		await self.__on_disconnect(before.channel)
 
 
 

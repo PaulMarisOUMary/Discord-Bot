@@ -4,5 +4,9 @@
     "bot_default_prefix": "?",
     "dad": {
         "probability": 0.1
+    },
+    "default_private_channels": {
+        "main_channel_name": "➕",
+        "private_channel_name": "Private Vocal N°{}"
     }
 }
