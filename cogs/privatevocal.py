@@ -15,29 +15,36 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 		description = "Create and manage private vocals channels."
 		return emoji, label, description
 
-	def __update_tracker(self, guild_data: dict, channel: discord.VoiceChannel) -> None:
-		"""Update the guild tracker data."""
-		if not channel.id in guild_data:
-			guild_data[channel.id] = list()
-		guild_data[channel.id] = [member.id for member in channel.members]
+	def __is_private(self, channel: discord.VoiceChannel) -> bool:
+		"""Check if the channel is private."""
+		return channel.name == '➕' or channel.id in self.tracker[channel.guild.id]
 
 	@commands.Cog.listener("on_voice_state_update")
 	async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
 		if not member.guild.id in self.tracker: 
-			self.tracker[member.guild.id] = dict()
+			self.tracker[member.guild.id] = list()
 		guild_data = self.tracker[member.guild.id]
 		
-		if after.channel and not before.channel: # Connect
+		if after.channel is not None and before.channel is None: # Connect
 
-				print("Connect")
+				if self.__is_private(after.channel):
+					print("Connect to private")
 
-		elif (after.channel and before.channel) and not (after.channel == before.channel): # Switch in same guild
+		elif after.channel is not None and before.channel is not None: # Switch in same guild
 	
-				print("Switch")
-			
-		elif not after.channel and before.channel: # Disconnect
+				if self.__is_private(after.channel) and self.__is_private(before.channel):
+					print("Switch from private to private")
 
-				print("Disconnect")
+				elif self.__is_private(after.channel):
+					print("Switch from public to private")
+
+				elif self.__is_private(before.channel):
+					print("Switch from private to public")
+					
+		elif after.channel is None and before.channel is not None: # Disconnect
+
+				if self.__is_private(after.channel):
+					print("Disconnect from private")
 
 		print(guild_data)
 
