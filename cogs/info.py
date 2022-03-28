@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from datetime import datetime
 from discord.ext import commands
+from discord import app_commands
 
 def statServer(guild) -> dict:
 	status = {}
@@ -27,7 +28,7 @@ def statServer(guild) -> dict:
 
 class Info(commands.Cog, name="info"):
 	"""Info & statistics."""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
 	def help_custom(self) -> tuple[str]:
@@ -35,26 +36,6 @@ class Info(commands.Cog, name="info"):
 		label = "Info"
 		description = "Commands about additionals informations such as stats."
 		return emoji, label, description
-
-	@commands.command(name="emojilist", aliases=["ce", "el"])
-	@commands.cooldown(1, 10, commands.BucketType.user)
-	@commands.guild_only()
-	async def getcustomemojis(self, ctx):
-		"""Return a list of each cutom emojis from the current server."""
-		embed_list, embed = [], discord.Embed(title=f"Custom Emojis List ({len(ctx.guild.emojis)}) :")
-		for i, emoji in enumerate(ctx.guild.emojis, start=1):
-			if i == 0 : 
-				i += 1
-			value = f"`<:{emoji.name}:{emoji.id}>`" if not emoji.animated else f"`<a:{emoji.name}:{emoji.id}>`"
-			embed.add_field(name=f"{self.bot.get_emoji(emoji.id)} - **:{emoji.name}:** - (*{i}*)",value=value)
-			if len(embed.fields) == 25:
-				embed_list.append(embed)
-				embed = discord.Embed()
-		if len(embed.fields) > 0: 
-			embed_list.append(embed)
-
-		for message in embed_list:
-			await ctx.send(embed=message)
 
 	@commands.command(name="stat", aliases=["status","graph","gs","sg"])
 	@commands.cooldown(1, 5, commands.BucketType.user)
@@ -76,23 +57,25 @@ class Info(commands.Cog, name="info"):
 		embed.set_footer(text=f"Requested by : {ctx.message.author} at {time.strftime('%H:%M:%S')}", icon_url=ctx.message.author.display_avatar.url)
 		await ctx.send(file=discord.File(fp=image_binary, filename="stat.png"), embed=embed)
 
-	@commands.command(name="profilepicture", aliases=["pp"])
-	async def profilepicture(self, ctx, member : discord.Member = None):
-		"""Show the profile picture of the selected member."""
-		if not member: 
-			member = ctx.author
-		await ctx.send(member.display_avatar.url)
+	@app_commands.command(name="avatar", description="Display the avatar.")
+	@app_commands.describe(user="The user to get the avatar from.")
+	@app_commands.guilds(discord.Object(id=332234497078853644))
+	async def avatar(self, interaction: discord.Interaction, user: discord.Member = None):
+		if not user:
+			user = interaction.user
+		await interaction.response.send_message(user.display_avatar.url)
 
-	@commands.command(name="bannerpicture", aliases=["bp"])
-	async def bannerpicture(self, ctx, member : discord.Member = None):
-		"""Show the banner picture of the selected member."""
-		if not member: 
-			member = ctx.author
-		user = await self.bot.fetch_user(member.id)
+	@app_commands.command(name="banner", description="Display the banner.")
+	@app_commands.describe(user="The user to get the banner from.")
+	@app_commands.guilds(discord.Object(id=332234497078853644))
+	async def avatar(self, interaction: discord.Interaction, user: discord.Member = None):
+		if not user: 
+			user = interaction.user
+		user = await self.bot.fetch_user(user.id)
 		try:
-			await ctx.send(user.banner.url)
+			await interaction.response.send_message(user.banner.url)
 		except:
-			await ctx.send("This user doesn't have a banner.")
+			await interaction.response.send_message("This user doesn't have a banner.")
 
 	@commands.command(name="lookup", aliases=["lk"])
 	@commands.cooldown(1, 5, commands.BucketType.user)
@@ -138,5 +121,5 @@ class Info(commands.Cog, name="info"):
 
 
 
-def setup(bot):
-	bot.add_cog(Info(bot))
+async def setup(bot):
+	await bot.add_cog(Info(bot))

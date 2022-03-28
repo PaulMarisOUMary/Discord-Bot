@@ -9,7 +9,7 @@ from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
 class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True)):
 	"""Don't leave your computer unlocked !"""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
 		self.EMOJI = '🥐'
@@ -123,5 +123,5 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		else:
 			return rank
 
-def setup(bot):
-	bot.add_cog(Croissants(bot))
+async def setup(bot):
+	await bot.add_cog(Croissants(bot))

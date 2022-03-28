@@ -6,7 +6,7 @@ from random import random
 
 class Dad(commands.Cog, name="dad", command_attrs=dict(hidden=True)):
     """Dad's jokes."""
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.settings = bot.bot_data["dad"]
         self.pattern = re.compile(r"""
@@ -37,5 +37,5 @@ class Dad(commands.Cog, name="dad", command_attrs=dict(hidden=True)):
                 else:
                     await channel.send(f"Hi {name}, I'm {self.bot.user.mention}")
 
-def setup(bot):
-    bot.add_cog(Dad(bot))
+async def setup(bot):
+    await bot.add_cog(Dad(bot))

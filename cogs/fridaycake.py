@@ -43,7 +43,7 @@ def mix_participants(participants : list, seed : int, n_group : int) -> list[lis
 
 class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=False)):
 	"""FridayCake's event commands."""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 		self.cakes = ['🎂', '🥮', '🥧', '🥯', '🧁', '🫓', '🧇', '🍞', '🍮', '🍰', '🥐']
 
@@ -163,5 +163,5 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 
 
 
-def setup(bot):
-	bot.add_cog(FridayCake(bot))
+async def setup(bot):
+	await bot.add_cog(FridayCake(bot))

@@ -5,15 +5,15 @@ import discord
 
 from datetime import datetime, date
 from discord.ext import commands, tasks
+from discord import app_commands
+from discord.app_commands import Choice
 
 class Birthday(commands.Cog, name="birthday"):
 	"""I'll wish you soon a happy birthday !"""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
 		self.birthday_data = self.bot.database_data["birthday"]
-
-		self.daily_birthday.start()
 
 	def help_custom(self) -> tuple[str]:
 		emoji = '🎁'
@@ -21,7 +21,10 @@ class Birthday(commands.Cog, name="birthday"):
 		description = "Maybe I'll wish you soon a happy birthday !"
 		return emoji, label, description
 
-	def cog_unload(self):
+	async def cog_load(self):
+		self.daily_birthday.start()
+
+	async def cog_unload(self):
 		self.daily_birthday.cancel()
 
 	@tasks.loop(hours=1)
@@ -54,46 +57,76 @@ class Birthday(commands.Cog, name="birthday"):
 		await self.bot.wait_until_ready()
 		while self.bot.database.connector is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
-	@commands.command(name="birthday", aliases=["bd", "setbirthday", "setbirth", "birth"], require_var_positional=True)
-	@commands.cooldown(1, 10, commands.BucketType.user)
-	async def birthday(self, ctx, date: str = None):
-		"""Allows you to set/show your birthday."""
-		if date:
-			try:
-				dataDate = datetime.strptime(date, "%d/%m/%Y").date()
-				if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: 
-					raise commands.CommandError("Please provide your real year of birth.")
-				# Insert
-				await self.bot.database.insert(self.birthday_data["table"], {"user_id": ctx.author.id, "user_birth": dataDate})
-				# Update
-				await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, f"user_id = {ctx.author.id}")
-
-				await self.show_birthday_message(ctx, ctx.author)
-			except ValueError:
-				raise commands.CommandError("Invalid date format, try : `dd/mm/yyyy`.\nExample : `26/12/1995`")
-			except Exception as e:
-				raise commands.CommandError(str(e))
+	async def year_suggest(self, _: discord.Interaction, current: str):
+		years = [str(i) for i in range(datetime.now().year - 99, datetime.now().year - 15)]
+		if not current: 
+			out = [app_commands.Choice(name=i, value=i) for i in range(datetime.now().year - 30, datetime.now().year - 15)]
 		else:
-			await self.show_birthday(ctx, ctx.author)
+			out = [app_commands.Choice(name=year, value=int(year)) for year in years if str(current) in year]
+		if len(out) > 25:
+			return out[:25]
+		else:
+			return out
 
-	@commands.command(name="showbirthday", aliases=["showbirth", "sbd"])
-	@commands.cooldown(1, 5, commands.BucketType.user)
-	async def show_birthday(self, ctx, user: discord.Member = None):
+	async def day_suggest(self, _: discord.Interaction, current: str):
+		days = [str(i) for i in range(1, 32)]
+		if not current:
+			out = [app_commands.Choice(name=i, value=i) for i in range(1, 16)]
+		else:
+			out = [app_commands.Choice(name=day, value=int(day)) for day in days if str(current) in day]
+		if len(out) > 25:
+			return out[:25]
+		else:
+			return out
+
+	@app_commands.command(name="birthday", description="Set your own birthday.")
+	@app_commands.describe(month="Your month of birth.", day="Your day of birth.", year="Your year of birth.")
+	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
+	@app_commands.autocomplete(day=day_suggest, year=year_suggest)
+	@app_commands.guilds(discord.Object(id=332234497078853644))
+	async def birthday(self, interaction: discord.Interaction, month: int, day: int, year: int):
+		"""Allows you to set/show your birthday."""
+		if day > 31 or day < 0:
+			await interaction.response.send_message("Please provide a real date of birth.")
+			return
+		elif year > datetime.now().year - 15 or year < datetime.now().year - 99:
+			await interaction.response.send_message("Please provide your real year of birth.")
+			return
+
+		try:
+			dataDate = datetime.strptime(f"{day}{month}{year}", "%d%m%Y").date()
+			if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: 
+				raise commands.CommandError("Please provide your real year of birth.")
+			# Insert
+			await self.bot.database.insert(self.birthday_data["table"], {"user_id": interaction.user.id, "user_birth": dataDate})
+			# Update
+			await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, f"user_id = {interaction.user.id}")
+
+			await self.show_birthday_message(interaction, interaction.user)
+		except Exception as e:
+			raise commands.CommandError(str(e))
+		else:
+			await self.show_birthday(interaction, interaction.user)
+
+	@app_commands.command(name="showbirthday", description="Display the birthday of a user.")
+	@app_commands.describe(user="The user to get the birthdate from.")
+	@app_commands.guilds(discord.Object(id=332234497078853644))
+	async def show_birthday(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Allows you to show the birthday of other users."""
 		if not user: 
-			user = ctx.author
-		await self.show_birthday_message(ctx, user)
+			user = interaction.user
+		await self.show_birthday_message(interaction, user)
 
-	async def show_birthday_message(self, ctx, user:discord.Member) -> None:
+	async def show_birthday_message(self, interaction: discord.Interaction, user:discord.Member) -> None:
 		response = await self.bot.database.lookup(self.birthday_data["table"], "user_birth", "user_id", str(user.id))
 		if response:
 			dataDate : date = response[0][0]
 			timestamp = round(time.mktime(dataDate.timetuple()))
-			await ctx.send(f":birthday: Birthday the <t:{timestamp}:D> and was born <t:{timestamp}:R>.")
+			await interaction.response.send_message(f":birthday: Birthday the <t:{timestamp}:D> and was born <t:{timestamp}:R>.")
 		else:
-			await ctx.send(":birthday: Nothing was found. Set the birthday and retry.")
+			await interaction.response.send_message(":birthday: Nothing was found. Set the birthday and retry.")
 
 
 
-def setup(bot):
-	bot.add_cog(Birthday(bot))
+async def setup(bot):
+	await bot.add_cog(Birthday(bot))

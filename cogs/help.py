@@ -1,10 +1,9 @@
-import string
 import discord
 import asyncio
 
 from discord.ext import commands
 from datetime import datetime, timedelta
-from views import help as vhelp #need big refactor
+from views import help as vhelp
 
 class HelpCommand(commands.HelpCommand):
     """Help command"""
@@ -69,7 +68,7 @@ class HelpCommand(commands.HelpCommand):
 
 class Help(commands.Cog, name="help"):
     """Help commands."""
-    def __init__(self, bot) -> None:
+    def __init__(self, bot: commands.Bot) -> None:
         self._original_help_command = bot.help_command
 
         attributes = {
@@ -90,5 +89,5 @@ class Help(commands.Cog, name="help"):
         description = "Help utilities."
         return emoji, label, description
 
-def setup(bot):
-	bot.add_cog(Help(bot))
+async def setup(bot):
+	await bot.add_cog(Help(bot))

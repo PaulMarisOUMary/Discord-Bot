@@ -11,7 +11,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 		self.bot = bot
 		self.tracker = dict()
 		self.MAIN_NAME = bot.config["privatevocal"]["main_name"]
-		self.PRIVATE_NAME = bot.config["privatevocal"]["private_name"]
+		self.PRIVATE_NAME = bot.config["privatevocal"]["private_name"
 
 	def help_custom(self) -> tuple[str]:
 		emoji = '💭'

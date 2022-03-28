@@ -7,14 +7,14 @@ from googletrans import Translator #pip install googletrans==4.0.0-rc1
 
 class Traductor(commands.Cog, name="traductor"):
 	"""A Cog to translate each non-English messages."""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-	"""def help_custom(self) -> tuple[str]:
-		emoji = '<:Gtranslate:807986736663101440>'
+	def help_custom(self) -> tuple[str]:
+		emoji = "<:Gtranslate:807986736663101440>"
 		label = "Traductor"
 		description = "Informations about the Traductor."
-		return emoji, label, description"""
+		return emoji, label, description
 
 	@commands.Cog.listener("on_message")
 	async def on_receive_message(self, message: discord.Message):
@@ -61,5 +61,5 @@ class Traductor(commands.Cog, name="traductor"):
 
 
 
-def setup(bot):
-	bot.add_cog(Traductor(bot))
+async def setup(bot):
+	await bot.add_cog(Traductor(bot))
