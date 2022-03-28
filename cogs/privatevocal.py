@@ -1,5 +1,6 @@
 import discord
 
+from discord.utils import get
 from discord.ext import commands
 
 class PrivateVocal(commands.Cog, name="privatevocal"):
@@ -33,17 +34,17 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 		elif after.channel is not None and before.channel is not None: # Switch in same guild
 	
 				if self.__is_private(after.channel) and self.__is_private(before.channel):
-					print("Switch from private to private")
+					print("Switch from private to private") # Disconnect - Connect
 
 				elif self.__is_private(after.channel):
-					print("Switch from public to private")
+					print("Switch from public to private") # Connect
 
 				elif self.__is_private(before.channel):
-					print("Switch from private to public")
+					print("Switch from private to public") # Disconnect
 					
 		elif after.channel is None and before.channel is not None: # Disconnect
 
-				if self.__is_private(after.channel):
+				if self.__is_private(before.channel):
 					print("Disconnect from private")
 
 		print(guild_data)
