@@ -4,12 +4,13 @@ import re
 
 from datetime import datetime
 from discord.ext import commands
+from discord import app_commands
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
-class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True)):
+class Croissants(commands.Cog, name="croissants"):
 	"""Don't leave your computer unlocked !"""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
 		self.EMOJI = '🥐'
@@ -17,7 +18,7 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 
 		self.cooldown : dict = {} #{key=user_id : value=datetime}
 
-		self.croissants_data = self.bot.database_data["croissants"]
+		self.croissants_data = self.bot.config["database"]["croissants"]
 
 	def help_custom(self) -> tuple[str]:
 		emoji = self.EMOJI
@@ -26,16 +27,16 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		return emoji, label, description
 
 	@commands.Cog.listener("on_message")
-	async def on_receive_message(self, message : discord.Message):
+	async def on_receive_message(self, message: discord.Message):
 		if not message.author.bot and self.REGEX.match(message.content):
 			if not self.__is_on_cooldown(message.author):
 				self.cooldown[message.author.id] = datetime.now()
 				await self.__send_croissants(message)
 			else: await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
 
-	@commands.command(name="croissants", aliases=["rankcroissants", "croissantsrank", "rc"])
-	@commands.cooldown(1, 10, commands.BucketType.user)
-	async def croissants_rank(self, ctx):
+	@app_commands.command(name="croissants", description="Get the global croissants rank.")
+	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
+	async def croissants_rank(self, interaction: discord.Interaction) -> None:
 		"""Get the global croissants rank."""
 		response = await self.bot.database.select(self.croissants_data["table"], "*", order="user_count DESC", limit=10)
 		
@@ -44,7 +45,7 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 			user_id, user_count = data
 			embed.add_field(name=f"Top {self.__rank_emoji(rank)} `{user_count} {self.EMOJI}`", value=f"<@{user_id}>", inline=rank <= 3)
 
-		await ctx.send(embed=embed)
+		await interaction.response.send_message(embed=embed)
 
 	async def __send_croissants(self, message) -> None:
 		answer_message = await message.reply(
@@ -123,5 +124,5 @@ class Croissants(commands.Cog, name="croissants", command_attrs=dict(hidden=True
 		else:
 			return rank
 
-def setup(bot):
-	bot.add_cog(Croissants(bot))
+async def setup(bot):
+	await bot.add_cog(Croissants(bot))

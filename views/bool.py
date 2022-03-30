@@ -24,9 +24,9 @@ class View(discord.ui.View):
 			await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
 
 	@discord.ui.button(style = discord.ButtonStyle.blurple)
-	async def confirm(self, button: discord.ui.Button, interaction: discord.Interaction):
+	async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
 		await self.bool_check(True, interaction)
 
 	@discord.ui.button(style = discord.ButtonStyle.blurple)
-	async def cancel(self, button: discord.ui.Button, interaction: discord.Interaction):
+	async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
 		await self.bool_check(False, interaction)

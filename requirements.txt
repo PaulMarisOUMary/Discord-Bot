@@ -13,10 +13,12 @@ requests
 tzlocal==2.1
 
 matplotlib
-pillow
+Pillow
+
+PyNaCl
 
 #Require this specific version (internal package error, issue #299 of github.com/ssut/py-googletrans)
 googletrans == 4.0.0-rc1
 
-#discordpy 2.0.0a "alpha stable" version (Aug 28, 2021)
-git+https://github.com/Rapptz/discord.py@45d498c1b76deaf3b394d17ccf56112fa691d160
+#discordpy master branch commit e515378076c64c5ab2f3a06237f2362ac8556290
+git+https://github.com/Rapptz/discord.py@e515378076c64c5ab2f3a06237f2362ac8556290

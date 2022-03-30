@@ -1,7 +1,10 @@
 {
     "token": "*************************************.******.**********************",
-    "bot_description": "Algobot",
     "bot_default_prefix": "?",
+    "bot_status": [
+        "use slash commands!",
+        "?help"
+    ],
     "dad": {
         "probability": 0.1
     }

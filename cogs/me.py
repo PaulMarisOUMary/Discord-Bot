@@ -1,13 +1,14 @@
 import discord
 
 from discord.ext import commands
+from discord import app_commands
 
 class Me(commands.Cog, name="me"):
 	"""Like minecraft set your own /me !"""
-	def __init__(self, bot) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-		self.me_data = self.bot.database_data["me"]
+		self.me_data = self.bot.config["database"]["me"]
 		self.max_lenght_me = self.me_data["max_length"]
 
 	def help_custom(self) -> tuple[str]:
@@ -16,39 +17,38 @@ class Me(commands.Cog, name="me"):
 		description = "Set and show a brief description of yourself."
 		return emoji, label, description
 
-	@commands.command(name="me", aliases=["description"])
-	@commands.cooldown(1, 10, commands.BucketType.user)
-	async def me(self, ctx, *args: str):
+	@app_commands.command(name="me", description="Set your own brief description of yourself !")
+	@app_commands.describe(description="Your brief description of yourself.")
+	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
+	async def me(self, interaction: discord.Interaction, description: str):
 		"""Allows you to set or show a brief description of yourself."""
-		if len(args):
-			try:
-				text = " ".join(args).replace("'", "''")
-				if len(text) > self.max_lenght_me: 
-					raise commands.CommandError(f"The max-lenght of your *me* is set to: __{self.max_lenght_me}__ (yours is {len(text)}).")
-				# Insert
-				await self.bot.database.insert(self.me_data["table"], {"user_id": ctx.author.id, "user_me": text})
-				# Update
-				await self.bot.database.update(self.me_data["table"], "user_me", text, f"user_id = {ctx.author.id}")
-				await self.show_me_message(ctx, ctx.author)
-			except Exception as e:
-				raise commands.CommandError(str(e))
-		else:
-			await self.show_me_message(ctx, ctx.author)
+		try:
+			text = description.replace("'", "''")
+			if len(text) > self.max_lenght_me: 
+				raise commands.CommandError(f"The max-lenght of your *me* is set to: __{self.max_lenght_me}__ (yours is {len(text)}).")
+			# Insert
+			await self.bot.database.insert(self.me_data["table"], {"user_id": interaction.user.id, "user_me": text})
+			# Update
+			await self.bot.database.update(self.me_data["table"], "user_me", text, f"user_id = {interaction.user.id}")
+			await self.show_me_message(interaction, interaction.user)
+		except Exception as e:
+			raise commands.CommandError(str(e))
 
-	@commands.command(name="sme", aliases=["showdescription", "showme"])
-	@commands.cooldown(1, 5, commands.BucketType.user)
-	async def show_me(self, ctx, user: discord.Member = None):
+	@app_commands.command(name="showme", description="Show the /me of other users.")
+	@app_commands.describe(user="The user you want to show the /me of.")
+	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
+	async def show_me(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Allows you to show the description of other users."""
-		if not user: 
-			user = ctx.author
-		await self.show_me_message(ctx, user)
+		if not user:
+			user = interaction.user
+		await self.show_me_message(interaction, user)
 
-	async def show_me_message(self, ctx, user: discord.Member) -> None:
+	async def show_me_message(self, interaction: discord.Interaction, user: discord.Member) -> None:
 		response = await self.bot.database.lookup(self.me_data["table"], "user_me", "user_id", str(user.id))
 		message = " ".join(response[0]) if len(response) else "No description provided.."
-		await ctx.send(f"• **{user.display_name}** {message}")
+		await interaction.response.send_message(f"• **{user.display_name}** {message}")
 
 
 
-def setup(bot):
-	bot.add_cog(Me(bot))
+async def setup(bot):
+	await bot.add_cog(Me(bot))

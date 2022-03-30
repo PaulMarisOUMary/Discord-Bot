@@ -16,10 +16,9 @@
 	- [Python prerequisites](#python-prerequisites)
 	- [Discord developper configuration](#discord-developper-configuration)
 	- [Configure the bot](#configure-the-bot)
-- [Workflows](#workflows)
-- [SQL](#sql)
+- [Database](#database)
 	- [SQL tables structure](#sql-tables-structure)
-- [Available commands](#available-commands)
+- [Workflows](#workflows)
 - [Images](#images)
 ## About the project
 
@@ -28,7 +27,7 @@ This discord bot was made for Algosup in 2020. It has a lot of features such tra
 ### Built with
 
 - [Python](https://python.org/) >= 3.8
-- [discord.py](https://discordpy.readthedocs.io) >= 2.0.0a
+- [discord.py](https://discordpy.readthedocs.io) >= 2.0.0a @ e515378076c64c5ab2f3a06237f2362ac8556290
 - SQL
 	- MariaDB (or MySQL)
 
@@ -55,50 +54,27 @@ $ pip install -r requirements.txt
 
 ### Configure the bot
 
-1. Paste your dicord bot token in the `"token"` field inside `auth/auth.json`.
+1. Paste your dicord bot token in the `"token"` field inside `/config/bot.json`.
 
-2. Configure the prefix in the `config\bot.json`.
+2. Configure the prefix in the `/config/bot.json`.
 
-3. If you're using the database, you need to configure the `config\database.json` file.
+3. If you're using a database, you need to configure the `/config/database.json` file.
 
-:warning: If you're NOT using any database, delete the following cogs: `fridaycake`, `me`, `croissants` & `birthday`.
+:warning: If you're NOT using any database, check [this section of the documentation](#acknowledgement).
 
-## Workflows
+## Database
 
-### Update and restart discord bot
+### Acknowledgement
+:warning: If you have not plan to use a SQL database:
+- you should remove the following cogs: `birthday`, `croissants`, `fridaycake`, `me`.
+- in `bot.py` replace the `command_prefix=__getprefix` `line 12` with `command_prefix="?"` (define the bot's prefix).
+- in `bot.py` delete from `line 35 to 43`.
 
-Github setup: 
-- On Github.com go on [your project repository](https://github.com/{USER_NAME}/{PROJECT_NAME}/settings/actions/runners)
-- Then click on `Settings` > `Actions` > `Runners` > `New self-hosted runner`.
-- Then select the right `runner-image` related to your machine and the right `architecture`.
-- Then follow the `Download` and the `Configure` instructions.
-
-Server setup:
-- If you want to start the self-runner on boot, you can follow [this guide](https://docs.github.com/en/actions/hosting-your-own-runners/configuring-the-self-hosted-runner-application-as-a-service).
-:warning: The self-hosted runner should have the following permissions, `install apps` and `start/restart services`. (install the service as --user usernameWithPermissions)
-
-Discord bot service:
-This step is made for linux only.
-- Create a service file in `/etc/systemd/system/your-service-name.service` with the following content:
-```bash
-[Unit]
-Description=Discord bot startup service
-After=multi-user.target
-
-[Service]
-Type=simple
-Restart=no
-User={usernameWithPermissions}
-WorkingDirectory=/home/{username}/actions-runner/_work/Algosup-Discord/Algosup-Discord
-ExecStart=python3 /home/{username}/actions-runner/_work/Algosup-Discord/Algosup-Discord/bot.py
-
-[Install]
-WantedBy=multi-user.target
-```
-:warning: Replace `{username}` & `{usernameWithPermissions}` with your username and `Algosup-Discord/Algosup-Discord` with your project name.
-- Then enable the service with `systemctl enable your-service-name.service` 
-
-## SQL
+If you have plan to use a database:
+- you should use a SQL Database.
+- reconfigure the "server" section from `/config/database.json`.
+- you can change the subjective structure of each tables if needed.
+    - if so you should reconfigure some keys/values of the `/config/database.json`.
 
 ### SQL tables structure
 - `table_birthday`
@@ -167,219 +143,40 @@ CHARACTER SET utf8mb4,
 COLLATE utf8mb4_unicode_ci;
 ```
 
-## Available commands
+## Workflows
 
-<details>
+### Update and restart discord bot
 
-<summary>Show available commands</summary>
+Github setup: 
+- On Github.com go on [your project repository](https://github.com/{USER_NAME}/{PROJECT_NAME}/settings/actions/runners)
+- Then click on `Settings` > `Actions` > `Runners` > `New self-hosted runner`.
+- Then select the right `runner-image` related to your machine and the right `architecture`.
+- Then follow the `Download` and the `Configure` instructions.
 
-([smth,smthelse] are aliases)
+Server setup:
+- If you want to start the self-runner on boot, you can follow [this guide](https://docs.github.com/en/actions/hosting-your-own-runners/configuring-the-self-hosted-runner-application-as-a-service).
+:warning: The self-hosted runner should have the following permissions, `install apps` and `start/restart services`. (install the service as --user usernameWithPermissions)
 
-  
+Discord bot service:
+This step is made for linux only.
+- Create a service file in `/etc/systemd/system/your-service-name.service` with the following content:
+```bash
+[Unit]
+Description=Discord bot startup service
+After=multi-user.target
 
-- ADMIN:
+[Service]
+Type=simple
+Restart=no
+User={usernameWithPermissions}
+WorkingDirectory=/home/{username}/actions-runner/_work/Algosup-Discord/Algosup-Discord
+ExecStart=python3 /home/{username}/actions-runner/_work/Algosup-Discord/Algosup-Discord/bot.py
 
-```c#
-
-?changeprefix {new_prefix}
-["cp"]
-
-
-
-?deletechannel {name}
-
-["delc"]
-
-  
-
-?killloop {cog}
-
-["kill"]
-
-  
-
-?reload {cog}
-
-["rel"]
-
-  
-
-?reloadall
-
-["rell", "relall"]
-
-  
-
-?reloadviews
-
-["rmod", "rview", "rviews"]
-
+[Install]
+WantedBy=multi-user.target
 ```
-
-  
-
-- BASIC:
-
-```c#
-
-?help
-
-["h", "?", "commands"]
-
-  
-
-?ping
-
-[]
-
-```
-
-
-
-- BIRTHDAY:
-
-```c#
-
-?birthday
-
-["bd", "setbirthday", "setbirth", "birth"]
-
-  
-
-?showbirthday
-
-['showbirth', 'sbd']
-
-```
-
-  
-
-- FRIDAYCAKE:
-
-```c#
-
-?fridaycake
-
-["fc"]
-
-  
-
-?all
-
-["a", "fa"]
-
-  
-
-?next
-
-["n", "nc"]
-
-  
-
-?when
-
-["w", "fw"]
-
-```
-
-
-
-- INFO:
-
-```c#
-
-?emojilist
-
-["ce", "el"]
-
-?lookup {user}
-
-["lk"]
-
-?profilepicture
-
-["pp"]
-
-?stat
-
-['status','graph','gs','sg']
-
-```
-
-
-- ME:
-
-```c#
-
-?description
-
-["me"]
-
-  
-
-?showdescription
-
-["sme", "showme"]
-
-```
-
-  
-
-- PRIVATETEXTUAL:
-
-```c#
-
-?createprivate
-
-["create", "+"]
-
-  
-
-?deleteprivate
-
-["delete", "-"]
-
-  
-
-?renameprivate
-
-["rename", "_"]
-
-  
-
-?addprivate
-
-["add", ">"]
-
-```
-
-  
-
-- SPOTIFY:
-
-```c#
-
-?spotify {user}
-
-["sp", "sy", "spy", "spot"]
-
-```
-
-  
-
-- USEFULL:
-
-```c#
-
-?strawpoll
-
-["stp", "straw", "sondage"]
-
-```
-
-</details>
-
-  
+:warning: Replace `{username}` & `{usernameWithPermissions}` with your username and `Algosup-Discord/Algosup-Discord` with your project name.
+- Then enable the service with `systemctl enable your-service-name.service`   
 
 ## Images:
 
