@@ -112,7 +112,7 @@ class Croissants(commands.Cog, name="croissants"):
 		return file
 
 	def __is_on_cooldown(self, user) -> bool:
-		return user.id in self.cooldown and datetime.now().timestamp() - self.cooldown[user.id].timestamp() < self.bot.database_data["croissants"]["cooldown"]
+		return user.id in self.cooldown and datetime.now().timestamp() - self.cooldown[user.id].timestamp() < self.croissants_data["cooldown"]
 
 	def __rank_emoji(self, rank) -> str:
 		if rank == 1:

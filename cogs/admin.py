@@ -1,7 +1,7 @@
 import discord
 import os
 
-from classes.utilities import cogs_manager, reload_views, cogs_directory, root_directory
+from classes.utilities import load_config ,cogs_manager, reload_views, cogs_directory, root_directory
 
 from discord.ext import commands
 
@@ -78,6 +78,13 @@ class Admin(commands.Cog, name="admin"):
 		for infant in infants: 
 			succes_text += f"`{infant.replace('views.', '')}` "
 		await ctx.send(succes_text)
+
+	@commands.command(name="reloadconfig", aliases=["rc"])
+	@commands.is_owner()
+	async def reload_config(self, ctx: commands.Context):
+		"""Reload each json config file."""
+		self.bot.config = load_config()
+		await ctx.send(f":handshake: `{len(self.bot.config)}` config file(s) reloaded!")
 
 	@commands.command(name="synctree", aliases=["st"])
 	@commands.is_owner()
