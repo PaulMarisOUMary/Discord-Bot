@@ -24,5 +24,7 @@ class Basic(commands.Cog, name="basic"):
 		ping = (time.monotonic() - before) * 1000
 		await interaction.edit_original_message(content=f":ping_pong: Pong ! in `{float(round(ping/1000.0,3))}s` ||{int(ping)}ms||")
 
+    
+    
 async def setup(bot):
 	await bot.add_cog(Basic(bot))
