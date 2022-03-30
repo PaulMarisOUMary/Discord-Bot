@@ -10,7 +10,7 @@
     },
     "private_vocal": {
         "main_channel_name": "\u2795",
-        "channel_name": "- {user.display_name} -",
+        "channel_name": "Vocal: #{user.discriminator}",
         "cooldown": 300
     }
 }
