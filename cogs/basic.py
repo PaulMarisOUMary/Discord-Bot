@@ -16,6 +16,7 @@ class Basic(commands.Cog, name="basic"):
 		return emoji, label, description"""
 
 	@app_commands.command(name="ping", description="Ping the bot.")
+	@app_commands.checks.cooldown(1, 5.0, key=lambda i: (i.guild_id, i.user.id))
 	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def ping(self, interaction: discord.Interaction):
 		"""Show latency in seconds & milliseconds"""

@@ -37,13 +37,13 @@ class Info(commands.Cog, name="info"):
 		description = "Commands about additionals informations such as stats."
 		return emoji, label, description
 
-	@commands.command(name="stat", aliases=["status","graph","gs","sg"])
-	@commands.cooldown(1, 5, commands.BucketType.user)
-	@commands.guild_only()
-	async def stat(self, ctx):
+	@app_commands.command(name="statistics", description="Display statistics about the guild.")
+	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
+	@app_commands.guilds(discord.Object(id=332234497078853644))
+	async def stat(self, interaction: discord.Interaction) -> None:
 		"""Show a graphic pie about the server's members.""" 
 		plt.clf()
-		ax, data, colors = plt.subplot(), statServer(ctx.guild.members), ["#747f8d","#f04747","#faa81a","#43b582"]
+		ax, data, colors = plt.subplot(), statServer(interaction.guild.members), ["#747f8d","#f04747","#faa81a","#43b582"]
 		ax.pie([data["offline"], data["dnd"], data["idle"], data["online"]], colors=colors, startangle=-40, wedgeprops=dict(width=0.5))
 		leg = ax.legend(["Offline","dnd","idle","Online"],frameon=False, loc="lower center", ncol=5)
 		for color,text in zip(colors,leg.get_texts()):
@@ -54,8 +54,8 @@ class Info(commands.Cog, name="info"):
 		
 		embed = discord.Embed(title=f"Current server stats ({data['members']})",description=f"<:offline:698246924138184836> : **`{data['offline']}`** (Offline)\n<:idle:698246924058361898> : **`{data['idle']}`** (AFK)\n<:dnd:698246924528254986> : **`{data['dnd']}`** (dnd)\n<:online:698246924465340497> : **`{data['online']}`** (Online)\n<:streaming:699381397898395688> : **`{data['streaming']}`** (Streaming)\n<:phone:948279755248111756> : **`{data['mobile']}`** (on mobile)\n<:isbot:698250069165473852> : **`{data['bot']}`** (Robot)")
 		embed.set_image(url="attachment://stat.png")
-		embed.set_footer(text=f"Requested by : {ctx.message.author} at {time.strftime('%H:%M:%S')}", icon_url=ctx.message.author.display_avatar.url)
-		await ctx.send(file=discord.File(fp=image_binary, filename="stat.png"), embed=embed)
+		embed.set_footer(text=f"Requested by : {interaction.user} at {time.strftime('%H:%M:%S')}", icon_url=interaction.user.display_avatar.url)
+		await interaction.response.send_message(file=discord.File(fp=image_binary, filename="stat.png"), embed=embed)
 
 	@app_commands.command(name="avatar", description="Display the avatar.")
 	@app_commands.describe(user="The user to get the avatar from.")
@@ -68,7 +68,7 @@ class Info(commands.Cog, name="info"):
 	@app_commands.command(name="banner", description="Display the banner.")
 	@app_commands.describe(user="The user to get the banner from.")
 	@app_commands.guilds(discord.Object(id=332234497078853644))
-	async def avatar(self, interaction: discord.Interaction, user: discord.Member = None):
+	async def banner(self, interaction: discord.Interaction, user: discord.Member = None):
 		if not user: 
 			user = interaction.user
 		user = await self.bot.fetch_user(user.id)

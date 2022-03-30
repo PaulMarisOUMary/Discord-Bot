@@ -1,13 +1,17 @@
+from crypt import methods
 import discord
 
 from typing import Optional, Union
 from discord.ext import commands
+from discord import app_commands, errors
 
 class Errors(commands.Cog, name="errors"):
 	"""Errors handler."""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 		bot.tree.error(self.get_app_command_error)
+
+		self.default_error_message = "🕳️ There is an error."
 
 	"""def help_custom(self):
 		emoji = "<a:crossmark:842800737221607474>"
@@ -24,25 +28,25 @@ class Errors(commands.Cog, name="errors"):
 	async def get_command_error(self, ctx: commands.Context, error: commands.CommandError):
 		"""Command Error handler"""
 		try:
-			message = await ctx.send("🕳️ There is an error.")
-			if isinstance(error, commands.errors.CommandNotFound):
+			message = await ctx.send(self.default_error_message)
+			if isinstance(error, commands.CommandNotFound):
 				await message.edit(f"🕳️ Command `{str(error).split(' ')[1]}` not found !")
-			elif isinstance(error, commands.errors.NotOwner):
+			elif isinstance(error, commands.NotOwner):
 				await message.edit("🕳️ You must own this bot to run this command.")
-			elif isinstance(error, commands.errors.NoPrivateMessage):
+			elif isinstance(error, commands.NoPrivateMessage):
 				await message.edit("🕳️ This command cannot be used in a private message.")
-			elif isinstance(error, commands.errors.CommandOnCooldown):
+			elif isinstance(error, commands.CommandOnCooldown):
 				await message.edit(f"🕳️ Command is on cooldown, wait `{str(error).split(' ')[7]}` !")
-			elif isinstance(error, commands.errors.MissingRequiredArgument):
+			elif isinstance(error, commands.MissingRequiredArgument):
 				command, params = ctx.command, ""
 				for param in command.clean_params: 
 					params += " {"+str(param)+'}'
 				await message.edit(f"🕳️ Something is missing. `?{command}{params}`")
-			elif isinstance(error, commands.errors.MemberNotFound):
+			elif isinstance(error, commands.MemberNotFound):
 				await message.edit(f"🕳️ Member `{str(error).split(' ')[1]}` not found ! Don't hesitate to ping the requested member.")
-			elif isinstance(error, commands.errors.MissingPermissions):
+			elif isinstance(error, commands.MissingPermissions):
 				await message.edit("🕳️ This command require more permissions.")
-			elif isinstance(error, commands.errors.DisabledCommand):
+			elif isinstance(error, commands.DisabledCommand):
 				await message.edit("🕳️ This command is disabled.")
 			else:
 				await message.edit(f"🕳️ `{type(error).__name__}` : {error}")
@@ -53,14 +57,22 @@ class Errors(commands.Cog, name="errors"):
 	#@app_commands.Cog.listener("on_command_error") / @app_commands.Cog.listener("on_app_command_error") #still in dev, hopefully something like this
 	async def get_app_command_error(self, interaction: discord.Interaction, command: Optional[Union[discord.app_commands.Command, discord.app_commands.ContextMenu]], error: discord.app_commands.AppCommandError):
 		try:
-			message = await interaction.channel.send("🕳️ There is an error.")
-			if isinstance(error, discord.app_commands.errors.CommandInvokeError):
+			try:
+				await interaction.response.send_message(self.default_error_message)
+				edit = interaction.edit_original_message
+			except discord.errors.InteractionResponded:
+				message = await interaction.channel.send(self.default_error_message)
+				edit = message.edit
+
+			if isinstance(error, app_commands.CommandInvokeError):
 				if isinstance(error.original, discord.errors.InteractionResponded):
-					await message.edit(f"🕳️ {error.__cause__}")
+					await edit(content=f"🕳️ {error.__cause__}")
 				else:
-					await message.edit(f"🕳️ `{type(error.original).__name__}` : {error.original}")
+					await edit(content=f"🕳️ `{type(error.original).__name__}` : {error.original}")
+			elif isinstance(error, app_commands.CommandOnCooldown):
+				await edit(content=f"🕳️ Command is on cooldown, wait `{str(error).split(' ')[7]}` !")	
 			else:
-				await interaction.channel.send(f"🕳️ `{type(error).__name__}` : {error}")
+				await edit(content=f"🕳️ `{type(error).__name__}` : {error}")
 		except Exception as e:
 			print(f"! Cogs.errors get_app_command_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
 

@@ -22,7 +22,7 @@ class Status(commands.Cog, name="status"):
 
 	async def loop_change_status(self) -> None:
 		await self.bot.wait_until_ready()
-		status_message = self.bot.bot_data["bot_status"]
+		status_message = self.bot.config["bot"]["bot_status"]
 		while not self.bot.is_closed():
 			for status in status_message:
 				await self.bot.change_presence(

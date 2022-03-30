@@ -47,7 +47,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		self.bot = bot
 		self.cakes = ['🎂', '🥮', '🥧', '🥯', '🧁', '🫓', '🧇', '🍞', '🍮', '🍰', '🥐']
 
-		self.fridaycake_data = self.bot.database_data["fridaycake"]
+		self.fridaycake_data = self.bot.config["database"]["fridaycake"]
 		self.seed = self.fridaycake_data["seed"]
 
 		self.bot.loop.create_task(self.initFridaycake())

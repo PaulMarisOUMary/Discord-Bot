@@ -13,7 +13,7 @@ class Birthday(commands.Cog, name="birthday"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-		self.birthday_data = self.bot.database_data["birthday"]
+		self.birthday_data = bot.config["database"]["birthday"]
 
 	def help_custom(self) -> tuple[str]:
 		emoji = '🎁'
@@ -35,7 +35,7 @@ class Birthday(commands.Cog, name="birthday"):
 
 			response = await self.bot.database.select(self.birthday_data["table"], "*")
 			for data in response:
-				user_id, user_birth = data[0], data[1]
+				user_id, user_birth = data
 
 				if user_birth.month == datetime.now().month and user_birth.day == datetime.now().day:
 					timestamp = round(time.mktime(user_birth.timetuple()))
@@ -83,15 +83,12 @@ class Birthday(commands.Cog, name="birthday"):
 	@app_commands.describe(month="Your month of birth.", day="Your day of birth.", year="Your year of birth.")
 	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
 	@app_commands.autocomplete(day=day_suggest, year=year_suggest)
+	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
 	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def birthday(self, interaction: discord.Interaction, month: int, day: int, year: int):
 		"""Allows you to set/show your birthday."""
-		if day > 31 or day < 0:
-			await interaction.response.send_message("Please provide a real date of birth.")
-			return
-		elif year > datetime.now().year - 15 or year < datetime.now().year - 99:
-			await interaction.response.send_message("Please provide your real year of birth.")
-			return
+		if day > 31 or day < 0 or year > datetime.now().year - 15 or year < datetime.now().year - 99:
+			raise ValueError("Please provide a real date of birth.")
 
 		try:
 			dataDate = datetime.strptime(f"{day}{month}{year}", "%d%m%Y").date()
@@ -105,11 +102,10 @@ class Birthday(commands.Cog, name="birthday"):
 			await self.show_birthday_message(interaction, interaction.user)
 		except Exception as e:
 			raise commands.CommandError(str(e))
-		else:
-			await self.show_birthday(interaction, interaction.user)
 
 	@app_commands.command(name="showbirthday", description="Display the birthday of a user.")
 	@app_commands.describe(user="The user to get the birthdate from.")
+	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def show_birthday(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Allows you to show the birthday of other users."""

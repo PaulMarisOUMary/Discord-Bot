@@ -81,14 +81,15 @@ class Admin(commands.Cog, name="admin"):
 
 	@commands.command(name="synctree", aliases=["st"])
 	@commands.is_owner()
-	async def reload_tree(self, ctx: commands.Context, guild_id: int = None):
+	async def reload_tree(self, ctx: commands.Context, guild_id: str = None):
 		"""Sync application commands."""
 		if guild_id:
-			guild_tree = await self.bot.tree.sync(guild=discord.Object(id=332234497078853644))
-			await ctx.send(f":pinched_fingers: `{len(guild_tree)}` synced!")
+			if guild_id == "guild":
+				guild_id = ctx.guild.id
+			sync_tree = await self.bot.tree.sync(guild=discord.Object(id=int(guild_id)))
 		else:
-			global_tree = await self.bot.tree.sync()
-			await ctx.send(f":pinched_fingers: `{len(global_tree)}` synced!")
+			sync_tree = await self.bot.tree.sync()
+		await ctx.send(f":pinched_fingers: `{len(sync_tree)}` synced!")
 
 	@commands.command(name="changeprefix", aliases=["cp"], require_var_positional=True)
 	@commands.has_guild_permissions(administrator=True)
