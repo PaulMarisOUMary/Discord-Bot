@@ -27,7 +27,7 @@ class Bot(commands.Bot):
 		await self.wait_until_ready()
 		
 		await self.tree.sync()
-		await self.tree.sync(guild=discord.Object(id=332234497078853644)) # dev
+		#await self.tree.sync(guild=discord.Object(id=332234497078853644)) # dev
 		
 	async def setup_hook(self):
 		"""Initialize the db, prefixes & cogs."""

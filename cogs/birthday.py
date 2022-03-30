@@ -84,7 +84,6 @@ class Birthday(commands.Cog, name="birthday"):
 	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
 	@app_commands.autocomplete(day=day_suggest, year=year_suggest)
 	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
-	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def birthday(self, interaction: discord.Interaction, month: int, day: int, year: int):
 		"""Allows you to set/show your birthday."""
 		if day > 31 or day < 0 or year > datetime.now().year - 15 or year < datetime.now().year - 99:
@@ -106,7 +105,6 @@ class Birthday(commands.Cog, name="birthday"):
 	@app_commands.command(name="showbirthday", description="Display the birthday of a user.")
 	@app_commands.describe(user="The user to get the birthdate from.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def show_birthday(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Allows you to show the birthday of other users."""
 		if not user: 

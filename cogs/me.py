@@ -20,7 +20,6 @@ class Me(commands.Cog, name="me"):
 	@app_commands.command(name="me", description="Set your own brief description of yourself !")
 	@app_commands.describe(description="Your brief description of yourself.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def me(self, interaction: discord.Interaction, description: str):
 		"""Allows you to set or show a brief description of yourself."""
 		try:
@@ -38,7 +37,6 @@ class Me(commands.Cog, name="me"):
 	@app_commands.command(name="showme", description="Show the /me of other users.")
 	@app_commands.describe(user="The user you want to show the /me of.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def show_me(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Allows you to show the description of other users."""
 		if not user:

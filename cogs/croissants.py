@@ -36,7 +36,6 @@ class Croissants(commands.Cog, name="croissants"):
 
 	@app_commands.command(name="croissants", description="Get the global croissants rank.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def croissants_rank(self, interaction: discord.Interaction) -> None:
 		"""Get the global croissants rank."""
 		response = await self.bot.database.select(self.croissants_data["table"], "*", order="user_count DESC", limit=10)

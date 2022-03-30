@@ -40,7 +40,6 @@ class Info(commands.Cog, name="info"):
 
 	@app_commands.command(name="statistics", description="Display statistics about the guild.")
 	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
-	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def stat(self, interaction: discord.Interaction) -> None:
 		"""Show a graphic pie about the server's members.""" 
 		plt.clf()
@@ -60,7 +59,6 @@ class Info(commands.Cog, name="info"):
 
 	@app_commands.command(name="avatar", description="Display the avatar.")
 	@app_commands.describe(user="The user to get the avatar from.")
-	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def avatar(self, interaction: discord.Interaction, user: discord.Member = None):
 		if not user:
 			user = interaction.user
@@ -68,7 +66,6 @@ class Info(commands.Cog, name="info"):
 
 	@app_commands.command(name="banner", description="Display the banner.")
 	@app_commands.describe(user="The user to get the banner from.")
-	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def banner(self, interaction: discord.Interaction, user: discord.Member = None):
 		if not user: 
 			user = interaction.user
@@ -80,7 +77,6 @@ class Info(commands.Cog, name="info"):
 
 	@app_commands.command(name="lookup", description="Shows additional informations about user.")
 	@app_commands.describe(user="The user to get informations from.")
-	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def lookup(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Show few information about a discord Member"""
 		if not user: 

@@ -16,7 +16,6 @@ class Usefull(commands.Cog, name="usefull"):
 
 	@app_commands.command(name="strawpoll", description="Create a strawpoll.")
 	@app_commands.describe(question="The question of the strawpoll.")
-	@app_commands.guilds(discord.Object(id=332234497078853644))
 	async def avatar(self, interaction: discord.Interaction, question: str):
 		await interaction.response.send_message(content=f"__*{interaction.user.mention}*__ : {question}", allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=False))
 		message = await interaction.original_message()

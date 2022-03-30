@@ -1,9 +1,8 @@
-from crypt import methods
 import discord
 
 from typing import Optional, Union
 from discord.ext import commands
-from discord import app_commands, errors
+from discord import app_commands
 
 class Errors(commands.Cog, name="errors"):
 	"""Errors handler."""
