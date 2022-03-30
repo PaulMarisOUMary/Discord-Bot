@@ -4,6 +4,7 @@ import discord
 import matplotlib.pyplot as plt
 
 from datetime import datetime
+from discord.utils import get
 from discord.ext import commands
 from discord import app_commands
 
@@ -77,47 +78,49 @@ class Info(commands.Cog, name="info"):
 		except:
 			await interaction.response.send_message("This user doesn't have a banner.")
 
-	@commands.command(name="lookup", aliases=["lk"])
-	@commands.cooldown(1, 5, commands.BucketType.user)
-	@commands.guild_only()
-	async def lookup(self, ctx, member: discord.Member = None):
+	@app_commands.command(name="lookup", description="Shows additional informations about user.")
+	@app_commands.describe(user="The user to get informations from.")
+	@app_commands.guilds(discord.Object(id=332234497078853644))
+	async def lookup(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Show few information about a discord Member"""
-		if not member: 
-			member = ctx.author
+		if not user: 
+			user = interaction.user
 
-		try:
-			user = await self.bot.fetch_user(member.id)
+		realuser: discord.Member = get(user.guild.members, id=user.id)
+
+		user = await self.bot.fetch_user(realuser.id)
+		if user.banner:
 			user_banner = user.banner.url
-		except: 
+		else:
 			user_banner = None
 
 		yes = "<a:checkmark_a:842800730049871892>"
 		no = "<a:crossmark:842800737221607474>"
 
-		embed=discord.Embed(color=member.color)
-		embed.set_author(name=f"Lookup: {member.display_name}", icon_url=member.default_avatar.url)
-		embed.add_field(name="ID:", value=f"`{member.id}`", inline=True)
-		embed.add_field(name="Display name:", value=f"`{member.name}#{member.discriminator}`", inline=True)
-		if member.status == discord.Status.online: 
+		embed=discord.Embed(color=realuser.color)
+		embed.set_author(name=f"Lookup: {realuser.display_name}", icon_url=realuser.default_avatar.url)
+		embed.add_field(name="ID:", value=f"`{realuser.id}`", inline=True)
+		embed.add_field(name="Display name:", value=f"`{realuser.name}#{realuser.discriminator}`", inline=True)
+		if realuser.status == discord.Status.online: 
 			embed.add_field(name="Status", value=f"<:online:698246924465340497> Online", inline=True)
-		elif member.status == discord.Status.idle: 
+		elif realuser.status == discord.Status.idle: 
 			embed.add_field(name="Status", value=f"<:idle:698246924058361898> Idle", inline=True)
-		elif member.status == discord.Status.dnd: 
+		elif realuser.status == discord.Status.dnd: 
 			embed.add_field(name="Status", value=f"<:dnd:698246924528254986> Do not disturb", inline=True)
 		else: 
 			embed.add_field(name="Status", value=f"<:offline:698246924138184836> Offline", inline=True)
 		embed.add_field(name="\u200b", value="\u200b", inline=False)
-		embed.add_field(name="<:isbot:698250069165473852> Is a bot?", value=f"{yes if member.bot else no}", inline=True)
-		embed.add_field(name="<:phone:948279755248111756> Is on mobile?", value=f"{yes if member.is_on_mobile() else no}", inline=True)
-		embed.add_field(name="<a:nitro:948271095566434357> Is a booster?", value=f"<t:{round(datetime.timestamp(member.premium_since))}:F>" if member.premium_since else no, inline=True)
+		embed.add_field(name="<:isbot:698250069165473852> Is a bot?", value=f"{yes if realuser.bot else no}", inline=True)
+		embed.add_field(name="<:phone:948279755248111756> Is on mobile?", value=f"{yes if realuser.is_on_mobile() else no}", inline=True)
+		embed.add_field(name="<a:nitro:948271095566434357> Is a booster?", value=f"<t:{round(datetime.timestamp(realuser.premium_since))}:F>" if realuser.premium_since else no, inline=True)
 		embed.add_field(name="\u200b", value="\u200b", inline=False)
-		embed.add_field(name="<:plus:948272417304883270> Account created at:", value=f"<t:{round(datetime.timestamp(member.created_at))}:F>", inline=True)
-		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"<t:{round(datetime.timestamp(member.joined_at))}:F>", inline=True)
-		embed.set_thumbnail(url=member.display_avatar.url)
+		embed.add_field(name="<:plus:948272417304883270> Account created at:", value=f"<t:{round(datetime.timestamp(realuser.created_at))}:F>", inline=True)
+		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"<t:{round(datetime.timestamp(realuser.joined_at))}:F>", inline=True)
+		embed.set_thumbnail(url=realuser.display_avatar.url)
 		if user_banner: 
 			embed.set_image(url=user_banner)
-		embed.set_footer(text=f"(The discord profile picture next to the 'lookup' text is your default profile picture.)\nRequested by : {ctx.message.author} at {time.strftime('%H:%M:%S')}", icon_url=ctx.message.author.display_avatar.url)
-		await ctx.send(embed=embed)
+		embed.set_footer(text=f"(The discord profile picture next to the 'lookup' text is your default profile picture.)\nRequested by : {realuser} at {time.strftime('%H:%M:%S')}", icon_url=realuser.display_avatar.url)
+		await interaction.response.send_message(embed=embed)
 
 
 

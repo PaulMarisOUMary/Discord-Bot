@@ -19,7 +19,7 @@ class Spotify(commands.Cog, name="spotify"):
 	@app_commands.command(name="spotify")
 	@app_commands.describe(user="The user to get spotify informations from.")
 	@app_commands.guilds(discord.Object(id=332234497078853644))
-	async def actual_calendar(self, interaction: discord.Interaction, user: discord.Member = None):
+	async def spotify_activity(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Show the current Spotify song."""
 		if not user: 
 			user = interaction.user
