@@ -1,7 +1,7 @@
 import discord
 import os
 
-from classes.utilities import cogs_manager, reload_views, cogs_directory
+from classes.utilities import cogs_manager, reload_views, cogs_directory, root_directory
 
 from discord.ext import commands
 
@@ -90,6 +90,14 @@ class Admin(commands.Cog, name="admin"):
 		else:
 			sync_tree = await self.bot.tree.sync()
 		await ctx.send(f":pinched_fingers: `{len(sync_tree)}` synced!")
+
+	@commands.command(name="botlogs", aliases=["bl"])
+	@commands.is_owner()
+	async def show_bot_logs(self, ctx: commands.Context):
+		"""Upload the bot logs"""
+		logs_file = os.path.join(root_directory, "discord.log")
+
+		await ctx.send(file=discord.File(fp=logs_file, filename="bot.log"))
 
 	@commands.command(name="changeprefix", aliases=["cp"], require_var_positional=True)
 	@commands.has_guild_permissions(administrator=True)
