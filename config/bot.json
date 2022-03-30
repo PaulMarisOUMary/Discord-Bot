@@ -7,5 +7,10 @@
     ],
     "dad": {
         "probability": 0.1
+    },
+    "private_vocal": {
+        "main_channel_name": "\u2795",
+        "channel_name": "- {user.display_name} -",
+        "cooldown": 300
     }
 }
