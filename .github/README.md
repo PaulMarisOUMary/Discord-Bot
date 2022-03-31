@@ -202,7 +202,7 @@ WantedBy=multi-user.target
 
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/images/algosup_beta.png?raw=true)
 
-- Promotion Beta 2021-2022 : `Alexandre`  `Antonin`  `Arthur`  `David`  `Elise`  `Gaël`  `Guillaume`  `Léo`  `Mathieu`  `Maxime`  `Nicolas`  `Paul`  `Pierre`  `Quentin`  `Robin`  `Théo`  `Thomas`
+- Promotion Beta 2021-2022 : `Alexandre`  `Antonin`  `Arthur`  `David`  `Elise`  `Gaël`  `Guillaume`  `Léo`  `Malo`  `Mathieu`  `Maxime`  `Nicolas`  `Paul`  `Pierre`  `Quentin`  `Remy`  `Robin`  `Théo`  `Thomas`  `Victor`
 
 ## GAMMA
 
