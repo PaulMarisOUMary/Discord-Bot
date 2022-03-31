@@ -196,7 +196,7 @@ WantedBy=multi-user.target
 
 ![](https://github.com/WarriorMachine/Algosup-Discord/blob/main/images/algosup_alpha.png?raw=true)
 
-- Promotion Alpha 2020-2021 : `Aurélien`  `Brendon`  `Clément`  `Clémentine`  `Eloi` ~~`Eric`~~ `Florent`  `Ivan` ~~`Jules`~~ `Karine`  `Laura-Lee`  `Laurent`  `Louis`  `Martin`  `Max`  `Paul` ~~`Robin`~~ `Romain`  `Salahedine` ~~`Steevy`~~ `Théo`
+- Promotion Alpha 2020-2021 : `Aurélien`  `Brendon`  `Clément`  `Clémentine`  `Eloi` ~~`Eric`~~ `Florent`  `Ivan` ~~`Jules`~~ `Karine`  `Laura-Lee`  `Laurent`  `Louis`  ~~`Martin`~~  `Max`  `Paul` ~~`Robin`~~ `Romain`  `Salahedine` ~~`Steevy`~~ `Théo`
 
 ## BETA
 
