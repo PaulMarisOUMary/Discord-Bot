@@ -1,8 +1,10 @@
 # auto-run github-runner on boot/startup: https://docs.github.com/en/actions/hosting-your-own-runners/configuring-the-self-hosted-runner-application-as-a-service
-name: Update files & Restart bot on Linux server
+name: "Update files & Restart bot on Linux server"
 
 on:
   push:
+    paths:
+     - '!.github/**'
     branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
