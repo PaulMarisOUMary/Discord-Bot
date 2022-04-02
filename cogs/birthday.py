@@ -41,7 +41,7 @@ class Birthday(commands.Cog, name="birthday"):
 				if user_birth.month == datetime.now().month and user_birth.day == datetime.now().day:
 					timestamp = round(time.mktime(user_birth.timetuple()))
 
-					message = f"Remembed this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
+					message = f"Remember this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
 					images = [
 						"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
 						"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
