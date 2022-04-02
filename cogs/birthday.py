@@ -5,6 +5,7 @@ import discord
 
 from datetime import datetime, date
 from discord.ext import commands, tasks
+from discord.utils import get
 from discord import app_commands
 from discord.app_commands import Choice
 
@@ -30,8 +31,8 @@ class Birthday(commands.Cog, name="birthday"):
 	@tasks.loop(hours=1)
 	async def daily_birthday(self):
 		if datetime.now().hour == 9:
-			guild = self.bot.get_guild(int(self.birthday_data["guild_id"]))
-			channel = guild.get_channel(int(self.birthday_data["channel_id"]))
+			guild = get(self.bot.guilds, id=self.birthday_data["guild_id"])
+			channel = get(guild.channels, id=self.birthday_data["channel_id"])
 
 			response = await self.bot.database.select(self.birthday_data["table"], "*")
 			for data in response:
