@@ -114,6 +114,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 			return embed
 
 	@commands.command(name='fridaycake', aliases=['f', 'fh', 'fc'])
+	@commands.bot_has_permissions(send_messages=True)
 	async def fridaycake(self, ctx):
 		"""Show the main menu about the FridayCake event."""
 		allowed = 5
@@ -143,12 +144,14 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 			pass
 
 	@commands.command(name='next', aliases=['n', 'fn'])
+	@commands.bot_has_permissions(send_messages=True)
 	async def next_cake(self, ctx):
 		"""Show who are the next to make a cake for the FridayCake event."""
 		embed = self.next(ctx)
 		await ctx.send(embed=embed)
 
 	@commands.command(name='when', aliases=['w', 'fw'])
+	@commands.bot_has_permissions(send_messages=True)
 	async def when_cake(self, ctx, member : discord.Member = None):
 		"""Show your personnal order of passage about the Fridaycake event."""
 		author = ctx.message.author if not member else member
@@ -156,6 +159,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		await ctx.send(embed=embed)
 
 	@commands.command(name='all', aliases=['a', 'fa'])
+	@commands.bot_has_permissions(send_messages=True)
 	async def all_cake(self, ctx):
 		"""Show the complete list by order for the FridayCake event."""
 		embed = self.all(ctx)

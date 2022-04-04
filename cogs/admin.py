@@ -17,6 +17,7 @@ class Admin(commands.Cog, name="admin"):
 		return emoji, label, description
 
 	@commands.command(name="loadcog")
+	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
 	async def load_cog(self, ctx: commands.Context, cog: str):
 		"""Load a cog."""
@@ -24,6 +25,7 @@ class Admin(commands.Cog, name="admin"):
 		await ctx.send(f":point_right: Cog {cog} loaded!")
 
 	@commands.command(name="unloadcog")
+	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
 	async def unload_cog(self, ctx: commands.Context, cog: str):
 		"""Unload a cog."""
@@ -31,6 +33,7 @@ class Admin(commands.Cog, name="admin"):
 		await ctx.send(f":point_left: Cog {cog} unloaded!")
 
 	@commands.command(name="reloadallcogs", aliases=["rell"])
+	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
 	async def reload_all_cogs(self, ctx: commands.Context):
 		"""Reload all cogs."""
@@ -40,6 +43,7 @@ class Admin(commands.Cog, name="admin"):
 		await ctx.send(f":muscle: All cogs reloaded: `{len(cogs)}`!")
 
 	@commands.command(name="reload", aliases=["rel"], require_var_positional=True)
+	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
 	async def reload_cogs(self, ctx: commands.Context, *cogs: str):
 		"""Reload specific cogs."""
@@ -49,6 +53,7 @@ class Admin(commands.Cog, name="admin"):
 		await ctx.send(f":thumbsup: `{'` `'.join(cogs)}` reloaded!")
 
 	@commands.command(name="reloadlatest", aliases=["rl"])
+	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
 	async def reload_latest_cogs(self, ctx: commands.Context, n_cogs: int = 1):
 		"""Reload the latest edited n cogs."""
@@ -70,6 +75,7 @@ class Admin(commands.Cog, name="admin"):
 		await ctx.send(f":point_down: `{'` `'.join(cogs)}` reloaded!")
 		
 	@commands.command(name="reloadviews", aliases=["rv"])
+	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
 	async def reload_view(self, ctx: commands.Context):
 		"""Reload each registered views."""
@@ -80,6 +86,7 @@ class Admin(commands.Cog, name="admin"):
 		await ctx.send(succes_text)
 
 	@commands.command(name="reloadconfig", aliases=["rc"])
+	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
 	async def reload_config(self, ctx: commands.Context):
 		"""Reload each json config file."""
@@ -87,6 +94,7 @@ class Admin(commands.Cog, name="admin"):
 		await ctx.send(f":handshake: `{len(self.bot.config)}` config file(s) reloaded!")
 
 	@commands.command(name="synctree", aliases=["st"])
+	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
 	async def reload_tree(self, ctx: commands.Context, guild_id: str = None):
 		"""Sync application commands."""
@@ -99,6 +107,7 @@ class Admin(commands.Cog, name="admin"):
 		await ctx.send(f":pinched_fingers: `{len(sync_tree)}` synced!")
 
 	@commands.command(name="botlogs", aliases=["bl"])
+	@commands.bot_has_permissions(send_messages=True, attach_files=True)
 	@commands.is_owner()
 	async def show_bot_logs(self, ctx: commands.Context):
 		"""Upload the bot logs"""
@@ -107,6 +116,7 @@ class Admin(commands.Cog, name="admin"):
 		await ctx.send(file=discord.File(fp=logs_file, filename="bot.log"))
 
 	@commands.command(name="changeprefix", aliases=["cp"], require_var_positional=True)
+	@commands.bot_has_permissions(send_messages=True)
 	@commands.has_guild_permissions(administrator=True)
 	@commands.guild_only()
 	async def change_guild_prefix(self, ctx, new_prefix):

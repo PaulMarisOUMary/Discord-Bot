@@ -27,6 +27,12 @@ class Errors(commands.Cog, name="errors"):
 	async def get_command_error(self, ctx: commands.Context, error: commands.CommandError):
 		"""Command Error handler"""
 		try:
+			if isinstance(error, commands.BotMissingPermissions):
+				if "send_messages" in  error.missing_permissions:
+					pass # Can't send messages through discord channels
+				else:
+					await ctx.send(f"🕳️ Missing permissions: `{'` `'.join(error.missing_permissions)}`")
+				return
 			message = await ctx.send(self.default_error_message)
 			if isinstance(error, commands.CommandNotFound):
 				await message.edit(f"🕳️ Command `{str(error).split(' ')[1]}` not found !")
@@ -55,6 +61,7 @@ class Errors(commands.Cog, name="errors"):
 
 	#@app_commands.Cog.listener("on_command_error") / @app_commands.Cog.listener("on_app_command_error") #still in dev, hopefully something like this
 	async def get_app_command_error(self, interaction: discord.Interaction, command: Optional[Union[discord.app_commands.Command, discord.app_commands.ContextMenu]], error: discord.app_commands.AppCommandError):
+		"""App command Error Handler"""
 		try:
 			try:
 				await interaction.response.send_message(self.default_error_message)
