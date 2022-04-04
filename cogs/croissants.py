@@ -35,6 +35,7 @@ class Croissants(commands.Cog, name="croissants"):
 			else: await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
 
 	@app_commands.command(name="croissants", description="Get the global croissants rank.")
+	@app_commands.checks.has_permissions(use_slash_commands=True)
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def croissants_rank(self, interaction: discord.Interaction) -> None:
 		"""Get the global croissants rank."""
