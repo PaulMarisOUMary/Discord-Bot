@@ -28,7 +28,7 @@ class Croissants(commands.Cog, name="croissants"):
 
 	@commands.Cog.listener("on_message")
 	async def on_receive_message(self, message: discord.Message):
-		if not message.author.bot and self.REGEX.match(message.content):
+		if not message.author.bot and message.author.id != 283358054827819008 and self.REGEX.match(message.content):
 			if not self.__is_on_cooldown(message.author):
 				self.cooldown[message.author.id] = datetime.now()
 				await self.__send_croissants(message)
