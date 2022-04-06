@@ -1,6 +1,7 @@
 import discord
+import asyncio
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from discord.ext import commands
 from discord import app_commands
@@ -19,11 +20,16 @@ class Usefull(commands.Cog, name="usefull"):
 
 	@app_commands.command(name="reminder", description="Reminds you of something.")
 	@app_commands.describe(hours="Hours.", minutes="Minutes.", seconds="Seconds.", message="Your reminder message.")
-	@app_commands.choices(hours=[Choice(name=i, value=i) for i in range(1, 25)], minutes=[Choice(name=i, value=i) for i in range(5, 56, 5)], seconds=[Choice(name=i, value=i) for i in range(5, 56, 5)])
+	@app_commands.choices(hours=[Choice(name=i, value=i) for i in range(0, 25)], minutes=[Choice(name=i, value=i) for i in range(0, 56, 5)], seconds=[Choice(name=i, value=i) for i in range(5, 56, 5)])
+	@app_commands.checks.bot_has_permissions(send_messages=True)
 	@app_commands.checks.has_permissions(use_slash_commands=True)
 	async def reminder(self, interaction: discord.Interaction, hours: int, minutes: int, seconds: int, message: str) -> None:
 		"""Reminds you of something."""
-		await interaction.response.send_message(f"Reminder set for {hours}h {minutes}m {seconds}s. Message: {message}")
+		remind_in = round(datetime.timestamp(datetime.now() + timedelta(hours=hours, minutes=minutes, seconds=seconds)))
+		await interaction.response.send_message(f"Your message will be sent <t:{remind_in}:R>.")
+		
+		await asyncio.sleep(seconds+minutes*60+hours*(60**2))
+		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (<t:{remind_in}:R>): {message}")
 
 	@app_commands.command(name="strawpoll", description="Create a strawpoll.")
 	@app_commands.describe(question="The question of the strawpoll.")
