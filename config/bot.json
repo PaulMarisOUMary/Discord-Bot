@@ -11,6 +11,6 @@
     "private_vocal": {
         "main_channel_name": "\u2795",
         "channel_name": "Vocal: #{user.discriminator}",
-        "cooldown": 300
+        "cooldown": 30
     }
 }
