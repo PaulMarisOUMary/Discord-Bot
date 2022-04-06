@@ -1,7 +1,10 @@
 import discord
 
+from datetime import datetime
+
 from discord.ext import commands
 from discord import app_commands
+from discord.app_commands import Choice
 
 class Usefull(commands.Cog, name="usefull"):
 	"""Usefull commands for Devs & more."""
@@ -13,6 +16,14 @@ class Usefull(commands.Cog, name="usefull"):
 		label = "Usefull"
 		description = "Usefull commands."
 		return emoji, label, description"""
+
+	@app_commands.command(name="reminder", description="Reminds you of something.")
+	@app_commands.describe(hours="Hours.", minutes="Minutes.", seconds="Seconds.", message="Your reminder message.")
+	@app_commands.choices(hours=[Choice(name=i, value=i) for i in range(1, 25)], minutes=[Choice(name=i, value=i) for i in range(5, 56, 5)], seconds=[Choice(name=i, value=i) for i in range(5, 56, 5)])
+	@app_commands.checks.has_permissions(use_slash_commands=True)
+	async def reminder(self, interaction: discord.Interaction, hours: int, minutes: int, seconds: int, message: str) -> None:
+		"""Reminds you of something."""
+		await interaction.response.send_message(f"Reminder set for {hours}h {minutes}m {seconds}s. Message: {message}")
 
 	@app_commands.command(name="strawpoll", description="Create a strawpoll.")
 	@app_commands.describe(question="The question of the strawpoll.")

@@ -60,7 +60,7 @@ class Errors(commands.Cog, name="errors"):
 	#@app_commands.Cog.listener("on_command_error") / @app_commands.Cog.listener("on_app_command_error") #still in dev, hopefully something like this
 	async def get_app_command_error(self, interaction: discord.Interaction, command: Optional[Union[discord.app_commands.Command, discord.app_commands.ContextMenu]], error: discord.app_commands.AppCommandError):
 		"""App command Error Handler
-		doc: https://discordpy.readthedocs.io/en/master/interactions/api.html?highlight=commandnotfound#exception-hierarchy
+		doc: https://discordpy.readthedocs.io/en/master/interactions/api.html#exception-hierarchy
 		"""
 		try:
 			try:
