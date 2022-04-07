@@ -36,6 +36,10 @@ class Dad(commands.Cog, name="dad"):
                     await channel.send(f"No you are {message.author.mention}")
                 else:
                     await channel.send(f"Hi {name}, I'm {self.bot.user.mention}")
+                    
+            if re.match("(.*)quoi\W*", content, re.IGNORECASE) and random() <= self.settings["probability"]:
+                await channel.send("feur")
+
 
 async def setup(bot):
     await bot.add_cog(Dad(bot))
