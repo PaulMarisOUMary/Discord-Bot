@@ -5,7 +5,16 @@ from discord.ext import commands
 from random import random
 
 class Dad(commands.Cog, name="dad"):
-    """Dad's jokes."""
+    """
+        Dad's jokes.
+        
+        Require intents: 
+			- message_content
+		
+		Require bot permission:
+			- read_messages
+			- send_messages
+    """
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
         self.settings = bot.config["bot"]["dad"]

@@ -4,7 +4,15 @@ from discord.ext import commands
 from discord import app_commands
 
 class Me(commands.Cog, name="me"):
-	"""Like minecraft set your own /me !"""
+	"""
+		Like minecraft set your own /me !
+	
+		Require intents: 
+			- None
+		
+		Require bot permission:
+			- None
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
@@ -19,6 +27,7 @@ class Me(commands.Cog, name="me"):
 
 	@app_commands.command(name="me", description="Set your own brief description of yourself !")
 	@app_commands.describe(description="Your brief description of yourself.")
+	@app_commands.checks.has_permissions(use_slash_commands=True)
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def me(self, interaction: discord.Interaction, description: str):
 		"""Allows you to set or show a brief description of yourself."""
@@ -36,6 +45,7 @@ class Me(commands.Cog, name="me"):
 
 	@app_commands.command(name="showme", description="Show the /me of other users.")
 	@app_commands.describe(user="The user you want to show the /me of.")
+	@app_commands.checks.has_permissions(use_slash_commands=True)
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def show_me(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Allows you to show the description of other users."""

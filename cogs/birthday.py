@@ -5,11 +5,20 @@ import discord
 
 from datetime import datetime, date
 from discord.ext import commands, tasks
+from discord.utils import get
 from discord import app_commands
 from discord.app_commands import Choice
 
 class Birthday(commands.Cog, name="birthday"):
-	"""I'll wish you soon a happy birthday !"""
+	"""
+		Set your birthday, and when the time comes I will wish you a happy birthday !
+		
+		Require intents: 
+			- default
+		
+		Require bot permission:
+			- None
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
@@ -30,8 +39,8 @@ class Birthday(commands.Cog, name="birthday"):
 	@tasks.loop(hours=1)
 	async def daily_birthday(self):
 		if datetime.now().hour == 9:
-			guild = self.bot.get_guild(int(self.birthday_data["guild_id"]))
-			channel = guild.get_channel(int(self.birthday_data["channel_id"]))
+			guild = get(self.bot.guilds, id=self.birthday_data["guild_id"])
+			channel = get(guild.channels, id=self.birthday_data["channel_id"])
 
 			response = await self.bot.database.select(self.birthday_data["table"], "*")
 			for data in response:
@@ -40,7 +49,7 @@ class Birthday(commands.Cog, name="birthday"):
 				if user_birth.month == datetime.now().month and user_birth.day == datetime.now().day:
 					timestamp = round(time.mktime(user_birth.timetuple()))
 
-					message = f"Remembed this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
+					message = f"Remember this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
 					images = [
 						"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
 						"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
@@ -83,6 +92,7 @@ class Birthday(commands.Cog, name="birthday"):
 	@app_commands.describe(month="Your month of birth.", day="Your day of birth.", year="Your year of birth.")
 	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
 	@app_commands.autocomplete(day=day_suggest, year=year_suggest)
+	@app_commands.checks.has_permissions(use_slash_commands=True)
 	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
 	async def birthday(self, interaction: discord.Interaction, month: int, day: int, year: int):
 		"""Allows you to set/show your birthday."""

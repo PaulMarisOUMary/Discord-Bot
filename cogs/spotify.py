@@ -6,7 +6,15 @@ from discord.ext import commands
 from discord import app_commands
 
 class Spotify(commands.Cog, name="spotify"):
-	"""Show Spotify songs."""
+	"""
+		Show Spotify presence on discord.
+	
+		Require intents:
+			- presences
+		
+		Require bot permission:
+			- use_external_emojis
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
@@ -18,6 +26,7 @@ class Spotify(commands.Cog, name="spotify"):
 
 	@app_commands.command(name="spotify")
 	@app_commands.describe(user="The user to get spotify informations from.")
+	@app_commands.checks.has_permissions(use_slash_commands=True)
 	async def spotify_activity(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Show the current Spotify song."""
 		if not user: 

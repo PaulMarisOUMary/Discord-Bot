@@ -9,7 +9,18 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
 class Croissants(commands.Cog, name="croissants"):
-	"""Don't leave your computer unlocked !"""
+	"""
+		Don't leave your computer unlocked !
+		A private joke to raise awareness against the risk of leaving your PC unlocked.
+		
+		Require intents: 
+			- message_content
+		
+		Require bot permission:
+			- read_messages
+			- send_messages
+			- attach_files
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
@@ -35,6 +46,7 @@ class Croissants(commands.Cog, name="croissants"):
 			else: await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
 
 	@app_commands.command(name="croissants", description="Get the global croissants rank.")
+	@app_commands.checks.has_permissions(use_slash_commands=True)
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def croissants_rank(self, interaction: discord.Interaction) -> None:
 		"""Get the global croissants rank."""

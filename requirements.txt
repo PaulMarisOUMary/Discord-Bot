@@ -21,4 +21,4 @@ PyNaCl
 googletrans == 4.0.0-rc1
 
 #discordpy master branch commit e515378076c64c5ab2f3a06237f2362ac8556290
-git+https://github.com/Rapptz/discord.py@e515378076c64c5ab2f3a06237f2362ac8556290
+git+https://github.com/Rapptz/discord.py
