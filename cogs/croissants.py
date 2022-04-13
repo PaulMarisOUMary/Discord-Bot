@@ -9,7 +9,18 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
 class Croissants(commands.Cog, name="croissants"):
-	"""Don't leave your computer unlocked !"""
+	"""
+		Don't leave your computer unlocked !
+		A private joke to raise awareness against the risk of leaving your PC unlocked.
+		
+		Require intents: 
+			- message_content
+		
+		Require bot permission:
+			- read_messages
+			- send_messages
+			- attach_files
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 

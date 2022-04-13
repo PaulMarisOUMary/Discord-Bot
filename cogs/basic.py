@@ -5,7 +5,15 @@ from discord.ext import commands
 from discord import app_commands
 
 class Basic(commands.Cog, name="basic"):
-	"""Basic commands, like ping."""
+	"""
+		Basic commands, like ping.
+		
+		Require intents: 
+			- None
+		
+		Require bot permission:
+			- None
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 

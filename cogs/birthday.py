@@ -10,7 +10,15 @@ from discord import app_commands
 from discord.app_commands import Choice
 
 class Birthday(commands.Cog, name="birthday"):
-	"""I'll wish you soon a happy birthday !"""
+	"""
+		Set your birthday, and when the time comes I will wish you a happy birthday !
+		
+		Require intents: 
+			- default
+		
+		Require bot permission:
+			- None
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 

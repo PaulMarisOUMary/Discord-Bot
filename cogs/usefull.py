@@ -8,7 +8,15 @@ from discord import app_commands
 from discord.app_commands import Choice
 
 class Usefull(commands.Cog, name="usefull"):
-	"""Usefull commands for Devs & more."""
+	"""
+		Usefull commands for Devs & more.
+
+		Require intents:
+			- message_content
+		
+		Require bot permission:
+			- send_messages
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 

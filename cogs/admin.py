@@ -6,7 +6,17 @@ from classes.utilities import load_config ,cogs_manager, reload_views, cogs_dire
 from discord.ext import commands
 
 class Admin(commands.Cog, name="admin"):
-	"""Admin commands, you probably don't have the permission to use them."""
+	"""
+		Admin commands.
+
+		Require intents: 
+			- message_content
+		
+		Require bot permission:
+			- read_messages
+			- send_messages
+			- attach_files
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 

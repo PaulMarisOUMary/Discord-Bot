@@ -139,7 +139,6 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 			await asyncio.sleep(60*allowed)
 			view.stop()
 			await message.delete()
-			await ctx.message.add_reaction("<a:checkmark_a:842800730049871892>")
 		except: 
 			pass
 

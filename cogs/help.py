@@ -34,7 +34,6 @@ class HelpCommand(commands.HelpCommand):
             await asyncio.sleep(60*allowed)
             view.stop()
             await message.delete()
-            await self.context.message.add_reaction("<a:checkmark_a:842800730049871892>")
         except: 
             pass
 
@@ -67,7 +66,16 @@ class HelpCommand(commands.HelpCommand):
         await self.context.send("Group commands unavailable.")
 
 class Help(commands.Cog, name="help"):
-    """Help commands."""
+    """
+        Help commands.
+        
+        Require intents: 
+			- message_content
+		
+		Require bot permission:
+			- read_messages
+			- send_messages
+    """
     def __init__(self, bot: commands.Bot) -> None:
         self._original_help_command = bot.help_command
 
@@ -80,7 +88,7 @@ class Help(commands.Cog, name="help"):
         bot.help_command = HelpCommand(command_attrs=attributes)
         bot.help_command.cog = self
         
-    def cog_unload(self) -> None:
+    async def cog_unload(self) -> None:
         self.bot.help_command = self._original_help_command
 
     def help_custom(self) -> tuple[str]:

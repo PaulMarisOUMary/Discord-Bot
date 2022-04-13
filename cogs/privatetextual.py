@@ -33,7 +33,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 		return emoji, label, description
 
 	@commands.command(name="createprivate", aliases=["create", '+'], require_var_positional=True)
-	@commands.bot_has_permissions(send_messages=True, add_reactions=True, manage_roles=True, manage_channels=True)
+	@commands.bot_has_permissions(send_messages=True, manage_roles=True, manage_channels=True)
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	@commands.guild_only()
 	async def create_private_channel(self, ctx, *members : discord.Member):
@@ -51,7 +51,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 
 		role = await ctx.guild.create_role(name="team")
 		team_channel = await ctx.guild.create_text_channel(name="_team_text", category=discord.utils.get(ctx.guild.categories, id=ctx.channel.category_id))
-		await team_channel.set_permissions(role, add_reactions=True, attach_files=True, embed_links=True, external_emojis=True, manage_messages=True, read_message_history=True, read_messages=True, send_messages=True, use_external_emojis=True, use_slash_commands=True, view_channel=True)
+		await team_channel.set_permissions(role, attach_files=True, embed_links=True, external_emojis=True, manage_messages=True, read_message_history=True, read_messages=True, send_messages=True, use_external_emojis=True, use_slash_commands=True, view_channel=True)
 		try: 
 			await team_channel.set_permissions(down_role, send_messages=False, view_channel=False)
 		except: 
@@ -63,10 +63,9 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 
 		await team_channel.send(f"{team_channel.mention} was created by {ctx.message.author.mention}.")
 		await team_channel.send(mentions)
-		await ctx.message.add_reaction(emoji="<a:checkmark_a:842800730049871892>")
 	
 	@commands.command(name="deleteprivate", aliases=["delete", '-'])
-	@commands.bot_has_permissions(send_messages=True, add_reactions=True, manage_roles=True, manage_channels=True)
+	@commands.bot_has_permissions(send_messages=True, manage_roles=True, manage_channels=True)
 	@commands.guild_only()
 	async def delete_private_channel(self, ctx):
 		"""Delete your private textual channel."""
@@ -78,7 +77,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 			raise commands.CommandError("You can't delete a non-team channel.")
 
 	@commands.command(name="renameprivate", aliases=["rename", '_'], require_var_positional=True)
-	@commands.bot_has_permissions(send_messages=True, add_reactions=True, manage_channels=True)
+	@commands.bot_has_permissions(send_messages=True, manage_channels=True)
 	@commands.guild_only()
 	async def rename_private_channel(self, ctx, custom_name : str):
 		"""Rename your private textual channel."""
@@ -86,14 +85,13 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 		normalize_cn, forbidden = text_to_allowed(custom_name)
 		if '_' in channel.name and roles and len(normalize_cn) > 0:
 			await channel.edit(name='_'+normalize_cn)
-			await ctx.message.add_reaction(emoji="<a:checkmark_a:842800730049871892>")
 		elif not '_' in channel.name:
 			raise commands.CommandError("You can't rename a non-team channel.")
 		if forbidden: 
 			raise commands.CommandError(f"You can't use `{forbidden}` to rename a channel.")
 
 	@commands.command(name="addprivate", aliases=["add", '>'], require_var_positional=True)
-	@commands.bot_has_permissions(send_messages=True, add_reactions=True, manage_roles=True)
+	@commands.bot_has_permissions(send_messages=True, manage_roles=True)
 	@commands.guild_only()
 	async def addd_to_private_channel(self, ctx, *members : discord.Member):
 		"""Join a specified member to your team channel."""
@@ -103,7 +101,6 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 				await member.add_roles(roles[0])
 			else : 
 				raise commands.CommandError("You can't invite bots in your team.")
-		await ctx.message.add_reaction(emoji="<a:checkmark_a:842800730049871892>")
 
 
 

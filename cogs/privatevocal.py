@@ -4,7 +4,17 @@ from datetime import datetime
 from discord.ext import commands
 
 class PrivateVocal(commands.Cog, name="privatevocal"):
-	"""Create and manage private vocal channels."""
+	"""
+		Create and manage private vocal channels.
+	
+		Require intents:
+			- voice_states
+		
+		Require bot permission:
+			- manage_channels
+			- manage_permissions
+			- move_members
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 		self.private_config = bot.config["bot"]["private_vocal"]

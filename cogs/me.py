@@ -4,7 +4,15 @@ from discord.ext import commands
 from discord import app_commands
 
 class Me(commands.Cog, name="me"):
-	"""Like minecraft set your own /me !"""
+	"""
+		Like minecraft set your own /me !
+	
+		Require intents: 
+			- None
+		
+		Require bot permission:
+			- None
+	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
