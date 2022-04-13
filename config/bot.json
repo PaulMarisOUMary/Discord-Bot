@@ -6,7 +6,18 @@
         "?help"
     ],
     "dad": {
-        "probability": 0.1
+        "jokes": [
+            {
+                "regex": "^(.*?[\\s])?(im|i\\ am|i\\'m)[\\s](?P<value>.+)",
+                "message": "Hi {value}, I'm {bot.user.mention}",
+                "probability": 0.1
+            },
+            {
+                "regex": "(.*)quoi\\W*",
+                "message": "feur.",
+                "probability": 0.25
+            }
+        ]
     },
     "private_vocal": {
         "main_channel_name": "\u2795",
