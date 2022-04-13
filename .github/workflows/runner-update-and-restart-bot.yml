@@ -4,7 +4,8 @@ name: "Update files & Restart bot on Linux server"
 on:
   push:
     paths:
-     - '!.github/**'
+      - '**'
+      - '!.github/**'
     branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
