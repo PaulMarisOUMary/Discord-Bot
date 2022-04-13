@@ -3,9 +3,6 @@ name: "Update files & Restart bot on Linux server"
 
 on:
   push:
-    paths:
-      - '**'
-      - '!.github/**'
     branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
