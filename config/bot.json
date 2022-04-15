@@ -13,8 +13,8 @@
                 "probability": 0.1
             },
             {
-                "regex": "(.*)quoi\\W*",
-                "message": "feur.",
+                "regex": "(.*)quoi[^a-zA-Z]*?$",
+                "message": "Feur.",
                 "probability": 0.25
             }
         ]
