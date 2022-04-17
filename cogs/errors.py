@@ -8,7 +8,7 @@ class Errors(commands.Cog, name="errors"):
 	"""Errors handler."""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
-		bot.tree.error(self.get_app_command_error)
+		bot.tree.error(coro = self.get_app_command_error)
 
 		self.default_error_message = "🕳️ There is an error."
 
@@ -58,7 +58,7 @@ class Errors(commands.Cog, name="errors"):
 			print(f"! Cogs.errors get_command_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
 
 	#@app_commands.Cog.listener("on_command_error") / @app_commands.Cog.listener("on_app_command_error") #still in dev, hopefully something like this
-	async def get_app_command_error(self, interaction: discord.Interaction, command: Optional[Union[discord.app_commands.Command, discord.app_commands.ContextMenu]], error: discord.app_commands.AppCommandError):
+	async def get_app_command_error(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
 		"""App command Error Handler
 		doc: https://discordpy.readthedocs.io/en/master/interactions/api.html#exception-hierarchy
 		"""
