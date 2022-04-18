@@ -4,6 +4,7 @@ from discord.ext import commands
 from views import bool
 from views import dropdown
 from views import link
+from views import modal
 
 class Views(commands.Cog, name="views"):
 	"""Experimental cog, new features such buttons, dropdown or whispering."""
@@ -61,6 +62,13 @@ class Views(commands.Cog, name="views"):
 		"""Discover button link with this feature."""
 		view = link.View(label="Source code on Github", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
 		await ctx.send("Find out what is behind Algobot !", view=view)
+
+	@commands.command(name="modal")
+	@commands.guild_only()
+	async def moda(self, ctx):
+		"""Discover button link with this feature."""
+		view = modal.View(source=ctx, label="Modal demo, click here.", emoji='📧')
+		await ctx.send(view=view)
 
 
 
