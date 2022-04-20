@@ -1,6 +1,8 @@
 import discord
 import functools
 
+from views.view import View as Parent
+
 class Dropdown(discord.ui.Select):
 	def __init__(self, ctx, options):
 		super().__init__(placeholder="Select a category...", min_values=1, max_values=1, options=options)
@@ -33,7 +35,7 @@ class Buttons(discord.ui.Button):
 		else:
 			await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
 
-class View(discord.ui.View):
+class View(Parent):
 	def __init__(self, mapping: dict, ctx: discord.ext.commands.context.Context, homeembed: discord.embeds.Embed, ui: int):
 		super().__init__()
 		self.mapping, self.ctx, self.home = mapping, ctx, homeembed

@@ -1,6 +1,8 @@
 import discord
 
-class View(discord.ui.View):
+from views.view import View as Parent
+
+class View(Parent):
 	"""Link View"""
 	def __init__(self, label : str, url : str):
 		super().__init__()

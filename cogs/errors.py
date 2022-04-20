@@ -1,6 +1,5 @@
 import discord
 
-from typing import Optional, Union
 from discord.ext import commands
 from discord import app_commands
 
@@ -8,7 +7,7 @@ class Errors(commands.Cog, name="errors"):
 	"""Errors handler."""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
-		bot.tree.error(coro = self.get_app_command_error)
+		bot.tree.error(coro = self.dispatch_to_app_command_handler)
 
 		self.default_error_message = "🕳️ There is an error."
 
@@ -17,6 +16,9 @@ class Errors(commands.Cog, name="errors"):
 		label = "Error"
 		description = "A custom errors handler. Nothing to see here."
 		return emoji, label, description"""
+
+	async def dispatch_to_app_command_handler(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
+		self.bot.dispatch("app_command_error", interaction, error)
 
 	@commands.Cog.listener("on_error")
 	async def get_error(self, event, *args, **kwargs):
@@ -27,6 +29,9 @@ class Errors(commands.Cog, name="errors"):
 	async def get_command_error(self, ctx: commands.Context, error: commands.CommandError):
 		"""Command Error handler"""
 		try:
+			if ctx.interaction: # Redirect HybridCommandError
+				await self.get_app_command_error(ctx.interaction, error.original)
+				return
 			try:
 				raise error
 			except commands.BotMissingPermissions as d_error:
@@ -57,7 +62,7 @@ class Errors(commands.Cog, name="errors"):
 		except Exception as e:
 			print(f"! Cogs.errors get_command_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
 
-	#@app_commands.Cog.listener("on_command_error") / @app_commands.Cog.listener("on_app_command_error") #still in dev, hopefully something like this
+	@commands.Cog.listener("on_app_command_error")
 	async def get_app_command_error(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
 		"""App command Error Handler
 		doc: https://discordpy.readthedocs.io/en/master/interactions/api.html#exception-hierarchy
@@ -95,6 +100,15 @@ class Errors(commands.Cog, name="errors"):
 
 			print(f"! Cogs.errors get_app_command_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
 
+	@commands.Cog.listener("on_view_error")
+	async def get_view_error(self, interaction: discord.Interaction, error: Exception, item: any):
+		"""View Error Handler"""
+		try:
+			raise error
+		except discord.errors.Forbidden:
+			pass
+		except Exception as e:
+			print(f"! Cogs.errors get_view_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
 
 
 async def setup(bot):

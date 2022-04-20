@@ -1,5 +1,7 @@
 import discord
 
+from views.view import View as Parent
+
 class Dropdown(discord.ui.Select):
     def __init__(self, options, source, placeholder : str, min_val : int, max_val : int):
         self.source = source
@@ -25,7 +27,7 @@ class Dropdown(discord.ui.Select):
         else:
             await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
 
-class View(discord.ui.View):
+class View(Parent):
     """Dropdown View"""
     def __init__(self, options, source, placeholder = "Select..", min_val = 1, max_val = 1):
         super().__init__()

@@ -1,6 +1,8 @@
 import discord
 
-class View(discord.ui.View):
+from views.view import View as Parent
+
+class View(Parent):
 	"""Bool View"""
 	def __init__(self, source, flabel = "Confirm", slabel = "Cancel", femoji = "✅", semoji= "🚫", fdisabled = False, sdisable = False, fstyle = discord.ButtonStyle.green, sstyle = discord.ButtonStyle.grey, emojis = True):
 		super().__init__()

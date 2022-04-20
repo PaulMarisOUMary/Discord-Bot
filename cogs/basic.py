@@ -13,18 +13,18 @@ class Basic(commands.Cog, name="basic"):
 			- None
 		
 		Require bot permission:
-			- None
+			- send_messages
 	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-	"""def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str]:
 		emoji = '📙'
 		label = "Basic"
 		description = "Basic commands, like ping."
-		return emoji, label, description"""
+		return emoji, label, description
 
-	@commands.hybrid_command(name="ping")
+	@commands.hybrid_command(name="ping", description="Ping the bot.")
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.bot_has_permissions(send_messages=True)
 	@app_commands.checks.cooldown(1, 5.0, key=lambda i: (i.guild_id, i.user.id))
@@ -36,7 +36,7 @@ class Basic(commands.Cog, name="basic"):
 		ping = (time.monotonic() - before) * 1000
 		await message.edit(content=f":ping_pong: Pong ! in `{float(round(ping/1000.0,3))}s` ||{int(ping)}ms||")
 
-    
-    
+
+
 async def setup(bot):
 	await bot.add_cog(Basic(bot))

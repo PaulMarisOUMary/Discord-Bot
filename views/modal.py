@@ -1,5 +1,6 @@
-from multiprocessing.dummy import Value
 import discord
+
+from views.view import View as Parent
 
 class SampleModal(discord.ui.Modal, title="Sample Modal"):
 	name = discord.ui.TextInput(
@@ -24,7 +25,7 @@ class SampleModal(discord.ui.Modal, title="Sample Modal"):
 		await interaction.response.send_message("Oops! Something went wrong.", ephemeral=True)
 
 
-class View(discord.ui.View):
+class View(Parent):
 	"""Button to Modal"""
 	def __init__(self, source, label, style=discord.ButtonStyle.grey, emoji=None, disabled=False):
 		super().__init__()
