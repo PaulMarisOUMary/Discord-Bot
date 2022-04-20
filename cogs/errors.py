@@ -39,7 +39,7 @@ class Errors(commands.Cog, name="errors"):
 			except commands.NoPrivateMessage:
 				await ctx.send("🕳️ This command cannot be used in a private message.")
 			except commands.CommandOnCooldown as d_error:
-				await ctx.send(f"🕳️ Command is on cooldown, wait `{str(d_error).split(' ')[7]}` !")
+				await ctx.send(f"🕳️ {d_error}")
 			except commands.MissingRequiredArgument:
 				await ctx.send(f"🕳️ Something is missing. `{ctx.clean_prefix}{ctx.command.name} <{'> <'.join(ctx.command.clean_params)}>`")
 			except commands.DisabledCommand:
@@ -48,7 +48,7 @@ class Errors(commands.Cog, name="errors"):
 				await ctx.send(f"🕳️ Member `{str(d_error).split(' ')[1]}` not found ! Don't hesitate to ping the requested member.")
 			except commands.MissingPermissions:
 				await ctx.send("🕳️ This command require more permissions.")
-			except commands.CommandInvokeError as d_error:
+			except commands.CommandInvokeError or commands.HybridCommandError as d_error:
 				await ctx.send(f"🕳️ {d_error.original}")
 			except Exception as e:
 				print(f"! Cogs.errors get_command_error (first level) : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
