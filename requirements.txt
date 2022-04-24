@@ -7,18 +7,18 @@
 # -- Uninstall all package(s) --
 # $ pip freeze | xargs pip uninstall -y
 
-aiomysql
-requests
+aiomysql == 0.0.22
+requests == 2.26.0
 
-tzlocal==4.2
+tzlocal == 4.2
 
-matplotlib
-Pillow
+matplotlib == 3.5.1
+Pillow == 9.0.1
 
-PyNaCl
+PyNaCl == 1.4.0
 
 #Require this specific version (internal package error, issue #299 of github.com/ssut/py-googletrans)
 googletrans == 4.0.0-rc1
 
-#discordpy master branch commit e515378076c64c5ab2f3a06237f2362ac8556290
-git+https://github.com/Rapptz/discord.py
+#discordpy master branch commit 277d35c9b22fc5b2c2e1b640305341ea7f524cc1
+git+https://github.com/Rapptz/discord.py@277d35c9b22fc5b2c2e1b640305341ea7f524cc1
