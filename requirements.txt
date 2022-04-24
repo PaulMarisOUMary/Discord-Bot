@@ -10,7 +10,7 @@
 aiomysql
 requests
 
-tzlocal==2.1
+tzlocal==4.2
 
 matplotlib
 Pillow
