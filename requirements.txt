@@ -15,7 +15,7 @@ tzlocal == 4.2
 matplotlib == 3.5.1
 Pillow == 9.0.1
 
-PyNaCl == 1.4.0
+PyNaCl
 
 #Require this specific version (internal package error, issue #299 of github.com/ssut/py-googletrans)
 googletrans == 4.0.0-rc1
