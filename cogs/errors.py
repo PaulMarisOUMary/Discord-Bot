@@ -27,7 +27,9 @@ class Errors(commands.Cog, name="errors"):
 
 	@commands.Cog.listener("on_command_error")
 	async def get_command_error(self, ctx: commands.Context, error: commands.CommandError):
-		"""Command Error handler"""
+		"""Command Error handler
+		doc: https://discordpy.readthedocs.io/en/master/ext/commands/api.html#exception-hierarchy
+		"""
 		try:
 			if ctx.interaction: # Redirect HybridCommandError
 				await self.get_app_command_error(ctx.interaction, error.original)
