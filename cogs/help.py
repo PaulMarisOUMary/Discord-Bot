@@ -1,5 +1,4 @@
 import discord
-import asyncio
 
 from discord.ext import commands
 from datetime import datetime, timedelta
@@ -29,13 +28,7 @@ class HelpCommand(commands.HelpCommand):
         embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*. Made for Algosup in 2020.\nI have a lot of features such translator, events manager, utils, and more.\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Algosup-Discord) !")
 
         view = vhelp.View(mapping = mapping, ctx = self.context, homeembed = embed, ui = 2)
-        message = await self.context.send(embed = embed, view = view)
-        try:
-            await asyncio.sleep(60*allowed)
-            view.stop()
-            await message.delete()
-        except: 
-            pass
+        await self.context.send(embed = embed, view = view, delete_after=60*allowed)
 
     async def send_command_help(self, command):
         cog = command.cog
