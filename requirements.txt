@@ -8,7 +8,7 @@
 # $ pip freeze | xargs pip uninstall -y
 
 aiomysql == 0.0.22
-requests == 2.26.0
+requests == 2.27.1
 
 tzlocal == 4.2
 
