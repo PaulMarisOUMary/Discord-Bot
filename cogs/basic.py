@@ -1,7 +1,6 @@
 import time
 
 from discord.ext import commands
-from discord import app_commands
 
 class Basic(commands.Cog, name="basic"):
 	"""
