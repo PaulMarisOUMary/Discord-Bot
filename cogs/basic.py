@@ -16,7 +16,7 @@ class Basic(commands.Cog, name="basic"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-	def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '📙'
 		label = "Basic"
 		description = "Basic commands, like ping."

@@ -28,7 +28,7 @@ class Usefull(commands.Cog, name="usefull"):
 
 	@app_commands.command(name="reminder", description="Reminds you of something.")
 	@app_commands.describe(hours="Hours.", minutes="Minutes.", seconds="Seconds.", message="Your reminder message.")
-	@app_commands.choices(hours=[Choice(name=i, value=i) for i in range(0, 25)], minutes=[Choice(name=i, value=i) for i in range(0, 56, 5)], seconds=[Choice(name=i, value=i) for i in range(5, 56, 5)])
+	@app_commands.choices(hours=[Choice(name=str(i), value=i) for i in range(0, 25)], minutes=[Choice(name=str(i), value=i) for i in range(0, 56, 5)], seconds=[Choice(name=str(i), value=i) for i in range(5, 56, 5)])
 	@app_commands.checks.bot_has_permissions(send_messages=True)
 	@app_commands.checks.has_permissions(use_slash_commands=True)
 	async def reminder(self, interaction: discord.Interaction, hours: int, minutes: int, seconds: int, message: str) -> None:

@@ -26,7 +26,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-	def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '💬'
 		label = "Private Textual"
 		description = "Add and edit textuals channels."

@@ -22,7 +22,11 @@ class Dropdown(discord.ui.Select):
 	async def callback(self, interaction: discord.Interaction):
 		if self.invoker == interaction.user:
 			if self.values[0] in ["All", "Next", "When"]:
-				embed =  {"All":functools.partial(self.main.all, self.source), "Next":functools.partial(self.main.next, self.source), "When":functools.partial(self.main.when, interaction.user)}.get(self.values[0], 0)()
+				embed =  {
+					"All": functools.partial(self.main.all, self.source), 
+					"Next": functools.partial(self.main.next, self.source), 
+					"When": functools.partial(self.main.when, interaction.user)
+				}.get(self.values[0], 0)()
 				await interaction.response.edit_message(embed=embed, view=self.view)
 			elif self.values[0] == "Home":
 				await interaction.response.edit_message(embed=self.embed, view=self.view)

@@ -5,11 +5,11 @@ from datetime import datetime, date
 
 class DataSQL():
     def __init__(self, host:str = "127.0.0.1", port:int = 3306, loop:asyncio.AbstractEventLoop = None) -> None:
-        self.loop, self.host, self.port, self.connector = loop, host, port, None
+        self.loop, self.host, self.port = loop, host, port
 
     async def auth(self, user:str="root", password:str='', database:str="mysql", autocommit:bool = True) -> None:
         self.__authUser, self.__authPassword, self.__authDatabase, self.__authAutocommit = user, password, database, autocommit
-        self.connector = await aiomysql.connect(
+        self.connector: aiomysql.connection.Connection = await aiomysql.connect(
             host=self.host, 
             port=self.port, 
             user=user, 
@@ -30,10 +30,10 @@ class DataSQL():
                 if e.args[0] == 2013: #Lost connection to SQL server during query
                     await self.auth(self.__authUser, self.__authPassword, self.__authDatabase, self.__authAutocommit)
                     return await self.query(query)
-                return e            
+                raise e            
 
             except Exception as e:
-                return e
+                raise e
     
     async def select(self, table:str, target:str, condition:str = '', order:str = '', limit:str='') -> query:
         query = f"SELECT {target} FROM `{table}`"

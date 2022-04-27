@@ -21,7 +21,7 @@ class SampleModal(discord.ui.Modal, title="Sample Modal"):
 	async def on_submit(self, interaction: discord.Interaction):
 		await interaction.response.send_message(f"Thanks for your feedback, `{self.name.value}` !\n{self.feedback.value}", ephemeral=True)
 
-	async def on_error(self, error: Exception, interaction: discord.Interaction) -> None:
+	async def on_error(self, error: Exception, interaction: discord.Interaction, item: any) -> None:
 		await interaction.response.send_message("Oops! Something went wrong.", ephemeral=True)
 
 

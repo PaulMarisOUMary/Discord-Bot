@@ -18,7 +18,7 @@ class Spotify(commands.Cog, name="spotify"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-	def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = "<:spotify:880896591756656641>"
 		label = "Spotify"
 		description = "Spotify status commands."

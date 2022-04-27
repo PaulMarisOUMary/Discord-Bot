@@ -41,7 +41,7 @@ class Info(commands.Cog, name="info"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-	def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '📊'
 		label = "Info"
 		description = "Commands about additionals informations such as stats."

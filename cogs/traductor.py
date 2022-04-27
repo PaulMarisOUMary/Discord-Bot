@@ -19,7 +19,7 @@ class Traductor(commands.Cog, name="traductor"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-	def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = "<:Gtranslate:807986736663101440>"
 		label = "Traductor"
 		description = "Informations about the Traductor."

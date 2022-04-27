@@ -19,7 +19,7 @@ class Me(commands.Cog, name="me"):
 		self.me_data = self.bot.config["database"]["me"]
 		self.max_lenght_me = self.me_data["max_length"]
 
-	def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '🤙'
 		label = "Me"
 		description = "Set and show a brief description of yourself."
