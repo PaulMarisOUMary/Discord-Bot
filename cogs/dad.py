@@ -19,7 +19,7 @@ class Dad(commands.Cog, name="dad"):
         self.bot = bot
         self.settings = bot.config["bot"]["dad"]
 
-    def help_custom(self) -> tuple[str]:
+    def help_custom(self) -> tuple[str, str, str]:
         emoji = '👨‍🦳'
         label = "Dad's jokes"
         description = "Ahah, it was a good one!"

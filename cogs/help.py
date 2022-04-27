@@ -8,7 +8,7 @@ from views import help as vhelp
 class HelpCommand(commands.HelpCommand):
     """Help command"""
 
-    async def on_help_command_error(self, ctx, error) -> None:
+    async def on_help_command_error(self, ctx, error):
         handledErrors = [
             commands.CommandOnCooldown, 
             commands.CommandNotFound
@@ -18,10 +18,10 @@ class HelpCommand(commands.HelpCommand):
             print("! Help command Error :", error, type(error), type(error).__name__)
             return await super().on_help_command_error(ctx, error)
 
-    def command_not_found(self, string) -> None:
+    def command_not_found(self, string):
         raise commands.CommandNotFound(f"Command {string} is not found")
 
-    async def send_bot_help(self, mapping) -> None:
+    async def send_bot_help(self, mapping):
         allowed = 5
         close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
         embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = f"`Welcome to the help page.`\n\n**The prefix on this server is**: `{self.context.clean_prefix}`.\n\nUse `help command` for more info on a command.\nUse `help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Algosup-Discord')
@@ -91,7 +91,7 @@ class Help(commands.Cog, name="help"):
     async def cog_unload(self) -> None:
         self.bot.help_command = self._original_help_command
 
-    def help_custom(self) -> tuple[str]:
+    def help_custom(self) -> tuple[str, str, str]:
         emoji = '🆘'
         label = "Help"
         description = "Help utilities."

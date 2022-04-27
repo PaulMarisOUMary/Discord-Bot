@@ -24,7 +24,7 @@ class Birthday(commands.Cog, name="birthday"):
 
 		self.birthday_data = bot.config["database"]["birthday"]
 
-	def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '🎁'
 		label = "Birthday"
 		description = "Maybe I'll wish you soon a happy birthday !"
@@ -66,10 +66,10 @@ class Birthday(commands.Cog, name="birthday"):
 		await self.bot.wait_until_ready()
 		while self.bot.database.connector is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
-	async def year_suggest(self, _: discord.Interaction, current: str):
+	async def year_suggest(self, _: discord.Interaction, current: str) -> list[Choice]:
 		years = [str(i) for i in range(datetime.now().year - 99, datetime.now().year - 15)]
 		if not current: 
-			out = [app_commands.Choice(name=i, value=i) for i in range(datetime.now().year - 30, datetime.now().year - 15)]
+			out = [app_commands.Choice(name=str(i), value=i) for i in range(datetime.now().year - 30, datetime.now().year - 15)]
 		else:
 			out = [app_commands.Choice(name=year, value=int(year)) for year in years if str(current) in year]
 		if len(out) > 25:
@@ -77,10 +77,10 @@ class Birthday(commands.Cog, name="birthday"):
 		else:
 			return out
 
-	async def day_suggest(self, _: discord.Interaction, current: str):
+	async def day_suggest(self, _: discord.Interaction, current: str) -> list[Choice]:
 		days = [str(i) for i in range(1, 32)]
 		if not current:
-			out = [app_commands.Choice(name=i, value=i) for i in range(1, 16)]
+			out = [app_commands.Choice(name=str(i), value=i) for i in range(1, 16)]
 		else:
 			out = [app_commands.Choice(name=day, value=int(day)) for day in days if str(current) in day]
 		if len(out) > 25:
@@ -121,7 +121,7 @@ class Birthday(commands.Cog, name="birthday"):
 			user = interaction.user
 		await self.show_birthday_message(interaction, user)
 
-	async def show_birthday_message(self, interaction: discord.Interaction, user:discord.Member) -> None:
+	async def show_birthday_message(self, interaction: discord.Interaction, user: discord.Member) -> None:
 		response = await self.bot.database.lookup(self.birthday_data["table"], "user_birth", "user_id", str(user.id))
 		if response:
 			dataDate : date = response[0][0]

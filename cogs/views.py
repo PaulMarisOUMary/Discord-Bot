@@ -11,7 +11,7 @@ class Views(commands.Cog, name="views"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-	def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '🔘'
 		label = "Views"
 		description = "Demo : New discord features."

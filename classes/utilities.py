@@ -24,7 +24,7 @@ def load_config() -> dict:
 			config[filename] = credential(file)
 	return config
 
-async def cogs_manager(bot: commands.Bot, mode: str, cogs: str) -> None:
+async def cogs_manager(bot: commands.Bot, mode: str, cogs: list[str]) -> None:
 	for cog in cogs:
 		try:
 			if mode == "unload":

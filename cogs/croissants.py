@@ -31,7 +31,7 @@ class Croissants(commands.Cog, name="croissants"):
 
 		self.croissants_data = self.bot.config["database"]["croissants"]
 
-	def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = self.EMOJI
 		label = "Croissants"
 		description = "For when someone left their computer unlocked."

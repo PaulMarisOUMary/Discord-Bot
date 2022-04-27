@@ -4,6 +4,7 @@ import os
 from classes.utilities import load_config ,cogs_manager, reload_views, cogs_directory, root_directory
 
 from discord.ext import commands
+from typing import Optional
 
 class Admin(commands.Cog, name="admin"):
 	"""
@@ -20,7 +21,7 @@ class Admin(commands.Cog, name="admin"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-	def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '⚙️'
 		label = "Admin"
 		description = "Show the list of admin commands."
@@ -55,10 +56,10 @@ class Admin(commands.Cog, name="admin"):
 	@commands.command(name="reload", aliases=["rel"], require_var_positional=True)
 	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
-	async def reload_cogs(self, ctx: commands.Context, *cogs: str):
+	async def reload_specified_cogs(self, ctx: commands.Context, *cogs: str):
 		"""Reload specific cogs."""
-		cogs = [f"cogs.{cog}" for cog in cogs]
-		await cogs_manager(self.bot, "reload", cogs)
+		reload_cogs = [f"cogs.{cog}" for cog in cogs]
+		await cogs_manager(self.bot, "reload", reload_cogs)
 
 		await ctx.send(f":thumbsup: `{'` `'.join(cogs)}` reloaded!")
 
@@ -67,7 +68,7 @@ class Admin(commands.Cog, name="admin"):
 	@commands.is_owner()
 	async def reload_latest_cogs(self, ctx: commands.Context, n_cogs: int = 1):
 		"""Reload the latest edited n cogs."""
-		def sort_cogs(cogs_last_edit):
+		def sort_cogs(cogs_last_edit: list[list]) -> list[list]:
 			return sorted(cogs_last_edit, reverse = True, key = lambda x: x[1])
 		
 		cogs = []
@@ -79,10 +80,10 @@ class Admin(commands.Cog, name="admin"):
 				cogs.append([actual[0], latest_edit])
 
 		sorted_cogs = sort_cogs(cogs)
-		cogs = [f"cogs.{cog[0]}" for cog in sorted_cogs[:n_cogs]]
-		await cogs_manager(self.bot, "reload", cogs)
+		reload_cogs = [f"cogs.{cog[0]}" for cog in sorted_cogs[:n_cogs]]
+		await cogs_manager(self.bot, "reload", reload_cogs)
 
-		await ctx.send(f":point_down: `{'` `'.join(cogs)}` reloaded!")
+		await ctx.send(f":point_down: `{'` `'.join(reload_cogs)}` reloaded!")
 		
 	@commands.command(name="reloadviews", aliases=["rv"])
 	@commands.bot_has_permissions(send_messages=True)
@@ -106,12 +107,12 @@ class Admin(commands.Cog, name="admin"):
 	@commands.command(name="synctree", aliases=["st"])
 	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
-	async def reload_tree(self, ctx: commands.Context, guild_id: str = None):
+	async def reload_tree(self, ctx: commands.Context, guild_id: Optional[str | int] = None):
 		"""Sync application commands."""
 		if guild_id:
 			if guild_id == "guild":
 				guild_id = ctx.guild.id
-			sync_tree = await self.bot.tree.sync(guild=discord.Object(id=int(guild_id)))
+			sync_tree = await self.bot.tree.sync(guild=discord.Object(id=guild_id))
 		else:
 			sync_tree = await self.bot.tree.sync()
 		await ctx.send(f":pinched_fingers: `{len(sync_tree)}` synced!")
