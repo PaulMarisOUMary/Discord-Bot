@@ -94,7 +94,7 @@ class Errors(commands.Cog, name="errors"):
 			await edit(content=f"🕳️ Max concurrency reached. Maximum number of concurrent invokers allowed: `{d_error.number}`, per `{d_error.per}`.")
 		# HybridCommandError
 		except commands.HybridCommandError as d_error:
-			print("Hybrid")
+			await self.get_app_command_error(ctx.interaction, error)
 		except Exception as e:
 			print(f"! Cogs.errors get_command_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
 
