@@ -107,7 +107,7 @@ class Admin(commands.Cog, name="admin"):
 	@commands.command(name="synctree", aliases=["st"])
 	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
-	async def reload_tree(self, ctx: commands.Context, guild_id: Optional[str | int] = None):
+	async def reload_tree(self, ctx: commands.Context, guild_id: str = None):
 		"""Sync application commands."""
 		if guild_id:
 			if guild_id == "guild":
