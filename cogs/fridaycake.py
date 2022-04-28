@@ -1,6 +1,5 @@
 import random
 import discord
-import asyncio
 
 from views import fridaycake
 
@@ -115,7 +114,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 
 	@commands.command(name='fridaycake', aliases=['f', 'fh', 'fc'])
 	@commands.bot_has_permissions(send_messages=True)
-	async def fridaycake(self, ctx):
+	async def fridaycake(self, ctx: commands.Context):
 		"""Show the main menu about the FridayCake event."""
 		allowed = 5
 		close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
@@ -134,13 +133,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		
 		view = fridaycake.View(options=options, placeholder="Select an action..", min_val=1, max_val=1, source=ctx, main=self, embed=embed)
 
-		message = await ctx.send(embed=embed, view=view)
-		try:
-			await asyncio.sleep(60*allowed)
-			view.stop()
-			await message.delete()
-		except: 
-			pass
+		await ctx.send(embed=embed, view=view, delete_after=60*allowed)
 
 	@commands.command(name='next', aliases=['n', 'fn'])
 	@commands.bot_has_permissions(send_messages=True)

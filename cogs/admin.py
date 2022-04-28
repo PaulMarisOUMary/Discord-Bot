@@ -133,11 +133,12 @@ class Admin(commands.Cog, name="admin"):
 	async def change_guild_prefix(self, ctx, new_prefix):
 		"""Change the guild prefix."""
 		try:
-			exist = await self.bot.database.exist(self.bot.database_data["prefix"]["table"], "*", f"guild_id={ctx.guild.id}")
+			table = self.bot.config["database"]["prefix"]["table"]
+			exist = await self.bot.database.exist(table, "*", f"guild_id={ctx.guild.id}")
 			if exist:
-				await self.bot.database.update(self.bot.database_data["prefix"]["table"], "guild_prefix", new_prefix, f"guild_id={ctx.guild.id}")
+				await self.bot.database.update(table, "guild_prefix", new_prefix, f"guild_id={ctx.guild.id}")
 			else:
-				await self.bot.database.insert(self.bot.database_data["prefix"]["table"], {"guild_id": ctx.guild.id, "guild_prefix": new_prefix})
+				await self.bot.database.insert(table, {"guild_id": ctx.guild.id, "guild_prefix": new_prefix})
 
 			self.bot.prefixes[ctx.guild.id] = new_prefix
 			await ctx.send(f":warning: Prefix changed to `{new_prefix}`")

@@ -1,7 +1,6 @@
 import time
 
 from discord.ext import commands
-from discord import app_commands
 
 class Basic(commands.Cog, name="basic"):
 	"""
@@ -25,8 +24,6 @@ class Basic(commands.Cog, name="basic"):
 	@commands.hybrid_command(name="ping", description="Ping the bot.")
 	@commands.cooldown(1, 5, commands.BucketType.user)
 	@commands.bot_has_permissions(send_messages=True)
-	@app_commands.checks.cooldown(1, 5.0, key=lambda i: (i.guild_id, i.user.id))
-	@app_commands.checks.has_permissions(use_slash_commands=True)
 	async def ping(self, ctx: commands.Context):
 		"""Show latency in seconds & milliseconds"""
 		before = time.monotonic()
