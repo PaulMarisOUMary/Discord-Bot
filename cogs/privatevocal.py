@@ -2,6 +2,8 @@ import discord
 
 from datetime import datetime
 from discord.ext import commands
+from discord import app_commands
+from discord.app_commands import Choice
 from typing import Union
 
 class PrivateVocal(commands.Cog, name="privatevocal"):
@@ -35,6 +37,9 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 				self.tracker[member.guild.id] = dict()
 				self.tracker[member.guild.id]["cooldown"] = dict()
 				self.tracker[member.guild.id]["channels"] = dict()
+
+	def __is_private_vocal(self, channel: discord.VoiceChannel, guild_channels: dict[int, int]) -> bool:
+		return channel.id in guild_channels
 
 	def __is_join_channel(self, channel: Union[discord.VoiceChannel, discord.StageChannel]) -> bool:
 		return channel.user_limit == 1 and channel.name == self.MAIN_CHANNEL_NAME
@@ -70,6 +75,27 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 			else:
 				del guild_id["channels"][before.channel.id]
 				await before.channel.delete()
+
+	@commands.hybrid_command(name="userlimit", description="Limit the number of user(s) in your private channel.")
+	@commands.cooldown(1, 10, commands.BucketType.user)
+	@commands.bot_has_permissions(send_messages=True)
+	@app_commands.choices(limit=[Choice(name=str(i), value=i) for i in range(1, 26)])
+	@app_commands.describe(limit="The number of max user(s) in your private channel.")
+	async def lock_private_vocal(self, ctx: commands.Context, limit: int = None):
+		"""Limit the number of user(s) in your private channel."""
+		voice = ctx.author.voice
+		if not voice:
+			await ctx.send("You're not in a voice channel.", ephemeral=True)
+			return
+		elif not self.__is_private_vocal(voice.channel, self.tracker[ctx.guild.id]["channels"]):
+			await ctx.send("You're not in a private vocal channel.", ephemeral=True)
+			return
+		
+		if not limit or limit < 1 or limit > 99:
+			limit = len(voice.channel.members)
+
+		await voice.channel.edit(user_limit=limit)
+		await ctx.send(f"Vocal user-limit set to `{limit}`.", ephemeral=True)
 
 
 

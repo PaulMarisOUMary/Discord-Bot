@@ -22,7 +22,7 @@ class Errors(commands.Cog, name="errors"):
 
 	async def __respond_to_interaction(self, interaction: discord.Interaction) -> bool:
 		try:
-			await interaction.response.send_message(self.default_error_message)
+			await interaction.response.send_message(content=self.default_error_message, ephemeral=True)
 			return True
 		except discord.errors.InteractionResponded:
 			return False
