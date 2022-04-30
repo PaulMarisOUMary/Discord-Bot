@@ -92,7 +92,6 @@ class Birthday(commands.Cog, name="birthday"):
 	@app_commands.describe(month="Your month of birth.", day="Your day of birth.", year="Your year of birth.")
 	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
 	@app_commands.autocomplete(day=day_suggest, year=year_suggest)
-	@app_commands.checks.has_permissions(use_slash_commands=True)
 	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
 	async def birthday(self, interaction: discord.Interaction, month: int, day: int, year: int):
 		"""Allows you to set/show your birthday."""

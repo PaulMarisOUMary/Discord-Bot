@@ -30,7 +30,6 @@ class Usefull(commands.Cog, name="usefull"):
 	@app_commands.describe(hours="Hours.", minutes="Minutes.", seconds="Seconds.", message="Your reminder message.")
 	@app_commands.choices(hours=[Choice(name=str(i), value=i) for i in range(0, 25)], minutes=[Choice(name=str(i), value=i) for i in range(0, 56, 5)], seconds=[Choice(name=str(i), value=i) for i in range(5, 56, 5)])
 	@app_commands.checks.bot_has_permissions(send_messages=True)
-	@app_commands.checks.has_permissions(use_slash_commands=True)
 	async def reminder(self, interaction: discord.Interaction, hours: int, minutes: int, seconds: int, message: str) -> None:
 		"""Reminds you of something."""
 		remind_in = round(datetime.timestamp(datetime.now() + timedelta(hours=hours, minutes=minutes, seconds=seconds)))
@@ -41,7 +40,6 @@ class Usefull(commands.Cog, name="usefull"):
 
 	@app_commands.command(name="strawpoll", description="Create a strawpoll.")
 	@app_commands.describe(question="The question of the strawpoll.")
-	@app_commands.checks.has_permissions(use_slash_commands=True)
 	async def avatar(self, interaction: discord.Interaction, question: str):
 		await interaction.response.send_message(content=f"__*{interaction.user.mention}*__ : {question}", allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=False))
 		message = await interaction.original_message()
