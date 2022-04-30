@@ -4,7 +4,6 @@ import os
 from classes.utilities import load_config ,cogs_manager, reload_views, cogs_directory, root_directory
 
 from discord.ext import commands
-from typing import Optional
 
 class Admin(commands.Cog, name="admin"):
 	"""
@@ -110,7 +109,7 @@ class Admin(commands.Cog, name="admin"):
 	async def reload_tree(self, ctx: commands.Context, guild_id: str = None):
 		"""Sync application commands."""
 		if guild_id:
-			if guild_id == "guild":
+			if guild_id == "guild" or guild_id == "~":
 				guild_id = ctx.guild.id
 			sync_tree = await self.bot.tree.sync(guild=discord.Object(id=guild_id))
 		else:
@@ -126,11 +125,11 @@ class Admin(commands.Cog, name="admin"):
 
 		await ctx.send(file=discord.File(fp=logs_file, filename="bot.log"))
 
-	@commands.command(name="changeprefix", aliases=["cp"], require_var_positional=True)
+	@commands.command(name="changeprefix", aliases=["cp", "prefix"], require_var_positional=True)
 	@commands.bot_has_permissions(send_messages=True)
 	@commands.has_guild_permissions(administrator=True)
 	@commands.guild_only()
-	async def change_guild_prefix(self, ctx, new_prefix):
+	async def change_guild_prefix(self, ctx: commands.Context, new_prefix: str):
 		"""Change the guild prefix."""
 		try:
 			table = self.bot.config["database"]["prefix"]["table"]
