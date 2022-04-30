@@ -38,7 +38,7 @@ class PrivateTextual(commands.Cog, name="privatetextual"):
 	@commands.guild_only()
 	async def create_private_channel(self, ctx, *members : discord.Member):
 		"""Create a private textual channel."""
-		users, mentions, down_role = [ctx.message.author], "", discord.utils.get(ctx.guild.roles, name="🎓Student")
+		users, mentions, down_role = [ctx.message.author], "", discord.utils.get(ctx.guild.roles, name="Student")
 
 		for g in members:
 			if g.bot: 
