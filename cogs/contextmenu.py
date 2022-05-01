@@ -1,5 +1,7 @@
 import discord
 
+from classes.translator import Translator
+
 from discord.ext import commands
 from discord import app_commands
 
@@ -15,7 +17,7 @@ class ContextMenu(commands.Cog):
                 #guild_ids=[id, id, ...]
             ),
             app_commands.ContextMenu(
-                name = "Translate",
+                name = "Translate to English",
                 callback = self.translate,
                 type = discord.AppCommandType.message,
             )
@@ -32,9 +34,12 @@ class ContextMenu(commands.Cog):
         await interaction.response.send_message(f"{member.mention} joined the {discord.utils.format_dt(member.joined_at)}", ephemeral=True)
 
     async def translate(self, interaction: discord.Interaction, message: discord.Message):
-        await interaction.response.send_message("Comming soon ! More about [here](https://github.com/PaulMarisOUMary/Algosup-Discord)", ephemeral=True)
+        content = message.content
 
-
+        analysis = Translator.detect(content)
+        flag_emoji = Translator.get_emoji(analysis)
+        translation = Translator.translate(message.content, dest="en", src="auto")
+        await interaction.response.send_message(f"{flag_emoji} -> {Translator.get_emoji('en')} **:** {translation}", ephemeral=True)
 
 async def setup(bot):
 	await bot.add_cog(ContextMenu(bot))
