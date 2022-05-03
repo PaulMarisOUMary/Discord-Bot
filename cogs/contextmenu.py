@@ -61,7 +61,7 @@ class ContextMenu(commands.Cog):
         await self.translate(interaction, message, "en")
 
     async def translate_to_your_language(self, interaction: discord.Interaction, message: discord.Message):
-        dest = Translator.get_flag_abbr(str(interaction.locale))
+        dest = Translator.get_trans_abbr(str(interaction.locale))
         await self.translate(interaction, message, dest)
 
 async def setup(bot):

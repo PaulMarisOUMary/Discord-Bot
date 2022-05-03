@@ -7,9 +7,7 @@ class Translator:
         "af": "za",
         "am": "et",
         "ar": "ae",
-        "az": "az", # key == value
         "be": "by",
-        "bg": "bg", # key == value
         "bn": "bd",
         "bs": "ba",
         "ca": "es", # invalid flag
@@ -18,19 +16,15 @@ class Translator:
         "cs": "cz",
         "cy": "gb",
         "da": "dk",
-        "de": "de", # key == value
         "el": "gr",
         "en": "gb",
         "en-gb": "gb",
         "en-us": "us",
         "eo": "pl",
-        "es": "es", # key == value
         "es-es": "es",
         "et": "ee",
         "eu": "es",
         "fa": "ir",
-        "fi": "fi", # key == value
-        "fr": "fr", # key == value
         "fy": "nl", # invalid flag
         "ga": "ie",
         "gd": "en",
@@ -41,14 +35,9 @@ class Translator:
         "he": "il",
         "hi": "in",
         "hmn": "la",
-        "hr": "hr", # key == value
         "ht": "us", # invalid flag
-        "hu": "hu", # key == value
         "hy": "am",
-        "id": "id", # key == value
         "ig": "ng", # invalid flag
-        "is": "is", # key == value
-        "it": "it", # key == value
         "iw": "il",
         "ja": "jp",
         "jw": "id",
@@ -62,36 +51,22 @@ class Translator:
         "la": None, # ! critical invalid flag
         "lb": "lu",
         "lo": "la",
-        "lt": "lt", # key == value
-        "lv": "lv", # key == value
-        "mg": "mg", # key == value
         "mi": "nz",
-        "mk": "mk", # key == value
         "ml": "in", # invalid flag
-        "mn": "mn", # key == value
         "mr": "in",
         "ms": "in",
-        "mt": "mt", # key == value
         "my": "mm",
         "ne": "np",
-        "nl": "nl", # key == value
-        "no": "no", # key == value
         "ny": "mw",
         "or": "in",
         "pa": "in", # invalid flag
-        "pl": "pl", # key == value
         "ps": "af",
-        "pt": "pt", # key == value
         "pt-br": "br",
-        "ro": "ro", # key == value
-        "ru": "ru", # key == value
         "sd": "pk",
         "si": "lk",
-        "sk": "sk", # key == value
         "sl": "si",
         "sm": "ws",
         "sn": "zw",
-        "so": "so", # key == value
         "sq": "al",
         "sr": "rs",
         "st": "ls",
@@ -102,13 +77,9 @@ class Translator:
         "ta": "in", # invalid flag
         "te": "in", # invalid flag
         "tg": "tj",
-        "th": "th", # key == value
         "tl": "hn",
-        "tr": "tr", # key == value
         "ug": "cn",
-        "uk": "uk", # key == value
         "ur": "pk",
-        "uz": "uz", # key == value
         "vi": "vn",
         "xh": "za",
         "yi": "il", # invalid flag
@@ -116,6 +87,15 @@ class Translator:
         "zh-cn": "cn",
         "zh-tw": "tw",
         "zu": "za" # invalid flag
+    }
+
+    # doc: https://discordpy.readthedocs.io/en/master/api.html?highlight=loca#discord.Locale
+    LOCALE_CONVERSION: dict[str, str] = {
+        "en-us": "en",
+        "en-gb": "en",
+        "es-es": "es",
+        "pt-br": "pt",
+        "sv-se": "sv"
     }
 
     @staticmethod
@@ -129,6 +109,10 @@ class Translator:
     @staticmethod
     def get_flag_abbr(code_lang: str) -> str:
         return Translator.CORRECT_CONVERSION.get(code_lang.lower(), code_lang.lower())
+
+    @staticmethod
+    def get_trans_abbr(locale: str) -> str:
+        return Translator.LOCALE_CONVERSION.get(locale.lower(), locale.lower())
 
     @staticmethod
     def get_emoji(code_lang: str) -> str:
