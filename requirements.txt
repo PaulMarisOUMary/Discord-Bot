@@ -12,7 +12,7 @@ requests == 2.27.1
 
 tzlocal == 4.2
 
-matplotlib == 3.5.1
+matplotlib == 3.5.2
 Pillow == 9.1.0
 
 PyNaCl
