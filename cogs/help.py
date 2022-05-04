@@ -23,9 +23,9 @@ class HelpCommand(commands.HelpCommand):
     async def send_bot_help(self, mapping):
         allowed = 5
         close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
-        embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = f"`Welcome to the help page.`\n\n**The prefix on this server is**: `{self.context.clean_prefix}`.\n\nUse `help command` for more info on a command.\nUse `help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+        embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = f"`Welcome to the help page.`\n\n**The prefix on this server is**: `{self.context.clean_prefix}`.\n\nUse `help command` for more info on a command.\nUse `help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Discord-Bot')
         embed.add_field(name="Time remaining :", value=f"This help session will end <t:{close_in}:R>.\nType `help` to open a new session.\n\u200b", inline=False)
-        embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*. Made for Algosup in 2020.\nI have a lot of features such translator, events manager, utils, and more.\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Algosup-Discord) !")
+        embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*. Made for Algosup in 2020.\nI have a lot of features such translator, events manager, utils, and more.\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Discord-Bot) !")
 
         view = vhelp.View(mapping = mapping, ctx = self.context, homeembed = embed, ui = 2)
         await self.context.send(embed = embed, view = view, delete_after=60*allowed)
@@ -34,7 +34,7 @@ class HelpCommand(commands.HelpCommand):
         cog = command.cog
         if "help_custom" in dir(cog):
             emoji, label, _ = cog.help_custom()
-            embed = discord.Embed(title = f"{emoji} Help · {label} : {command.name}", description=f"**Command** : {command.name}\n{command.help}", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
+            embed = discord.Embed(title = f"{emoji} Help · {label} : {command.name}", description=f"**Command** : {command.name}\n{command.help}", url="https://github.com/PaulMarisOUMary/Discord-Bot")
             params = ""
             for param in command.clean_params: 
                 params += f" <{param}>"
@@ -46,7 +46,7 @@ class HelpCommand(commands.HelpCommand):
     async def send_cog_help(self, cog):
         if "help_custom" in dir(cog):
             emoji, label, _ = cog.help_custom()
-            embed = discord.Embed(title = f"{emoji} Help · {label}",description=f"`{cog.__doc__}`", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
+            embed = discord.Embed(title = f"{emoji} Help · {label}",description=f"`{cog.__doc__}`", url="https://github.com/PaulMarisOUMary/Discord-Bot")
             for command in cog.get_commands():
                 params = ""
                 for param in command.clean_params: 

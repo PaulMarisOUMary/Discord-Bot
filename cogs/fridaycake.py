@@ -65,13 +65,13 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 
 	def all(self, ctx) -> discord.Embed:
 		author = ctx.message.author
-		embed = discord.Embed(title=f"{random.choice(self.cakes)} Fridaycake · All", description="`Show your personnal order of passage.`\n\u200b" ,colour=0xf7346b, url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+		embed = discord.Embed(title=f"{random.choice(self.cakes)} Fridaycake · All", description="`Show your personnal order of passage.`\n\u200b" ,colour=0xf7346b, url='https://github.com/PaulMarisOUMary/Discord-Bot')
 		embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
 			
 		for participants, _date in zip(self.participants, get_dates(start, holidays, len(self.participants))): 
 			string = "`"
 			for _id, names in participants:
-				string += f"{names}` & `" if not int(_id) == author.id else f"{names}` [ᐊ](https://github.com/PaulMarisOUMary/Algosup-Discord) & `"
+				string += f"{names}` & `" if not int(_id) == author.id else f"{names}` [ᐊ](https://github.com/PaulMarisOUMary/Discord-Bot) & `"
 			embed.add_field(name=f"Friday {_date.strftime('%d %B, %Y')}", value=f"~~{string[0:-4]}~~" if date.today() >= _date else f"{string[0:-4]}", inline=False)
 		return embed
 
@@ -86,8 +86,8 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		else:
 			participants = ''
 			for _id, names in pin[0]:
-				participants += f"<@{_id}> `{names}`\n" if not _id == author.id else f"<@{_id}> `{names}` [ᐊ](https://github.com/PaulMarisOUMary/Algosup-Discord)\n"
-			embed = discord.Embed(title=f"{random.choice(self.cakes)} Fridaycake · Next", description="`Show who are the next to make a cake.`\n\u200b" ,colour=0xf7346b, url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+				participants += f"<@{_id}> `{names}`\n" if not _id == author.id else f"<@{_id}> `{names}` [ᐊ](https://github.com/PaulMarisOUMary/Discord-Bot)\n"
+			embed = discord.Embed(title=f"{random.choice(self.cakes)} Fridaycake · Next", description="`Show who are the next to make a cake.`\n\u200b" ,colour=0xf7346b, url='https://github.com/PaulMarisOUMary/Discord-Bot')
 			embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
 			embed.add_field(name=f"📅 Date :", value=f"Friday {pin[1].strftime('%d %B, %Y')}\n\u200b", inline=False)
 			embed.add_field(name="👥 Participants :", value=participants, inline=False)
@@ -104,8 +104,8 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 		else:
 			participants = ''
 			for _id, names in pin[0]:
-				participants += f"<@{_id}> `{names}`\n" if not int(_id) == author.id else f"<@{_id}> `{names}` [ᐊ](https://github.com/PaulMarisOUMary/Algosup-Discord)\n"
-			embed = discord.Embed(title=f"{random.choice(self.cakes)} Fridaycake · When", description="`Show your personnal order of passage.`\n\u200b" ,colour=0xf7346b, url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+				participants += f"<@{_id}> `{names}`\n" if not int(_id) == author.id else f"<@{_id}> `{names}` [ᐊ](https://github.com/PaulMarisOUMary/Discord-Bot)\n"
+			embed = discord.Embed(title=f"{random.choice(self.cakes)} Fridaycake · When", description="`Show your personnal order of passage.`\n\u200b" ,colour=0xf7346b, url='https://github.com/PaulMarisOUMary/Discord-Bot')
 			embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
 			embed.add_field(name=f"👨‍🍳 Be ready for the Friday {pin[1].strftime('%d %B, %Y')} !", value=f"{author.mention}\n\u200b", inline=False)
 			embed.add_field(name=f"📅 Date :", value=f"Friday {pin[1].strftime('%d %B, %Y')}\n\u200b" if date.today() <= pin[1] else f"~~Friday {pin[1].strftime('%d %B, %Y')}~~\n\u200b", inline=False)
@@ -126,7 +126,7 @@ class FridayCake(commands.Cog, name="fridaycake", command_attrs=dict(hidden=Fals
 			{'label':"When", 'description':"Show your personnal order of passage.", 'emoji':f"{self.cakes[3]}"},
 			{'label':"Can I trust the order of the participant list ?", 'description':"The main concept of the algorithm explained.", 'emoji':'⚙️'}
 		]
-		embed = discord.Embed(color=0xf7346b, title = f"{random.choice(self.cakes)} Fridaycake · Home", description = "`Welcome to the main menu about the Fridaycake.`\n\u200b", url='https://github.com/PaulMarisOUMary/Algosup-Discord')
+		embed = discord.Embed(color=0xf7346b, title = f"{random.choice(self.cakes)} Fridaycake · Home", description = "`Welcome to the main menu about the Fridaycake.`\n\u200b", url='https://github.com/PaulMarisOUMary/Discord-Bot')
 		embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
 		embed.add_field(name="Time remaining :", value=f"This help session will end <t:{close_in}:R>.\nType `fridaycake` to open a new session.\n\u200b", inline=False)
 		embed.add_field(name="How to use this menu ?", value=f"Use the dropmenu below to select the action.", inline=False)

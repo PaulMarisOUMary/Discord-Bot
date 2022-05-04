@@ -60,7 +60,7 @@ class Views(commands.Cog, name="views"):
 	@commands.guild_only()
 	async def lin(self, ctx):
 		"""Discover button link with this feature."""
-		view = link.View(label="Source code on Github", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
+		view = link.View(label="Source code on Github", url="https://github.com/PaulMarisOUMary/Discord-Bot")
 		await ctx.send("Find out what is behind Algobot !", view=view)
 
 	@commands.command(name="modal")

@@ -82,7 +82,7 @@ class View(Parent):
 			if "help_custom" in dir(cog):
 				emoji, label, description = cog.help_custom()
 				options.append(discord.SelectOption(label=label, description=description, emoji=emoji))
-				embed = discord.Embed(title = f"{emoji} Help · {label}", description=f"{cog.__doc__.lstrip(' ')}", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
+				embed = discord.Embed(title = f"{emoji} Help · {label}", description=f"{cog.__doc__.lstrip(' ')}", url="https://github.com/PaulMarisOUMary/Discord-Bot")
 				embed.set_footer(text="Remind : Hooks such as <> must not be used when executing commands.", icon_url=self.ctx.message.author.display_avatar.url)
 
 				for command in cog.get_commands():

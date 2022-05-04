@@ -31,12 +31,12 @@ class Dropdown(discord.ui.Select):
 			elif self.values[0] == "Home":
 				await interaction.response.edit_message(embed=self.embed, view=self.view)
 			else:
-				embed = discord.Embed(color=0xf7346b, title = "⚙️ Fridaycake · Can I trust you ?", description = "`The main concept of the algorithm explained.`\n\u200b", url="https://github.com/PaulMarisOUMary/Algosup-Discord")
+				embed = discord.Embed(color=0xf7346b, title = "⚙️ Fridaycake · Can I trust you ?", description = "`The main concept of the algorithm explained.`\n\u200b", url="https://github.com/PaulMarisOUMary/Discord-Bot")
 				embed.set_thumbnail(url="https://cdn.discordapp.com/attachments/332696002144501760/800791318200188998/fridaycake.png")
 				embed.add_field(name="How do you get the list of participants ?", value=f"There is a file named `participants.dat` in the `data/` folder.\nInside I have arranged each volunteers by promotion and then by alphabetical order.\n\u200b", inline=False)
 				embed.add_field(name="How am I mixed up ?", value="I'm using a __seed__ to shuffle randomly the list of participants.\nThe point is, it doesn't matter on which computer or when the calculation is performed, it always return the same result as long we doesn't change the seed (it means also you can try at home it will return exactly the same result as Algobot).\n\u200b", inline=False)
-				embed.add_field(name="How can I investigate ?", value="You can simply clone the repository with git from [Algosup-Discord](https://github.com/PaulMarisOUMary/Algosup-Discord) and try these functions :\n`get_participants('data/participants.dat')`\n`mix_participants(participants, seed, n_groups)`\n\u200b", inline=False)
-				embed.add_field(name="Additional informations :", value=f"Number of participants : `{self.main.nparticipants}`\nCurrent seed : `{self.main.seed}`\n\nFeel free to contact me if you have any question.\nProject open source, have a look on [Github](https://github.com/PaulMarisOUMary/Algosup-Discord) !")
+				embed.add_field(name="How can I investigate ?", value="You can simply clone the repository with git from [Discord-Bot](https://github.com/PaulMarisOUMary/Discord-Bot) and try these functions :\n`get_participants('data/participants.dat')`\n`mix_participants(participants, seed, n_groups)`\n\u200b", inline=False)
+				embed.add_field(name="Additional informations :", value=f"Number of participants : `{self.main.nparticipants}`\nCurrent seed : `{self.main.seed}`\n\nFeel free to contact me if you have any question.\nProject open source, have a look on [Github](https://github.com/PaulMarisOUMary/Discord-Bot) !")
 
 				await interaction.response.edit_message(embed=embed, view=self.view)
 		else:
