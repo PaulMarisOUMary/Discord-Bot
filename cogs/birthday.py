@@ -102,10 +102,12 @@ class Birthday(commands.Cog, name="birthday"):
 			dataDate = datetime.strptime(f"{day}{month}{year}", "%d%m%Y").date()
 			if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: 
 				raise commands.CommandError("Please provide your real year of birth.")
-			# Insert
-			await self.bot.database.insert(self.birthday_data["table"], {"user_id": interaction.user.id, "user_birth": dataDate})
-			# Update
-			await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, f"user_id = {interaction.user.id}")
+			
+			exist = await self.bot.database.exist(self.birthday_data["table"], "*", f"user_id={interaction.user.id}")
+			if exist:
+				await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, f"user_id = {interaction.user.id}")
+			else:
+				await self.bot.database.insert(self.birthday_data["table"], {"user_id": interaction.user.id, "user_birth": dataDate})
 
 			await self.show_birthday_message(interaction, interaction.user)
 		except Exception as e:

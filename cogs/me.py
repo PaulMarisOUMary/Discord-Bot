@@ -34,10 +34,13 @@ class Me(commands.Cog, name="me"):
 			text = description.replace("'", "''")
 			if len(text) > self.max_lenght_me: 
 				raise commands.CommandError(f"The max-lenght of your *me* is set to: __{self.max_lenght_me}__ (yours is {len(text)}).")
-			# Insert
-			await self.bot.database.insert(self.me_data["table"], {"user_id": interaction.user.id, "user_me": text})
-			# Update
-			await self.bot.database.update(self.me_data["table"], "user_me", text, f"user_id = {interaction.user.id}")
+			
+			exist = await self.bot.database.exist(self.me_data["table"], "*", f"user_id={interaction.user.id}")
+			if exist:
+				await self.bot.database.update(self.me_data["table"], "user_me", text, f"user_id = {interaction.user.id}")
+			else:
+				await self.bot.database.insert(self.me_data["table"], {"user_id": interaction.user.id, "user_me": text})
+			
 			await self.show_me_message(interaction, interaction.user)
 		except Exception as e:
 			raise commands.CommandError(str(e))
