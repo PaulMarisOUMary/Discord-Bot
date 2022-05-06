@@ -28,6 +28,17 @@ class Views(commands.Cog, name="views"):
 	@commands.guild_only()
 	async def dro(self, ctx):
 		"""Discover select menu feature with this command."""
+		async def when_callback(_class, interaction: discord.Interaction):
+			if _class.view.invoke.author == interaction.user:
+				message = "Selected languages : "
+				for value in _class.values:
+					message += f"`{value}` "
+				await interaction.response.defer()
+				await interaction.delete_original_message()
+				await _class.view.invoke.reply(message)
+			else:
+				await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
+
 		options = [
 			{"label":"Mandarin", "description":"你好", "emoji":"🇨🇳"},
 			{"label":"Spanish", "description":"Buenos dias", "emoji":"🇪🇸"},
@@ -53,7 +64,8 @@ class Views(commands.Cog, name="views"):
 			{"label":"Czech", "description":"Ahoj", "emoji":"🇨🇿"},
 			{"label":"Persian", "description":"سلام", "emoji":"🇮🇷"}
 		]
-		view = dropdown.View(options=options, placeholder="Select your language(s)", min_val=1, max_val=9, source=ctx)
+		
+		view = dropdown.View(invoke=ctx, placeholder="Select your language(s)", min_val=1, max_val=9, options=options, when_callback=when_callback)
 		await ctx.send("Dropdown demo right there !", view=view)
 
 	@commands.command(name="link")

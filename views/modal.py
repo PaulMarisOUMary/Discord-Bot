@@ -1,6 +1,8 @@
 import discord
 import functools
 
+from typing import Union
+from discord.ext import commands
 from views.view import View as Parent
 
 class CustomModal(discord.ui.Modal):
@@ -27,8 +29,10 @@ class CustomModal(discord.ui.Modal):
 
 class View(Parent):
 	"""Button to Modal"""
-	def __init__(self, source, label, style=discord.ButtonStyle.grey, emoji=None, disabled=False):
+	def __init__(self, invoke: Union[commands.Context, discord.Interaction] = None):
 		super().__init__()
+
+		self.invoker = invoke.author
 
 		async def when_submit(_class: CustomModal, interaction: discord.Interaction):
 			formater = ''
@@ -59,18 +63,9 @@ class View(Parent):
 			when_submit = when_submit
 		)
 
-		self.source = source
-		self.button.label = label
-		self.button.style = style
-		self.button.emoji = emoji
-		self.button.disabled = disabled
-
-	async def button_func(self, interaction: discord.Interaction):
-		if self.source.author != interaction.user:
+	@discord.ui.button(label = "Sample modal", style = discord.ButtonStyle.gray, emoji = '📧')
+	async def button(self, interaction: discord.Interaction, button: discord.ui.Button):
+		if self.invoker != interaction.user:
 			await interaction.response.send_message("You can't open this modal.", ephemeral=True)
 		else:
 			await interaction.response.send_modal(self.modal)
-
-	@discord.ui.button(style = discord.ButtonStyle.blurple)
-	async def button(self, interaction: discord.Interaction, button: discord.ui.Button):
-		await self.button_func(interaction)
