@@ -1,4 +1,5 @@
 import discord
+import logging
 
 from discord.ext import commands
 from discord import app_commands
@@ -9,6 +10,7 @@ class Errors(commands.Cog, name="errors"):
 		self.bot = bot
 		bot.tree.error(coro = self.__dispatch_to_app_command_handler)
 
+		self.logger = logging.getLogger('discord')
 		self.default_error_message = "🕳️ There is an error."
 
 	"""def help_custom(self):
@@ -16,6 +18,12 @@ class Errors(commands.Cog, name="errors"):
 		label = "Error"
 		description = "A custom errors handler. Nothing to see here."
 		return emoji, label, description"""
+
+	def trace_error(self, level: str, error: Exception):
+		self.logger.name = f"discord.{level}"
+		self.logger.error(msg=type(error).__name__, exc_info=error)
+		
+		print(f"! {level}: {error}")
 
 	async def __dispatch_to_app_command_handler(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
 		self.bot.dispatch("app_command_error", interaction, error)
@@ -96,7 +104,7 @@ class Errors(commands.Cog, name="errors"):
 		except commands.HybridCommandError as d_error:
 			await self.get_app_command_error(ctx.interaction, error)
 		except Exception as e:
-			print(f"! Cogs.errors get_command_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
+			self.trace_error("get_command_error", e)
 
 	@commands.Cog.listener("on_app_command_error")
 	async def get_app_command_error(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
@@ -131,7 +139,7 @@ class Errors(commands.Cog, name="errors"):
 			app_commands.CommandSignatureMismatch
 			"""
 
-			print(f"! Cogs.errors get_app_command_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
+			self.trace_error("get_app_command_error", e)
 
 	@commands.Cog.listener("on_view_error")
 	async def get_view_error(self, interaction: discord.Interaction, error: Exception, item: any):
@@ -141,8 +149,7 @@ class Errors(commands.Cog, name="errors"):
 		except discord.errors.Forbidden:
 			pass
 		except Exception as e:
-			print(f"! Cogs.errors get_view_error : {type(error).__name__} : {error}\n! Internal Error : {e}\n")
-
+			self.trace_error("get_view_error", e)
 
 async def setup(bot):
 	await bot.add_cog(Errors(bot))
