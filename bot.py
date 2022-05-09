@@ -2,7 +2,7 @@ import discord
 import logging
 
 from classes.database import DataSQL
-from classes.utilities import load_config, cogs_manager, set_logging, cogs_directory
+from classes.utilities import load_config, clean_close, cogs_manager, set_logging, cogs_directory
 
 from os import listdir
 from discord.ext import commands
@@ -21,6 +21,12 @@ class Bot(commands.Bot):
 
 	async def on_ready(self):
 		print(f"Logged as: {self.user} | discord.py{discord.__version__}\nGuilds: {len(self.guilds)} Users: {len(self.users)} Config: {len(self.config)}")
+
+	async def close(self):
+		self.database.close()
+		await super().close()
+
+		print("Shutting down...")
 
 	async def startup(self):
 		"""Sync application commands"""
@@ -51,6 +57,7 @@ class Bot(commands.Bot):
 
 if __name__ == '__main__':
 	set_logging(level=logging.WARNING, filename="discord.log")
+	clean_close()
 
 	bot = Bot()
 	bot.config = load_config()

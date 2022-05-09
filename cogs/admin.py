@@ -144,6 +144,15 @@ class Admin(commands.Cog, name="admin"):
 		except Exception as e:
 			await ctx.send(f"Error: {e}")
 
+	@commands.command(name="shutdown")
+	@commands.bot_has_permissions(send_messages=True)
+	@commands.is_owner()
+	async def shutdown_structure(self, ctx: commands.Context):
+		"""Shutdown the bot."""
+		await ctx.send(f":wave: `{self.bot.user.name}` is shutting down...")
+
+		await self.bot.close()
+
 
 
 async def setup(bot):

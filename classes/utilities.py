@@ -1,4 +1,6 @@
+import asyncio
 import logging
+import platform
 
 from sys import modules
 from json import load
@@ -54,3 +56,7 @@ def set_logging(level = logging.WARNING, filename: str = "discord.log") -> None:
 	handler = logging.FileHandler(filename=filename, encoding='utf-8', mode='w')
 	handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 	logger.addHandler(handler)
+
+def clean_close() -> None:
+	if platform.system().lower() == 'windows':
+		asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
