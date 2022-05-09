@@ -56,9 +56,9 @@ class Bot(commands.Bot):
 		self.loop.create_task(self.startup())
 
 if __name__ == '__main__':
-	set_logging(level=logging.WARNING, filename="discord.log")
-	clean_close()
+	clean_close() # Avoid Windows EventLoopPolicy Error
 
 	bot = Bot()
 	bot.config = load_config()
+	bot.logger = set_logging(console_level=logging.WARN, filename="discord.log")
 	bot.run(bot.config["bot"]["token"], reconnect=True)

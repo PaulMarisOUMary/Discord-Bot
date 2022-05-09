@@ -14,7 +14,7 @@ root_directory = dirname(dirname(abspath(__file__)))
 config_directory = join(root_directory, "config")
 cogs_directory = join(root_directory, "cogs")
 
-def credential(file) -> dict:
+def credential(file: str) -> dict:
 	with open(join(config_directory, file), "r") as f:
 		return load(f)
 
@@ -50,12 +50,26 @@ def reload_views():
 		except: 
 			pass
 
-def set_logging(level = logging.WARNING, filename: str = "discord.log") -> None:
+def set_logging(file_level: int = logging.DEBUG, console_level: int = logging.INFO, filename: str = "discord.log") -> logging.Logger:
+	"""Sets up logging for the bot."""
+	
 	logger = logging.getLogger('discord')
-	logger.setLevel(level)
-	handler = logging.FileHandler(filename=filename, encoding='utf-8', mode='w')
-	handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-	logger.addHandler(handler)
+	logger.setLevel(logging.DEBUG)
+	formatting = logging.Formatter(fmt="[%(asctime)s] [%(levelname)5s] (%(name)s) | %(message)s")
+
+	# File-logs
+	file_handler = logging.FileHandler(filename=join(root_directory, filename), encoding="utf-8", mode='w')
+	file_handler.setFormatter(formatting)
+	file_handler.setLevel(file_level)
+	logger.addHandler(file_handler)
+
+	# Console-logs
+	console_handler = logging.StreamHandler()
+	console_handler.setFormatter(formatting)
+	console_handler.setLevel(console_level)
+	logger.addHandler(console_handler)
+
+	return logger
 
 def clean_close() -> None:
 	if platform.system().lower() == 'windows':

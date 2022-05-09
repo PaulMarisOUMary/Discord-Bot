@@ -10,7 +10,6 @@ class Errors(commands.Cog, name="errors"):
 		self.bot = bot
 		bot.tree.error(coro = self.__dispatch_to_app_command_handler)
 
-		self.logger = logging.getLogger('discord')
 		self.default_error_message = "🕳️ There is an error."
 
 	"""def help_custom(self):
@@ -20,10 +19,10 @@ class Errors(commands.Cog, name="errors"):
 		return emoji, label, description"""
 
 	def trace_error(self, level: str, error: Exception):
-		self.logger.name = f"discord.{level}"
-		self.logger.error(msg=type(error).__name__, exc_info=error)
+		self.bot.logger.name = f"discord.{level}"
+		self.bot.logger.error(msg=type(error).__name__, exc_info=error)
 		
-		print(f"! {level}: {error}")
+		raise error
 
 	async def __dispatch_to_app_command_handler(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
 		self.bot.dispatch("app_command_error", interaction, error)
