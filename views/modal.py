@@ -25,7 +25,9 @@ class CustomModal(discord.ui.Modal):
 			self.values[key] = value()
 
 		await self.when_submit(self, interaction)
-		
+
+	async def on_error(self, interaction: discord.Interaction, error: Exception) -> None:
+		interaction.client.dispatch("modal_error", interaction, error)
 
 class View(Parent):
 	"""Button to Modal"""

@@ -150,5 +150,15 @@ class Errors(commands.Cog, name="errors"):
 		except Exception as e:
 			self.trace_error("get_view_error", e)
 
+	@commands.Cog.listener("on_modal_error")
+	async def get_modal_error(self, interaction: discord.Interaction, error: Exception):
+		"""Modal Error Handler"""
+		try:
+			raise error
+		except discord.errors.Forbidden:
+			pass
+		except Exception as e:
+			self.trace_error("get_modal_error", e)
+
 async def setup(bot):
 	await bot.add_cog(Errors(bot))
