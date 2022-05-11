@@ -79,7 +79,7 @@ class Views(commands.Cog, name="views"):
 	@commands.guild_only()
 	async def moda(self, ctx):
 		"""Discover button link with this feature."""
-		view = modal.View(source=ctx, label="Modal demo, click here.", emoji='📧')
+		view = modal.View(invoke=ctx)
 		await ctx.send(view=view)
 
 
