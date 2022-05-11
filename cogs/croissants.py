@@ -31,6 +31,12 @@ class Croissants(commands.Cog, name="croissants"):
 
 		self.croissants_data = self.bot.config["database"]["croissants"]
 
+	croissants = app_commands.Group(name="croissants", description="Commands related to croissnants")
+
+
+	"""async def cog_unload(self) -> None:
+		self.croissants.remove_command()"""
+
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = self.EMOJI
 		label = "Croissants"
@@ -45,7 +51,35 @@ class Croissants(commands.Cog, name="croissants"):
 				await self.__send_croissants(message)
 			else: await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
 
-	@app_commands.command(name="croissants", description="Get the global croissants rank.")
+	@croissants.command(name="lore", description="Explain the lore of the croissants.")
+	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
+	async def croissants_rank(self, interaction: discord.Interaction) -> None:
+		"""Explain the lore of the croissants."""
+
+		embed = discord.Embed(title="Lore of Croissants", color=0xD3A779)
+		embed.add_field(name=f"{self.EMOJI} When", value="Born in October 2020. During the break time.")
+		embed.add_field(name=f"{self.EMOJI} Where", value="In computer science, at the school.")
+		embed.add_field(name=f"{self.EMOJI} What", value="Croissants were a joke made by Franck on a students computers.")
+		embed.add_field(name=f"{self.EMOJI} Why", value="Croissants are a sweet way to give awareness for students about their individual responsibility in a IT company/organisation.\nIf you leave your computer unlocked, it means someone else could use it for malicious purposes.")
+		embed.add_field(name=":arrow_right: Recap", value="Don't forget to **lock** your computer when you're not using it.\nSome company/school reset your computer when you leaves it unlocked, because it could leads to a security breach.")
+
+		await interaction.response.send_message(embed=embed, ephemeral=True)
+
+	@croissants.command(name="show", description="Explain the lore of the croissants.")
+	@app_commands.describe(user="The user to show the croissants of.")
+	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
+	async def croissants_rank(self, interaction: discord.Interaction, user: discord.Member) -> None:
+		"""Explain the lore of the croissants."""
+		response = await self.bot.database.lookup(self.croissants_data["table"], "user_count", "user_id", str(user.id))
+
+		if response:
+			text = f"{user.mention} have `{response[0][0]}` croissants {self.EMOJI} !"
+		else:
+			text = f"Well job, {user.mention} have no croissants {self.EMOJI} ||[yet](<https://youtu.be/S2t59dPf9K0>)||."
+
+		await interaction.response.send_message(content=text, ephemeral=True)
+
+	@croissants.command(name="rank", description="Get the global croissants rank.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def croissants_rank(self, interaction: discord.Interaction) -> None:
 		"""Get the global croissants rank."""
@@ -70,9 +104,9 @@ class Croissants(commands.Cog, name="croissants"):
 	async def __increment_croissants_counter(self, user_id : int) -> int:
 		exist = await self.bot.database.exist(self.croissants_data["table"], "*", f"user_id={user_id}")
 		if exist:
+			await self.bot.database.increment(self.croissants_data["table"], "user_count", condition=f"user_id={user_id}")
 			response = await self.bot.database.select(self.croissants_data["table"], "user_count", f"user_id={user_id}")
-			count = response[0][0] + 1
-			await self.bot.database.update(self.croissants_data["table"], "user_count", count, f"user_id={user_id}")
+			count = response[0][0]
 			return count
 		else:
 			await self.bot.database.insert(self.croissants_data["table"], {"user_id": user_id, "user_count": 1})
