@@ -33,10 +33,6 @@ class Croissants(commands.Cog, name="croissants"):
 
 	croissants = app_commands.Group(name="croissants", description="Commands related to croissants")
 
-
-	"""async def cog_unload(self) -> None:
-		self.croissants.remove_command()"""
-
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = self.EMOJI
 		label = "Croissants"
