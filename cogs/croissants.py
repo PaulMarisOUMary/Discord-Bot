@@ -49,7 +49,7 @@ class Croissants(commands.Cog, name="croissants"):
 
 	@croissants.command(name="lore", description="Explain the lore of the croissants.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	async def croissants_rank(self, interaction: discord.Interaction) -> None:
+	async def croissants_lore(self, interaction: discord.Interaction) -> None:
 		"""Explain the lore of the croissants."""
 
 		embed = discord.Embed(title="Lore of Croissants", color=0xD3A779)
@@ -61,11 +61,11 @@ class Croissants(commands.Cog, name="croissants"):
 
 		await interaction.response.send_message(embed=embed, ephemeral=True)
 
-	@croissants.command(name="show", description="Explain the lore of the croissants.")
+	@croissants.command(name="show", description="Show how many croissants a user paid.")
 	@app_commands.describe(user="The user to show the croissants of.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	async def croissants_rank(self, interaction: discord.Interaction, user: discord.Member) -> None:
-		"""Explain the lore of the croissants."""
+	async def croissants_show(self, interaction: discord.Interaction, user: discord.Member) -> None:
+		"""Show how many croissants a user paid."""
 		response = await self.bot.database.lookup(self.croissants_data["table"], "user_count", "user_id", str(user.id))
 
 		if response:
