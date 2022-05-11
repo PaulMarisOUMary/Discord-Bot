@@ -131,6 +131,20 @@ CHARACTER SET utf8mb4,
 COLLATE utf8mb4_unicode_ci;
 ```
 
+- `table_metrics`
+```sql
+CREATE TABLE IF NOT EXISTS `table_metrics`
+(
+    `command_name`      varchar(32) NOT NULL,
+    `command_count`     MEDIUMINT unsigned NOT NULL,
+    `command_type`      varchar(128) NOT NULL,
+UNIQUE(`command_name`)
+)
+ENGINE = InnoDB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_unicode_ci;
+```
+
 - `table_prefix`
 ```sql
 CREATE TABLE IF NOT EXISTS `table_prefix`
