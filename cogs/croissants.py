@@ -55,8 +55,8 @@ class Croissants(commands.Cog, name="croissants"):
 		embed = discord.Embed(title="Lore of Croissants", color=0xD3A779)
 		embed.add_field(name=f"{self.EMOJI} When", value="Born in October 2020. During the break time.")
 		embed.add_field(name=f"{self.EMOJI} Where", value="In computer science, at the school.")
-		embed.add_field(name=f"{self.EMOJI} What", value="Croissants were a joke made by Franck on a students computers.")
-		embed.add_field(name=f"{self.EMOJI} Why", value="Croissants are a sweet way to give awareness for students about their individual responsibility in a IT company/organisation.\nIf you leave your computer unlocked, it means someone else could use it for malicious purposes.")
+		embed.add_field(name=f"{self.EMOJI} What", value="Croissants were a joke made by Franck on a student's computers.")
+		embed.add_field(name=f"{self.EMOJI} Why", value="Croissants are a sweet way to give awareness for students about their individual responsibility in an IT company/organisation.\nIf you leave your computer unlocked, it means someone else could use it for malicious purposes.")
 		embed.add_field(name=":arrow_right: Recap", value="Don't forget to **lock** your computer when you're not using it.\nSome company/school reset your computer when you leaves it unlocked, because it could leads to a security breach.")
 
 		await interaction.response.send_message(embed=embed, ephemeral=True)
