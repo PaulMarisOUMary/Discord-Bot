@@ -31,7 +31,7 @@ class Croissants(commands.Cog, name="croissants"):
 
 		self.croissants_data = self.bot.config["database"]["croissants"]
 
-	croissants = app_commands.Group(name="croissants", description="Commands related to croissnants")
+	croissants = app_commands.Group(name="croissants", description="Commands related to croissants")
 
 
 	"""async def cog_unload(self) -> None:
