@@ -64,7 +64,7 @@ class Birthday(commands.Cog, name="birthday"):
 	@daily_birthday.before_loop
 	async def before_daily_birthday(self):
 		await self.bot.wait_until_ready()
-		while self.bot.database.connector is None: await asyncio.sleep(0.01) #wait_for initBirthday
+		while self.bot.database.pool is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
 	async def year_suggest(self, _: discord.Interaction, current: str) -> list[Choice]:
 		years = [str(i) for i in range(datetime.now().year - 99, datetime.now().year - 15)]

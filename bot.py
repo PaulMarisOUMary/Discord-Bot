@@ -23,7 +23,7 @@ class Bot(commands.Bot):
 		print(f"Logged as: {self.user} | discord.py{discord.__version__}\nGuilds: {len(self.guilds)} Users: {len(self.users)} Config: {len(self.config)}")
 
 	async def close(self):
-		self.database.close()
+		await self.database.close()
 		await super().close()
 
 		print("Shutting down...")

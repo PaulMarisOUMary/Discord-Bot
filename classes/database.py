@@ -9,7 +9,7 @@ class DataSQL():
 
     async def auth(self, user: str = "root", password: str = '', database: str = "mysql", autocommit: bool = True) -> None:
         self.__authUser, self.__authPassword, self.__authDatabase, self.__authAutocommit = user, password, database, autocommit
-        self.connector: aiomysql.connection.Connection = await aiomysql.connect(
+        self.pool: aiomysql.pool.Pool = await aiomysql.create_pool(
             host=self.host, 
             port=self.port, 
             user=user, 
@@ -20,20 +20,21 @@ class DataSQL():
         )
 
     async def query(self, query: str) -> tuple:
-        async with self.connector.cursor() as cursor:
-            try:
-                await cursor.execute(query)
-                response = await cursor.fetchall()
-                return response
+        async with self.pool.acquire() as connection:
+            async with connection.cursor() as cursor:
+                try:
+                    await cursor.execute(query)
+                    response = await cursor.fetchall()
+                    return response
 
-            except aiomysql.OperationalError as e:
-                if e.args[0] == 2013: #Lost connection to SQL server during query
-                    await self.auth(self.__authUser, self.__authPassword, self.__authDatabase, self.__authAutocommit)
-                    return await self.query(query)
-                raise e            
+                except aiomysql.OperationalError as e:
+                    if e.args[0] == 2013: #Lost connection to SQL server during query
+                        await self.auth(self.__authUser, self.__authPassword, self.__authDatabase, self.__authAutocommit)
+                        return await self.query(query)
+                    raise e
 
-            except Exception as e:
-                raise e
+                except Exception as e:
+                    raise e
     
     async def select(self, table: str, target: str, condition: str = '', order: str = '', limit: str = '') -> query:
         query = f"SELECT {target} FROM `{table}`"
@@ -88,5 +89,6 @@ class DataSQL():
 
         if value != keeper: return value
 
-    def close(self) -> None:
-        self.connector.close()
+    async def close(self) -> None:
+        self.pool.close()
+        await self.pool.wait_closed()

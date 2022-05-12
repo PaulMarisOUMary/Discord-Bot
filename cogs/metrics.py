@@ -26,22 +26,39 @@ class Metrics(commands.Cog, name="metrics"):
 	@commands.Cog.listener("on_command")
 	async def on_command(self, context: commands.Context) -> None:
 		if context.interaction:
-			print(f"hybrid {context.command.name}")
-		else:
-			print(f"command {context.command.name}")
+			return
+
+		if isinstance(context.command, commands.hybrid.HybridCommand) and not context.interaction:
+			print("hybrid_command", context.command.qualified_name)
+		elif isinstance(context.command, commands.core.Command) and not context.interaction:
+			print("command", context.command.qualified_name)
+
+			#await self.add_metrics(f"{context.command.qualified_name}", "commands.Command" , context.author)
+			#await self.add_metrics(f"{context.interaction.command.qualified_name}", "commands.HybridCommand" , context.author)
 
 	@commands.Cog.listener("on_interaction")
 	async def on_interaction(self, interaction: discord.Interaction) -> None:
-		if interaction.type == discord.InteractionType.application_command:
-			print(f"slash {interaction.command.qualified_name} {discord.InteractionType.application_command}")
-			await self.add_metrics(interaction.command.qualified_name, discord.InteractionType.application_command)
+		if not interaction.type == discord.InteractionType.application_command:
+			return
+		
+		if isinstance(interaction.command, commands.hybrid.HybridAppCommand):
+			print("hybrid_command", interaction.command.qualified_name)
+		elif isinstance(interaction.command, discord.app_commands.commands.Command):
+			print("app_command", interaction.command.qualified_name)
+			
+			#await self.add_metrics(interaction.command.qualified_name, "application_commands.Command", interaction.user)
 
-	async def add_metrics(self, command_name: str, command_type: any):
+	async def add_metrics(self, command_name: str, command_type: str, invoker: discord.User) -> None:
 		"""Add a metric to the database."""
-		try:
+		#if invoker.id in self.bot.owner_ids:
+		#	return
+
+		exist = await self.bot.database.exist(self.metrics_data["table"], "*", f'command_name="{command_name}"')
+
+		if exist:
 			await self.bot.database.increment(self.metrics_data["table"], "command_count", condition=f"command_name='{command_name}'")
-		except Exception as e:
-			await self.bot.database.insert(table=self.metrics_data["table"], args={"command_name": command_name, "command_count": 1, "command_type": str(command_type)})
+		else:
+			await self.bot.database.insert(table=self.metrics_data["table"], args={"command_name": command_name, "command_count": 1, "command_type": command_type})
 
 
 
