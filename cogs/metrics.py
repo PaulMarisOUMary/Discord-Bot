@@ -28,9 +28,9 @@ class Metrics(commands.Cog, name="metrics"):
 		if context.interaction:
 			return
 
-		if isinstance(context.command, commands.hybrid.HybridCommand) and not context.interaction:
+		if isinstance(context.command, commands.hybrid.HybridCommand):
 			print("hybrid_command", context.command.qualified_name)
-		elif isinstance(context.command, commands.core.Command) and not context.interaction:
+		elif isinstance(context.command, commands.core.Command):
 			print("command", context.command.qualified_name)
 
 			#await self.add_metrics(f"{context.command.qualified_name}", "commands.Command" , context.author)
