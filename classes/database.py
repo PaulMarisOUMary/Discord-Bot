@@ -4,6 +4,13 @@ import asyncio
 from typing import Union
 from datetime import datetime, date
 
+class MixedTypes():
+    def __init__(self, value: any) -> None:
+        self.value = value
+
+    def __str__(self) -> str:
+        return str(self.value)
+
 class DataSQL():
     def __init__(self, host: str = "127.0.0.1", port: int = 3306, loop: asyncio.AbstractEventLoop = None) -> None:
         self.loop, self.host, self.port = loop, host, port
@@ -105,12 +112,12 @@ class DataSQL():
 
         return await self.query(query)
 
-    async def update(self, table: str, dict: str, condition: str = None) -> query: # !need-refactor
+    async def update(self, table: str, dict: str, condition: str = None) -> query:
         query = self.__query_update(table, dict, condition)
         return await self.query(query)
 
-    async def increment(self, table: str, target: str, value: int = 1, condition: Union[str, None] = None) -> update: # !need-refactor
-        await self.update(table, target, f"{target} + {value}", condition, True)
+    async def increment(self, table: str, target: str, value: int = 1, condition: Union[str, None] = None) -> update:
+        await self.update(table, {target: MixedTypes(f"{target} + {value}")}, condition)
 
     async def select(self, table: str, target: str, condition: str = '', order: str = '', limit: str = '') -> query:
         query = f"SELECT {target} FROM `{table}`"
