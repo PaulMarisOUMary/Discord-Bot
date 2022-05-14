@@ -1,6 +1,8 @@
 import discord
 from discord.ext import commands
 
+from classes.database import MixedTypes
+
 class Metrics(commands.Cog, name="metrics"):
 	"""
 		Store bot's metrics in the database.
@@ -15,7 +17,7 @@ class Metrics(commands.Cog, name="metrics"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-		self.metrics_data = self.bot.config["database"]["metrics"]
+		self.subconfig_data: dict = self.bot.config["database"]["metrics"]
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '📈'
@@ -29,12 +31,10 @@ class Metrics(commands.Cog, name="metrics"):
 			return
 
 		if isinstance(context.command, commands.hybrid.HybridCommand):
-			print("hybrid_command", context.command.qualified_name)
-		elif isinstance(context.command, commands.core.Command):
-			print("command", context.command.qualified_name)
+			await self.add_metrics(context.command.qualified_name, "commands.HybridCommand", context.author)
 
-			#await self.add_metrics(f"{context.command.qualified_name}", "commands.Command" , context.author)
-			#await self.add_metrics(f"{context.interaction.command.qualified_name}", "commands.HybridCommand" , context.author)
+		elif isinstance(context.command, commands.core.Command):
+			await self.add_metrics(context.command.qualified_name, "commands.Command", context.author)
 
 	@commands.Cog.listener("on_interaction")
 	async def on_interaction(self, interaction: discord.Interaction) -> None:
@@ -42,24 +42,24 @@ class Metrics(commands.Cog, name="metrics"):
 			return
 		
 		if isinstance(interaction.command, commands.hybrid.HybridAppCommand):
-			print("hybrid_command", interaction.command.qualified_name)
+			await self.add_metrics(interaction.command.qualified_name, "commands.HybridCommand", interaction.user)
+
 		elif isinstance(interaction.command, discord.app_commands.commands.Command):
-			print("app_command", interaction.command.qualified_name)
-			
-			#await self.add_metrics(interaction.command.qualified_name, "application_commands.Command", interaction.user)
+			await self.add_metrics(interaction.command.qualified_name, "application_commands.Command", interaction.user)
 
 	async def add_metrics(self, command_name: str, command_type: str, invoker: discord.User) -> None:
 		"""Add a metric to the database."""
-		#if invoker.id in self.bot.owner_ids:
-		#	return
+		if invoker.id in self.bot.owner_ids or invoker.id == self.bot.owner_id: # Avoid owner from being counted
+			return
 
-		exist = await self.bot.database.exist(self.metrics_data["table"], "*", f'command_name="{command_name}"')
-
-		if exist:
-			await self.bot.database.increment(self.metrics_data["table"], "command_count", condition=f"command_name='{command_name}'")
-		else:
-			await self.bot.database.insert(table=self.metrics_data["table"], args={"command_name": command_name, "command_count": 1, "command_type": command_type})
-
+		await self.bot.database.insert_onduplicate(
+			self.subconfig_data["table"],
+			{
+				"command_name": command_name, 
+				"command_count": MixedTypes("COALESCE(command_count, 0) + 1"), 
+				"command_type": command_type
+			}
+		)
 
 
 
