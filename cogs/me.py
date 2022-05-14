@@ -3,7 +3,8 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
-class Me(commands.Cog, name="me"):
+@app_commands.guild_only()
+class Me(commands.GroupCog, name="me", group_name="me", group_description="Like minecraft set your own /me !"):
 	"""
 		Like minecraft set your own /me !
 	
@@ -16,8 +17,8 @@ class Me(commands.Cog, name="me"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-		self.me_data = self.bot.config["database"]["me"]
-		self.max_lenght_me = self.me_data["max_length"]
+		self.subconfig_data: dict = self.bot.config["database"]["me"]
+		self.max_lenght_me = self.subconfig_data["max_length"]
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '🤙'
@@ -25,7 +26,7 @@ class Me(commands.Cog, name="me"):
 		description = "Set and show a brief description of yourself."
 		return emoji, label, description
 
-	@app_commands.command(name="me", description="Set your own brief description of yourself !")
+	@app_commands.command(name="set", description="Set your own brief description of yourself !")
 	@app_commands.describe(description="Your brief description of yourself.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def me(self, interaction: discord.Interaction, description: str):
@@ -35,17 +36,13 @@ class Me(commands.Cog, name="me"):
 			if len(text) > self.max_lenght_me: 
 				raise commands.CommandError(f"The max-lenght of your *me* is set to: __{self.max_lenght_me}__ (yours is {len(text)}).")
 			
-			exist = await self.bot.database.exist(self.me_data["table"], "*", f"user_id={interaction.user.id}")
-			if exist:
-				await self.bot.database.update(self.me_data["table"], "user_me", text, f"user_id = {interaction.user.id}")
-			else:
-				await self.bot.database.insert(self.me_data["table"], {"user_id": interaction.user.id, "user_me": text})
+			await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"user_id": interaction.user.id, "user_me": text})
 			
 			await self.show_me_message(interaction, interaction.user)
 		except Exception as e:
 			raise commands.CommandError(str(e))
 
-	@app_commands.command(name="showme", description="Show the /me of other users.")
+	@app_commands.command(name="show", description="Show the /me of other users.")
 	@app_commands.describe(user="The user you want to show the /me of.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def show_me(self, interaction: discord.Interaction, user: discord.Member = None):
@@ -55,7 +52,7 @@ class Me(commands.Cog, name="me"):
 		await self.show_me_message(interaction, user)
 
 	async def show_me_message(self, interaction: discord.Interaction, user: discord.Member) -> None:
-		response = await self.bot.database.lookup(self.me_data["table"], "user_me", "user_id", str(user.id))
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_me", "user_id", str(user.id))
 		message = " ".join(response[0]) if len(response) else "No description provided.."
 		await interaction.response.send_message(f"• **{user.display_name}** {message}")
 

@@ -9,7 +9,8 @@ from discord.utils import get
 from discord import app_commands
 from discord.app_commands import Choice
 
-class Birthday(commands.Cog, name="birthday"):
+@app_commands.guild_only()
+class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_description="Commands related to birthday."):
 	"""
 		Set your birthday, and when the time comes I will wish you a happy birthday !
 		
@@ -22,7 +23,7 @@ class Birthday(commands.Cog, name="birthday"):
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-		self.birthday_data = bot.config["database"]["birthday"]
+		self.subconfig_data: dict = bot.config["database"]["birthday"]
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '🎁'
@@ -39,10 +40,10 @@ class Birthday(commands.Cog, name="birthday"):
 	@tasks.loop(hours=1)
 	async def daily_birthday(self):
 		if datetime.now().hour == 9:
-			guild = get(self.bot.guilds, id=self.birthday_data["guild_id"])
-			channel = get(guild.channels, id=self.birthday_data["channel_id"])
+			guild = get(self.bot.guilds, id=self.subconfig_data["guild_id"])
+			channel = get(guild.channels, id=self.subconfig_data["channel_id"])
 
-			response = await self.bot.database.select(self.birthday_data["table"], "*")
+			response = await self.bot.database.select(self.subconfig_data["table"], "*")
 			for data in response:
 				user_id, user_birth = data
 
@@ -64,7 +65,7 @@ class Birthday(commands.Cog, name="birthday"):
 	@daily_birthday.before_loop
 	async def before_daily_birthday(self):
 		await self.bot.wait_until_ready()
-		while self.bot.database.connector is None: await asyncio.sleep(0.01) #wait_for initBirthday
+		while self.bot.database.pool is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
 	async def year_suggest(self, _: discord.Interaction, current: str) -> list[Choice]:
 		years = [str(i) for i in range(datetime.now().year - 99, datetime.now().year - 15)]
@@ -88,12 +89,12 @@ class Birthday(commands.Cog, name="birthday"):
 		else:
 			return out
 
-	@app_commands.command(name="birthday", description="Set your own birthday.")
+	@app_commands.command(name="set", description="Set your own birthday.")
 	@app_commands.describe(month="Your month of birth.", day="Your day of birth.", year="Your year of birth.")
 	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
 	@app_commands.autocomplete(day=day_suggest, year=year_suggest)
 	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
-	async def birthday(self, interaction: discord.Interaction, month: int, day: int, year: int):
+	async def set_birthday(self, interaction: discord.Interaction, month: int, day: int, year: int):
 		"""Allows you to set/show your birthday."""
 		if day > 31 or day < 0 or year > datetime.now().year - 15 or year < datetime.now().year - 99:
 			raise ValueError("Please provide a real date of birth.")
@@ -103,17 +104,13 @@ class Birthday(commands.Cog, name="birthday"):
 			if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: 
 				raise commands.CommandError("Please provide your real year of birth.")
 			
-			exist = await self.bot.database.exist(self.birthday_data["table"], "*", f"user_id={interaction.user.id}")
-			if exist:
-				await self.bot.database.update(self.birthday_data["table"], "user_birth", dataDate, f"user_id = {interaction.user.id}")
-			else:
-				await self.bot.database.insert(self.birthday_data["table"], {"user_id": interaction.user.id, "user_birth": dataDate})
+			await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"user_id": interaction.user.id, "user_birth": dataDate})
 
 			await self.show_birthday_message(interaction, interaction.user)
 		except Exception as e:
 			raise commands.CommandError(str(e))
 
-	@app_commands.command(name="showbirthday", description="Display the birthday of a user.")
+	@app_commands.command(name="show", description="Display the birthday of a user.")
 	@app_commands.describe(user="The user to get the birthdate from.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def show_birthday(self, interaction: discord.Interaction, user: discord.Member = None):
@@ -123,7 +120,7 @@ class Birthday(commands.Cog, name="birthday"):
 		await self.show_birthday_message(interaction, user)
 
 	async def show_birthday_message(self, interaction: discord.Interaction, user: discord.Member) -> None:
-		response = await self.bot.database.lookup(self.birthday_data["table"], "user_birth", "user_id", str(user.id))
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_birth", "user_id", str(user.id))
 		if response:
 			dataDate : date = response[0][0]
 			timestamp = round(time.mktime(dataDate.timetuple()))

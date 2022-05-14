@@ -106,15 +106,19 @@ class Admin(commands.Cog, name="admin"):
 	@commands.command(name="synctree", aliases=["st"])
 	@commands.bot_has_permissions(send_messages=True)
 	@commands.is_owner()
-	async def reload_tree(self, ctx: commands.Context, guild_id: str = None):
+	async def sync_tree(self, ctx: commands.Context, guild_id: str = None):
 		"""Sync application commands."""
 		if guild_id:
 			if guild_id == "guild" or guild_id == "~":
 				guild_id = ctx.guild.id
-			sync_tree = await self.bot.tree.sync(guild=discord.Object(id=guild_id))
+			tree = await self.bot.tree.sync(guild=discord.Object(id=guild_id))
 		else:
-			sync_tree = await self.bot.tree.sync()
-		await ctx.send(f":pinched_fingers: `{len(sync_tree)}` synced!")
+			tree = await self.bot.tree.sync()
+
+		self.bot.logger.name = f"discord.cogs.admin.sync_tree"
+		self.bot.logger.info(msg=f"{ctx.author} synced the tree({len(tree)}): {tree}")
+
+		await ctx.send(f":pinched_fingers: `{len(tree)}` synced!")
 
 	@commands.command(name="botlogs", aliases=["bl"])
 	@commands.bot_has_permissions(send_messages=True, attach_files=True)
@@ -133,11 +137,7 @@ class Admin(commands.Cog, name="admin"):
 		"""Change the guild prefix."""
 		try:
 			table = self.bot.config["database"]["prefix"]["table"]
-			exist = await self.bot.database.exist(table, "*", f"guild_id={ctx.guild.id}")
-			if exist:
-				await self.bot.database.update(table, "guild_prefix", new_prefix, f"guild_id={ctx.guild.id}")
-			else:
-				await self.bot.database.insert(table, {"guild_id": ctx.guild.id, "guild_prefix": new_prefix})
+			await self.bot.database.insert_onduplicate(table, {"guild_id": ctx.guild.id, "guild_prefix": new_prefix})
 
 			self.bot.prefixes[ctx.guild.id] = new_prefix
 			await ctx.send(f":warning: Prefix changed to `{new_prefix}`")

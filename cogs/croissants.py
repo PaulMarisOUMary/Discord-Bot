@@ -8,7 +8,10 @@ from discord import app_commands
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
-class Croissants(commands.Cog, name="croissants"):
+from classes.database import MixedTypes
+
+@app_commands.guild_only()
+class Croissants(commands.GroupCog, name="croissants", group_name="croissants", group_description="Commands related to croissants."):
 	"""
 		Don't leave your computer unlocked !
 		A private joke to raise awareness against the risk of leaving your PC unlocked.
@@ -29,9 +32,7 @@ class Croissants(commands.Cog, name="croissants"):
 
 		self.cooldown : dict = {} #{key=user_id : value=datetime}
 
-		self.croissants_data = self.bot.config["database"]["croissants"]
-
-	croissants = app_commands.Group(name="croissants", description="Commands related to croissants")
+		self.subconfig_data: dict = self.bot.config["database"]["croissants"]
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = self.EMOJI
@@ -47,7 +48,7 @@ class Croissants(commands.Cog, name="croissants"):
 				await self.__send_croissants(message)
 			else: await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
 
-	@croissants.command(name="lore", description="Explain the lore of the croissants.")
+	@app_commands.command(name="lore", description="Explain the lore of the croissants.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def croissants_lore(self, interaction: discord.Interaction) -> None:
 		"""Explain the lore of the croissants."""
@@ -61,12 +62,12 @@ class Croissants(commands.Cog, name="croissants"):
 
 		await interaction.response.send_message(embed=embed, ephemeral=True)
 
-	@croissants.command(name="show", description="Show how many croissants a user paid.")
+	@app_commands.command(name="show", description="Show how many croissants a user paid.")
 	@app_commands.describe(user="The user to show the croissants of.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def croissants_show(self, interaction: discord.Interaction, user: discord.Member) -> None:
 		"""Show how many croissants a user paid."""
-		response = await self.bot.database.lookup(self.croissants_data["table"], "user_count", "user_id", str(user.id))
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_count", "user_id", str(user.id))
 
 		if response:
 			text = f"{user.mention} have `{response[0][0]}` croissants {self.EMOJI} !"
@@ -75,11 +76,11 @@ class Croissants(commands.Cog, name="croissants"):
 
 		await interaction.response.send_message(content=text, ephemeral=True)
 
-	@croissants.command(name="rank", description="Get the global croissants rank.")
+	@app_commands.command(name="rank", description="Get the global croissants rank.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def croissants_rank(self, interaction: discord.Interaction) -> None:
 		"""Get the global croissants rank."""
-		response = await self.bot.database.select(self.croissants_data["table"], "*", order="user_count DESC", limit=10)
+		response = await self.bot.database.select(self.subconfig_data["table"], "*", order="user_count DESC", limit=10)
 		
 		embed = discord.Embed(title=f"🏆 Croissants rank {self.EMOJI}", color=0xD3A779)
 		for rank, data in enumerate(response, start=1):
@@ -98,15 +99,10 @@ class Croissants(commands.Cog, name="croissants"):
 		await answer_message.edit(content=f"{message.author.mention} took out the credit card ! And this is the `{count}` time, he's so generous! {self.EMOJI}")
 
 	async def __increment_croissants_counter(self, user_id : int) -> int:
-		exist = await self.bot.database.exist(self.croissants_data["table"], "*", f"user_id={user_id}")
-		if exist:
-			await self.bot.database.increment(self.croissants_data["table"], "user_count", condition=f"user_id={user_id}")
-			response = await self.bot.database.select(self.croissants_data["table"], "user_count", f"user_id={user_id}")
-			count = response[0][0]
-			return count
-		else:
-			await self.bot.database.insert(self.croissants_data["table"], {"user_id": user_id, "user_count": 1})
-			return 1
+		await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"user_id": user_id, "user_count": MixedTypes("COALESCE(user_count, 0) + 1")})
+
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_count", "user_id", str(user_id))
+		return response[0][0]
 
 	def __get_screenshot(self, author : discord.Member, content : str) -> discord.File:
 		name_font = ImageFont.truetype("fonts/Whitney-Medium.ttf", 24)
@@ -153,7 +149,7 @@ class Croissants(commands.Cog, name="croissants"):
 		return file
 
 	def __is_on_cooldown(self, user) -> bool:
-		return user.id in self.cooldown and datetime.now().timestamp() - self.cooldown[user.id].timestamp() < self.croissants_data["cooldown"]
+		return user.id in self.cooldown and datetime.now().timestamp() - self.cooldown[user.id].timestamp() < self.subconfig_data["cooldown"]
 
 	def __rank_emoji(self, rank) -> str:
 		if rank == 1:
