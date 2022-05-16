@@ -78,10 +78,10 @@ class Errors(commands.Cog, name="errors"):
 		except commands.NotOwner:
 			await edit(content="🕳️ You must own this bot to run this command.")
 		except commands.MissingPermissions as d_error:
-			await edit(content=f"🕳️ Your account require the following permissions: {'` `'.join(d_error.missing_permissions)}.")
+			await edit(content=f"🕳️ Your account require the following permissions: `{'` `'.join(d_error.missing_permissions)}`.")
 		except commands.BotMissingPermissions as d_error:
 			if not "send_messages" in d_error.missing_permissions:
-				await edit(content=f"🕳️ The bot require the following permissions: {'` `'.join(d_error.missing_permissions)}.")
+				await edit(content=f"🕳️ The bot require the following permissions: `{'` `'.join(d_error.missing_permissions)}`.")
 		except commands.CheckAnyFailure or commands.MissingRole or commands.BotMissingRole or commands.MissingAnyRole or commands.BotMissingAnyRole as d_error:
 			await edit(content=f"🕳️ {d_error}")
 		except commands.NSFWChannelRequired:
