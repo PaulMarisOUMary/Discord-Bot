@@ -10,8 +10,6 @@ from os.path import dirname, abspath, join, basename, splitext
 from discord.ext import commands
 from importlib import reload
 
-from discord import app_commands
-
 root_directory = dirname(dirname(abspath(__file__)))
 config_directory = join(root_directory, "config")
 cogs_directory = join(root_directory, "cogs")
@@ -76,12 +74,3 @@ def set_logging(file_level: int = logging.DEBUG, console_level: int = logging.IN
 def clean_close() -> None:
 	if platform.system().lower() == 'windows':
 		asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-
-def get_cog_from_sub_app_command(client: commands.Bot, command_reference: app_commands.command) -> commands.Cog:
-	"""Gets the cog that the app_command belongs to. (the app_command object must be in a Group)"""
-	return [client.get_cog(cog_str) 
-			for cog_str in client.cogs 
-				if client.get_cog(cog_str).app_command 
-					for command in client.get_cog(cog_str).app_command.commands 
-						if command == command_reference
-		][0]
