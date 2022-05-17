@@ -18,7 +18,6 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 			- manage_channels
 			- manage_roles
 			- view_channel
-
 	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
@@ -83,11 +82,11 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 
 				await interaction.user.add_roles(channel_role, reason=reason)
 
-				await interaction.response.send_message(f"Success ! {channel.mention} created.", ephemeral=True)
+				await interaction.response.send_message(f"Success ! {channel.mention} created.")
 
 				await channel.send(f"{channel.mention} has been created by {interaction.user.mention} !\n||Delete the channel with: `/private delete`||\nAdd your teammates with: `/private add <user>`.")
 			except Exception as e:
-				await interaction.response.send_message(e)
+				await interaction.response.send_message(e, ephemeral=True)
 
 		modal = CustomModal(
 			title = "Create private textual channel",
@@ -139,19 +138,43 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 	@app_commands.command(name="add", description="Add a user in the private textual channel.")
 	@app_commands.describe(user="User to add.")
 	@app_commands.checks.bot_has_permissions(manage_roles=True)
-	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.channel_id, i.user.id))
 	async def add(self, interaction: discord.Interaction, user: discord.Member):
 		channel_role = self.__get_private_role(interaction.channel)
 
 		if not self.__is_dash_channel(interaction.channel) or not channel_role:
-			await interaction.response.send_message("You can't delete a non private textual channel.\nTry to type this command in your private channel.", ephemeral=True)
+			await interaction.response.send_message("You can't add a user in a non private textual channel.\nTry to type this command in your private channel.", ephemeral=True)
 			return
 
 		await user.add_roles(channel_role, reason=f"Add private textual role to {user}, requested by: {interaction.user}.")
 
-		await interaction.response.send_message(f"{user.mention} joined {interaction.channel.mention} !", ephemeral=True)
+		await interaction.response.send_message(f"{user.mention} joined {interaction.channel.mention} !")
 
+	@app_commands.command(name="info", description="Get information about a private textual channel.")
+	@app_commands.checks.bot_has_permissions(manage_channels=True, view_channel=True)
+	async def info(self, interaction: discord.Interaction):
+		channel_role = self.__get_private_role(interaction.channel)
 
+		if not self.__is_dash_channel(interaction.channel) or not channel_role:
+			await interaction.response.send_message("You can't get information about a non private textual channel.\nTry to type this command in your private channel.", ephemeral=True)
+			return
+
+		owner = channel_role.name.split(":")[1]
+
+		await interaction.response.send_message(f"Owner: {owner.mention}\nCreated at: {interaction.channel.created_at.strftime('%d/%m/%Y %H:%M:%S')}")
+
+	@app_commands.command(name="remove", description="Remove a user from the private textual channel.")
+	@app_commands.describe(user="User to remove.")
+	@app_commands.checks.bot_has_permissions(manage_roles=True)
+	async def remove(self, interaction: discord.Interaction, user: discord.Member):
+		channel_role = self.__get_private_role(interaction.channel)
+
+		if not self.__is_dash_channel(interaction.channel) or not channel_role:
+			await interaction.response.send_message("You can't remove a user from a non private textual channel.\nTry to type this command in your private channel.", ephemeral=True)
+			return
+
+		await user.remove_roles(channel_role, reason=f"Remove private textual role from {user}, requested by: {interaction.user}.")
+
+		await interaction.response.send_message(f"{user.mention} left {interaction.channel.mention} !", ephemeral=True)
 
 async def setup(bot):
 	await bot.add_cog(PrivateTextual(bot))
