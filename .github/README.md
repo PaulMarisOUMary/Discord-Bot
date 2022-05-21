@@ -8,11 +8,12 @@
 ![GitHub last release](https://img.shields.io/github/v/release/PaulMarisOUMary/Discord-Bot?label=Release&color=blueviolet&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMTIgMTIgNDAgNDAiPjxwYXRoIGZpbGw9IiMzMzMzMzMiIGQ9Ik0zMiwxMy40Yy0xMC41LDAtMTksOC41LTE5LDE5YzAsOC40LDUuNSwxNS41LDEzLDE4YzEsMC4yLDEuMy0wLjQsMS4zLTAuOWMwLTAuNSwwLTEuNywwLTMuMiBjLTUuMywxLjEtNi40LTIuNi02LjQtMi42QzIwLDQxLjYsMTguOCw0MSwxOC44LDQxYy0xLjctMS4yLDAuMS0xLjEsMC4xLTEuMWMxLjksMC4xLDIuOSwyLDIuOSwyYzEuNywyLjksNC41LDIuMSw1LjUsMS42IGMwLjItMS4yLDAuNy0yLjEsMS4yLTIuNmMtNC4yLTAuNS04LjctMi4xLTguNy05LjRjMC0yLjEsMC43LTMuNywyLTUuMWMtMC4yLTAuNS0wLjgtMi40LDAuMi01YzAsMCwxLjYtMC41LDUuMiwyIGMxLjUtMC40LDMuMS0wLjcsNC44LTAuN2MxLjYsMCwzLjMsMC4yLDQuNywwLjdjMy42LTIuNCw1LjItMiw1LjItMmMxLDIuNiwwLjQsNC42LDAuMiw1YzEuMiwxLjMsMiwzLDIsNS4xYzAsNy4zLTQuNSw4LjktOC43LDkuNCBjMC43LDAuNiwxLjMsMS43LDEuMywzLjVjMCwyLjYsMCw0LjYsMCw1LjJjMCwwLjUsMC40LDEuMSwxLjMsMC45YzcuNS0yLjYsMTMtOS43LDEzLTE4LjFDNTEsMjEuOSw0Mi41LDEzLjQsMzIsMTMuNHoiLz48L3N2Zz4%3D)
 ![Github last prerelease](https://img.shields.io/github/v/release/PaulMarisOUMary/Discord-Bot?color=orange&include_prereleases&label=Pre-release&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMTIgMTIgNDAgNDAiPjxwYXRoIGZpbGw9IiMzMzMzMzMiIGQ9Ik0zMiwxMy40Yy0xMC41LDAtMTksOC41LTE5LDE5YzAsOC40LDUuNSwxNS41LDEzLDE4YzEsMC4yLDEuMy0wLjQsMS4zLTAuOWMwLTAuNSwwLTEuNywwLTMuMiBjLTUuMywxLjEtNi40LTIuNi02LjQtMi42QzIwLDQxLjYsMTguOCw0MSwxOC44LDQxYy0xLjctMS4yLDAuMS0xLjEsMC4xLTEuMWMxLjksMC4xLDIuOSwyLDIuOSwyYzEuNywyLjksNC41LDIuMSw1LjUsMS42IGMwLjItMS4yLDAuNy0yLjEsMS4yLTIuNmMtNC4yLTAuNS04LjctMi4xLTguNy05LjRjMC0yLjEsMC43LTMuNywyLTUuMWMtMC4yLTAuNS0wLjgtMi40LDAuMi01YzAsMCwxLjYtMC41LDUuMiwyIGMxLjUtMC40LDMuMS0wLjcsNC44LTAuN2MxLjYsMCwzLjMsMC4yLDQuNywwLjdjMy42LTIuNCw1LjItMiw1LjItMmMxLDIuNiwwLjQsNC42LDAuMiw1YzEuMiwxLjMsMiwzLDIsNS4xYzAsNy4zLTQuNSw4LjktOC43LDkuNCBjMC43LDAuNiwxLjMsMS43LDEuMywzLjVjMCwyLjYsMCw0LjYsMCw1LjJjMCwwLjUsMC40LDEuMSwxLjMsMC45YzcuNS0yLjYsMTMtOS43LDEzLTE4LjFDNTEsMjEuOSw0Mi41LDEzLjQsMzIsMTMuNHoiLz48L3N2Zz4%3D)
 
-# Algobot
+# Discord-Bot
 
 ## Table of content
 
 - [About the project](#about-the-project)
+	- [Major features](#major-features)
 	- [Built with](#built-with)
 - [Getting started](#getting-started)
 	- [Python prerequisites](#python-prerequisites)
@@ -23,12 +24,34 @@
 - [Workflows](#workflows)
 ## About the project
 
-This discord bot was made for Algosup in 2020. It has a lot of features such translator, events manager, utils, and more. Made by student(s) for students.
+This discord bot was made for an IT School in 2020. It has a lot of features including all the latest features from discord.py. Made by student(s) for students.
+
+<a name="major-features"/>
+
+> **Note**: Major features
+> - [ContextMenus](https://discordpy.readthedocs.io/en/master/interactions/api.html#discord.app_commands.ContextMenu) (Right-click commands)
+> - [AppCommands](https://discordpy.readthedocs.io/en/master/interactions/api.html#discord.app_commands.AppCommand) (Slash-commands)
+> - [HybridCommands](https://discordpy.readthedocs.io/en/master/ext/commands/api.html#discord.ext.commands.HybridCommand) (Slash-commands + Commands)
+> - [Groups](https://discordpy.readthedocs.io/en/master/ext/commands/api.html#discord.ext.commands.Group)
+> - [Commands](https://discordpy.readthedocs.io/en/master/ext/commands/api.html#discord.ext.commands.Group)
+> - [Custom-Modals](https://discordpy.readthedocs.io/en/master/interactions/api.html#discord.ui.Modal) (Forms)
+> - [Custom-Views](https://discordpy.readthedocs.io/en/master/interactions/api.html?#discord.ui.View) (Buttons, Dropdown, ..)
+> - [Cogs](https://discordpy.readthedocs.io/en/master/ext/commands/api.html#discord.ext.commands.Cog)/[GroupCogs](https://discordpy.readthedocs.io/en/master/ext/commands/api.html?highlight=cogs#discord.ext.commands.GroupCog)
+> - Custom prefix per guild
+> - Dynamic structure (Does not require a reboot to apply changes in files)
+> - Database support (SQL)
+> - Error handling
+> - Logging
+> - Multiple configs
+> - Powerful, dev & debuging commands
+> - Metrics about usage of the bot
+> - Language detector & Translation
+> - And much more..
 
 ### Built with
 
 - [Python](https://python.org/) >= 3.8
-- [discord.py](https://discordpy.readthedocs.io) >= 2.0.0a @ e515378076c64c5ab2f3a06237f2362ac8556290
+- [discord.py](https://discordpy.readthedocs.io) >= 2.0.0a
 - SQL
 	- MariaDB (or MySQL)
 
@@ -51,7 +74,7 @@ $ pip install -r requirements.txt
 
 4. Copy the token bot from [Discord Developpers/applications/{YOUR_APP_ID}/bot #Token](https://discord.com/developers/applications/{YOUR_APP_ID}/bot)
 
-:warning: In URL replace `{YOUR_APP_ID}` with your own app/bot ID.
+> **Note** In URL replace `{YOUR_APP_ID}` with your own app/bot ID.
 
 ### Configure the bot
 
@@ -61,24 +84,27 @@ $ pip install -r requirements.txt
 
 3. If you're using a database, you need to configure the `/config/database.json` file.
 
-:warning: If you're NOT using any database, check [this section of the documentation](#acknowledgement).
+> **Warning** If you're NOT using any database, check [this section of the documentation](#acknowledgement).
 
 ## Database
 
 ### Acknowledgement
-:warning: If you have not plan to use a SQL database: :warning:
-- in the folder `cogs` you should remove the following files: `birthday.py`, `croissants.py`, `me.py`, `metrics.py`.
-- in `cogs/admin.py` remove the `change_guild_prefix` method.
-- in `bot.py` replace the `command_prefix=__getprefix` `line 12` with `command_prefix="?"` (define the bot's prefix).
-- in `bot.py` delete the `Database initialization` (line 41-44) and the `Prefix per guild initialization` (line 46-48).
+> **Warning** If you have not plan to use a SQL database:
+> - in the folder `cogs` you should remove the following files: `birthday.py`, `croissants.py`, `me.py`, `metrics.py`.
+> - in `cogs/admin.py` remove the `change_guild_prefix` method.
+> - in `bot.py` replace the `command_prefix=__getprefix` `line 12` with `command_prefix="?"` (define the bot's prefix).
+> - in `bot.py` delete the `Database initialization` (line 41-44) and the `Prefix per guild initialization` (line 46-48).
 
-If you have plan to use a database:
-- you should use a SQL Database.
-- reconfigure the "server" section from `/config/database.json`.
-- you can change the subjective structure of each tables if needed.
-    - if so you should reconfigure some keys/values of the `/config/database.json`.
+> **Note** If you have plan to use a database:
+> - you should use a SQL Database.
+> - reconfigure the "server" section from `/config/database.json`.
+> - you can change the subjective structure of each tables if needed.
+>     - if so you should reconfigure some keys/values of the `/config/database.json`.
 
 ### SQL tables structure
+
+> **Note** These tables are required in the database if you have planned to use the bot as if provided
+
 - `table_birthday`
 ```sql
 CREATE TABLE IF NOT EXISTS `table_birthday`
@@ -191,8 +217,8 @@ ExecStart=python3 /home/{username}/actions-runner/_work/Discord-Bot/Discord-Bot/
 [Install]
 WantedBy=multi-user.target
 ```
-:warning: Replace `{username}` & `{usernameWithPermissions}` with your username and `Discord-Bot/Discord-Bot` with your project name.
-- Then enable the service with `systemctl enable your-service-name.service`   
+> **Note** Replace `{username}` & `{usernameWithPermissions}` with your username and `Discord-Bot/Discord-Bot` with your project name.
+> - Then enable the service with `systemctl enable your-service-name.service`   
 
 <h5>Contributors :</h5>
 
