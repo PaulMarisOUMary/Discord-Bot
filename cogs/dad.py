@@ -17,7 +17,8 @@ class Dad(commands.Cog, name="dad"):
     """
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
-        self.settings = bot.config["bot"]["dad"]
+        
+        self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
 
     def help_custom(self) -> tuple[str, str, str]:
         emoji = '👨‍🦳'
@@ -31,7 +32,7 @@ class Dad(commands.Cog, name="dad"):
         if author_id != self.bot.user.id:
             content = message.content
 
-            for joke in self.settings["jokes"]:
+            for joke in self.subconfig_data["jokes"]:
                 regex = joke["regex"]
                 response: str = joke["message"]
                 probability = joke["probability"]

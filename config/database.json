@@ -5,32 +5,5 @@
         "user": "user",
         "password": "********",
         "database": "database"
-    },
-    "birthday": {
-        "table": "table_birthday",
-
-        "guild_id": 780212419141828619,
-        "channel_id": 859832702960926770
-    },
-    "croissants": {
-        "table": "table_croissants",
-
-        "cooldown": 300
-    },
-    "fridaycake": {
-        "table": "table_fridaycake",
-
-        "seed": 2
-    },
-    "me": {
-        "table": "table_me",
-
-        "max_length": 255
-    },
-    "metrics": {
-        "table": "table_metrics"
-    },
-    "prefix": {
-        "table": "table_prefix"
     }
 }

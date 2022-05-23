@@ -23,7 +23,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-		self.subconfig_data: dict = bot.config["database"]["birthday"]
+		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '🎁'

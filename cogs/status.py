@@ -22,16 +22,16 @@ class Status(commands.Cog, name="status"):
 
 	async def loop_change_status(self) -> None:
 		await self.bot.wait_until_ready()
-		status_message = self.bot.config["bot"]["bot_status"]
+		subconfig_data = self.bot.config["cogs"][self.__cog_name__.lower()]
 		while not self.bot.is_closed():
-			for status in status_message:
+			for status in subconfig_data["status"]:
 				await self.bot.change_presence(
 					activity=discord.Streaming(
 						name=status, 
 						url="https://www.twitch.tv/warriormachine_"), 
 					status=discord.Status.do_not_disturb
 				)
-				await asyncio.sleep(10)
+				await asyncio.sleep(subconfig_data["cooldown"])
 
 
 

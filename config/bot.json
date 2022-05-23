@@ -1,27 +1,7 @@
 {
     "token": "*************************************.******.**********************",
-    "bot_default_prefix": "?",
-    "bot_status": [
-        "use slash commands!",
-        "?help"
-    ],
-    "dad": {
-        "jokes": [
-            {
-                "regex": "^(.*?[\\s])?(im|i\\ am|i\\'m)[\\s](?P<value>.+)",
-                "message": "Hi {value}, I'm {bot.user.mention}",
-                "probability": 0.1
-            },
-            {
-                "regex": "(.*)quoi[^a-zA-Z]*?$",
-                "message": "Feur.",
-                "probability": 0.25
-            }
-        ]
-    },
-    "private_vocal": {
-        "main_channel_name": "\u2795",
-        "channel_name": "Vocal: #{user.discriminator}",
-        "cooldown": 30
+    "default_prefix": "?",
+    "prefix_table": {
+        "table": "table_prefix"
     }
 }

@@ -1,0 +1,53 @@
+{
+    "birthday": {
+        "table": "table_birthday",
+
+        "guild_id": 780212419141828619,
+        "channel_id": 859832702960926770
+    },
+    "croissants": {
+        "table": "table_croissants",
+
+        "cooldown": 300
+    },
+    "dad": {
+        "jokes": [
+            {
+                "regex": "^(.*?[\\s])?(im|i\\ am|i\\'m)[\\s](?P<value>.+)",
+                "message": "Hi {value}, I'm {bot.user.mention}",
+                "probability": 0.1
+            },
+            {
+                "regex": "(.*)quoi[^a-zA-Z]*?$",
+                "message": "Feur.",
+                "probability": 0.25
+            }
+        ]
+    },
+    "fridaycake": {
+        "table": "table_fridaycake",
+
+        "seed": 2
+    },
+    "me": {
+        "table": "table_me",
+
+        "max_length": 255
+    },
+    "metrics": {
+        "table": "table_metrics"
+    },
+    "privatevocal": {
+        "main_channel_name": "\u2795",
+        "channel_name": "Vocal: #{user.discriminator}",
+        "cooldown": 30
+    },
+    "status": {
+        "status": [
+            "V2.0 Soon !",
+            "I'm open-source !",
+            "Use slash-commands !"
+        ],
+        "cooldown": 15
+    }
+}
