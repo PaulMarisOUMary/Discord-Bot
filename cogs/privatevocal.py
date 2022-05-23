@@ -20,11 +20,12 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 	"""
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
-		self.private_config = bot.config["bot"]["private_vocal"]
+		
+		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
 
 		self.tracker: dict[int, dict] = dict()
-		self.MAIN_CHANNEL_NAME = self.private_config["main_channel_name"]
-		self.CHANNEL_NAME = self.private_config["channel_name"]
+		self.MAIN_CHANNEL_NAME = self.subconfig_data["main_channel_name"]
+		self.CHANNEL_NAME = self.subconfig_data["channel_name"]
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '💭'
@@ -45,7 +46,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 		return channel.user_limit == 1 and channel.name == self.MAIN_CHANNEL_NAME
 	
 	def __is_user_on_cooldown(self, user: discord.Member, guild_cooldown: dict) -> bool:
-		return (user.id in guild_cooldown) and datetime.now().timestamp() - guild_cooldown[user.id].timestamp() < self.private_config["cooldown"]
+		return (user.id in guild_cooldown) and datetime.now().timestamp() - guild_cooldown[user.id].timestamp() < self.subconfig_data["cooldown"]
 
 	@commands.Cog.listener("on_voice_state_update")
 	async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
@@ -57,7 +58,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 		if after.channel is not None and self.__is_join_channel(after.channel):
 			if self.__is_user_on_cooldown(member, guild_cooldown):
 				await member.move_to(None)
-				remaining = self.private_config["cooldown"] - (datetime.now() - guild_cooldown[member.id]).total_seconds()
+				remaining = self.subconfig_data["cooldown"] - (datetime.now() - guild_cooldown[member.id]).total_seconds()
 				await member.send(f"Sorry you're on cooldown, time remaining: `{round(remaining)}` seconds.")
 			
 			else:

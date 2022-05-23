@@ -9,14 +9,19 @@ from discord.ext import commands
 
 class Bot(commands.Bot):
 	def __init__(self):
-		super().__init__(command_prefix=self.__get_prefix, case_insensitive=True, intents=discord.Intents.all())
+		super().__init__(
+			allowed_mentions=discord.AllowedMentions(everyone=False),
+			case_insensitive = True, 
+			command_prefix = self.__get_prefix, 
+			intents = discord.Intents.all(), 
+		)
 
 	def __get_prefix(self, client, message):
 		guild_id = message.guild.id
 		if guild_id in client.prefixes: 
 			prefix = client.prefixes[guild_id]
 		else: 
-			prefix = self.config["bot"]["bot_default_prefix"]
+			prefix = self.config["bot"]["default_prefix"]
 		return commands.when_mentioned_or(prefix)(client, message)
 
 	async def on_ready(self):
@@ -33,7 +38,6 @@ class Bot(commands.Bot):
 		await self.wait_until_ready()
 		
 		await self.tree.sync()
-		#await self.tree.sync(guild=discord.Object(id=332234497078853644)) # dev
 		
 	async def setup_hook(self):
 		"""Initialize the db, prefixes & cogs."""
@@ -45,7 +49,7 @@ class Bot(commands.Bot):
 
 		# Prefix per guild initialization
 		self.prefixes = dict()
-		for data in await self.database.select(self.config["database"]["prefix"]["table"], "*"): 
+		for data in await self.database.select(self.config["bot"]["prefix_table"]["table"], "*"): 
 			self.prefixes[data[0]] = data[1]
 
 		# Cogs loader

@@ -32,7 +32,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 
 		self.cooldown : dict = {} #{key=user_id : value=datetime}
 
-		self.subconfig_data: dict = self.bot.config["database"]["croissants"]
+		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = self.EMOJI

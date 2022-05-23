@@ -17,7 +17,7 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
 
-		self.subconfig_data: dict = self.bot.config["database"]["me"]
+		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
 		self.max_lenght_me = self.subconfig_data["max_length"]
 
 	def help_custom(self) -> tuple[str, str, str]:

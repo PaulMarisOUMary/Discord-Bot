@@ -136,7 +136,7 @@ class Admin(commands.Cog, name="admin"):
 	async def change_guild_prefix(self, ctx: commands.Context, new_prefix: str):
 		"""Change the guild prefix."""
 		try:
-			table = self.bot.config["database"]["prefix"]["table"]
+			table = self.bot.config["bot"]["prefix_table"]["table"]
 			await self.bot.database.insert_onduplicate(table, {"guild_id": ctx.guild.id, "guild_prefix": new_prefix})
 
 			self.bot.prefixes[ctx.guild.id] = new_prefix
