@@ -149,9 +149,10 @@ COLLATE utf8mb4_unicode_ci;
 ```sql
 CREATE TABLE IF NOT EXISTS `table_me`
 (
+    `guild_id`          BIGINT unsigned NOT NULL,
     `user_id`           BIGINT unsigned NOT NULL,
     `user_me`           varchar(1024),
-UNIQUE(`user_id`)
+CONSTRAINT `me_per_guild` UNIQUE (`guild_id`, `user_id`)
 )
 ENGINE = InnoDB,
 CHARACTER SET utf8mb4,
