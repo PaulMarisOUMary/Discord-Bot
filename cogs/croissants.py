@@ -67,7 +67,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def croissants_show(self, interaction: discord.Interaction, user: discord.Member) -> None:
 		"""Show how many croissants a user paid."""
-		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_count", "user_id", str(user.id))
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_count", {"user_id": str(user.id)})
 
 		if response:
 			text = f"{user.mention} have `{response[0][0]}` croissants {self.EMOJI} !"
@@ -101,7 +101,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 	async def __increment_croissants_counter(self, user_id : int) -> int:
 		await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"user_id": user_id, "user_count": MixedTypes("COALESCE(user_count, 0) + 1")})
 
-		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_count", "user_id", str(user_id))
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_count", {"user_id": str(user_id)})
 		return response[0][0]
 
 	def __get_screenshot(self, author : discord.Member, content : str) -> discord.File:

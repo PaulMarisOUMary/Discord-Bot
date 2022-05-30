@@ -18,7 +18,6 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 		self.bot = bot
 
 		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
-		self.max_lenght_me = self.subconfig_data["max_length"]
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '🤙'
@@ -33,10 +32,10 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 		"""Allows you to set or show a brief description of yourself."""
 		try:
 			text = description.replace("'", "''")
-			if len(text) > self.max_lenght_me: 
-				raise commands.CommandError(f"The max-lenght of your *me* is set to: __{self.max_lenght_me}__ (yours is {len(text)}).")
+			if max_lenght_me := self.subconfig_data["max_length"] < len(text) : 
+				raise commands.CommandError(f"The max-lenght of your *me* is set to: __{max_lenght_me}__ (yours is {len(text)}).")
 			
-			await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"user_id": interaction.user.id, "user_me": text})
+			await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"guild_id": interaction.guild_id, "user_id": interaction.user.id, "user_me": text})
 			
 			await self.show_me_message(interaction, interaction.user)
 		except Exception as e:
@@ -52,7 +51,7 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 		await self.show_me_message(interaction, user)
 
 	async def show_me_message(self, interaction: discord.Interaction, user: discord.Member) -> None:
-		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_me", "user_id", str(user.id))
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_me", {"guild_id": str(user.guild.id),"user_id":  str(user.id)})
 		message = " ".join(response[0]) if len(response) else "No description provided.."
 		await interaction.response.send_message(f"• **{user.display_name}** {message}")
 
