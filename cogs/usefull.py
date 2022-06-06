@@ -7,6 +7,8 @@ from discord.ext import commands
 from discord import app_commands
 from discord.app_commands import Choice
 
+from classes.discordbot import DiscordBot
+
 class Usefull(commands.Cog, name="usefull"):
 	"""
 		Usefull commands for Devs & more.
@@ -17,7 +19,7 @@ class Usefull(commands.Cog, name="usefull"):
 		Require bot permission:
 			- send_messages
 	"""
-	def __init__(self, bot: commands.Bot) -> None:
+	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot
 
 	"""def help_custom(self) -> tuple[str]:
@@ -68,5 +70,5 @@ class Usefull(commands.Cog, name="usefull"):
 
 
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
 	await bot.add_cog(Usefull(bot))

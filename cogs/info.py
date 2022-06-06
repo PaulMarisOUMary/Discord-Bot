@@ -8,6 +8,8 @@ from discord.utils import get
 from discord.ext import commands
 from discord import app_commands
 
+from classes.discordbot import DiscordBot
+
 def statServer(guild) -> dict:
 	status = {}
 	must = ["members", "bot", "streaming", "idle", "dnd", "online", "offline", "mobile"]
@@ -38,7 +40,7 @@ class Info(commands.Cog, name="info"):
 		Require bot permission:
 			- use_external_emojis
 	"""
-	def __init__(self, bot: commands.Bot) -> None:
+	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot
 
 	def help_custom(self) -> tuple[str, str, str]:
@@ -133,5 +135,5 @@ class Info(commands.Cog, name="info"):
 
 
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
 	await bot.add_cog(Info(bot))

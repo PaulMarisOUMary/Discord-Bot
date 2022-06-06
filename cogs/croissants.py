@@ -9,6 +9,7 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
 
 from classes.database import MixedTypes
+from classes.discordbot import DiscordBot
 
 @app_commands.guild_only()
 class Croissants(commands.GroupCog, name="croissants", group_name="croissants", group_description="Commands related to croissants."):
@@ -24,7 +25,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 			- send_messages
 			- attach_files
 	"""
-	def __init__(self, bot: commands.Bot) -> None:
+	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot
 
 		self.EMOJI = '🥐'
@@ -161,5 +162,5 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 		else:
 			return rank
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
 	await bot.add_cog(Croissants(bot))

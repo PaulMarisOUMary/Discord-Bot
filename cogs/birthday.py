@@ -9,6 +9,8 @@ from discord.utils import get
 from discord import app_commands
 from discord.app_commands import Choice
 
+from classes.discordbot import DiscordBot
+
 @app_commands.guild_only()
 class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_description="Commands related to birthday."):
 	"""
@@ -20,7 +22,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 		Require bot permission:
 			- None
 	"""
-	def __init__(self, bot: commands.Bot) -> None:
+	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot
 
 		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
@@ -139,5 +141,5 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 
 
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
 	await bot.add_cog(Birthday(bot))

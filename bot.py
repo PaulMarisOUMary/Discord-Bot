@@ -2,12 +2,13 @@ import discord
 import logging
 
 from classes.database import DataSQL
+from classes.discordbot import DiscordBot
 from classes.utilities import load_config, clean_close, cogs_manager, set_logging, cogs_directory
 
 from os import listdir
 from discord.ext import commands
 
-class Bot(commands.Bot):
+class Bot(DiscordBot):
 	def __init__(self):
 		super().__init__(
 			allowed_mentions=discord.AllowedMentions(everyone=False),
@@ -16,7 +17,7 @@ class Bot(commands.Bot):
 			intents = discord.Intents.all(), 
 		)
 
-	def __get_prefix(self, client, message):
+	def __get_prefix(self, client: DiscordBot, message: discord.Message):
 		guild_id = message.guild.id
 		if guild_id in client.prefixes: 
 			prefix = client.prefixes[guild_id]
@@ -56,7 +57,7 @@ class Bot(commands.Bot):
 		cogs = [f"cogs.{filename[:-3]}" for filename in listdir(cogs_directory) if filename.endswith(".py")]
 		await cogs_manager(self, "load", cogs)
 
-		# Sync application commands & show logging informations 
+		# Sync application commands
 		self.loop.create_task(self.startup())
 
 if __name__ == '__main__':

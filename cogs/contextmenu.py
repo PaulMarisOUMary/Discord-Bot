@@ -1,13 +1,14 @@
 import discord
 import re
 
+from classes.discordbot import DiscordBot
 from classes.translator import Translator
 
 from discord.ext import commands
 from discord import app_commands
 
 class ContextMenu(commands.Cog):
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
         self.context_commands: list[app_commands.ContextMenu] = [
@@ -64,5 +65,5 @@ class ContextMenu(commands.Cog):
         dest = Translator.get_trans_abbr(str(interaction.locale))
         await self.translate(interaction, message, dest)
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
     await bot.add_cog(ContextMenu(bot))

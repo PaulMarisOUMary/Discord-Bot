@@ -1,6 +1,7 @@
 import discord
 import os
 
+from classes.discordbot import DiscordBot
 from classes.utilities import load_config ,cogs_manager, reload_views, cogs_directory, root_directory
 
 from discord.ext import commands
@@ -17,7 +18,7 @@ class Admin(commands.Cog, name="admin"):
 			- send_messages
 			- attach_files
 	"""
-	def __init__(self, bot: commands.Bot) -> None:
+	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot
 
 	def help_custom(self) -> tuple[str, str, str]:
@@ -155,5 +156,5 @@ class Admin(commands.Cog, name="admin"):
 
 
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
 	await bot.add_cog(Admin(bot))
