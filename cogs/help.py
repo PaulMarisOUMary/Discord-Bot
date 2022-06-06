@@ -4,6 +4,8 @@ from discord.ext import commands
 from datetime import datetime, timedelta
 from views import help as vhelp
 
+from classes.discordbot import DiscordBot
+
 class HelpCommand(commands.HelpCommand):
     """Help command"""
 
@@ -69,7 +71,7 @@ class Help(commands.Cog, name="help"):
 			- read_messages
 			- send_messages
     """
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: DiscordBot) -> None:
         self._original_help_command = bot.help_command
 
         attributes = {
@@ -90,5 +92,5 @@ class Help(commands.Cog, name="help"):
         description = "Help utilities."
         return emoji, label, description
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
 	await bot.add_cog(Help(bot))

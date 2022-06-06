@@ -3,9 +3,11 @@ import discord
 
 from discord.ext import commands
 
+from classes.discordbot import DiscordBot
+
 class Status(commands.Cog, name="status"):
 	"""A loop to set the current status of the bot."""
-	def __init__(self, bot: commands.Bot) -> None:
+	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot
 
 	"""def help_custom(self) -> tuple[str]:
@@ -35,5 +37,5 @@ class Status(commands.Cog, name="status"):
 
 
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
 	await bot.add_cog(Status(bot))

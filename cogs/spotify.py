@@ -5,6 +5,8 @@ from discord.utils import get
 from discord.ext import commands
 from discord import app_commands
 
+from classes.discordbot import DiscordBot
+
 class Spotify(commands.Cog, name="spotify"):
 	"""
 		Show Spotify presence on discord.
@@ -15,7 +17,7 @@ class Spotify(commands.Cog, name="spotify"):
 		Require bot permission:
 			- use_external_emojis
 	"""
-	def __init__(self, bot: commands.Bot) -> None:
+	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot
 
 	def help_custom(self) -> tuple[str, str, str]:
@@ -45,5 +47,5 @@ class Spotify(commands.Cog, name="spotify"):
 
 
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
 	await bot.add_cog(Spotify(bot))

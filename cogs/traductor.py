@@ -3,6 +3,8 @@ import discord
 import re
 
 from discord.ext import commands
+
+from classes.discordbot import DiscordBot
 from classes.translator import Translator
 
 class Traductor(commands.Cog, name="traductor"):
@@ -16,7 +18,7 @@ class Traductor(commands.Cog, name="traductor"):
 			- send_messages
 			- add_reactions
 	"""
-	def __init__(self, bot: commands.Bot) -> None:
+	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot
 
 	def help_custom(self) -> tuple[str, str, str]:
@@ -74,5 +76,5 @@ class Traductor(commands.Cog, name="traductor"):
 
 
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
 	await bot.add_cog(Traductor(bot))

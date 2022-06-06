@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 
 from classes.database import MixedTypes
+from classes.discordbot import DiscordBot
 
 class Metrics(commands.Cog, name="metrics"):
 	"""
@@ -14,7 +15,7 @@ class Metrics(commands.Cog, name="metrics"):
 		Require bot permission:
 			- None
 	"""
-	def __init__(self, bot: commands.Bot) -> None:
+	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot
 
 		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
@@ -63,5 +64,5 @@ class Metrics(commands.Cog, name="metrics"):
 
 
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
 	await bot.add_cog(Metrics(bot))

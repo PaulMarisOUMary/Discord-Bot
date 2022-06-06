@@ -4,6 +4,8 @@ import re
 from discord.ext import commands
 from random import random
 
+from classes.discordbot import DiscordBot
+
 class Dad(commands.Cog, name="dad"):
     """
         Dad's jokes.
@@ -15,7 +17,7 @@ class Dad(commands.Cog, name="dad"):
 			- read_messages
 			- send_messages
     """
-    def __init__(self, bot: commands.Bot) -> None:
+    def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
         
         self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
@@ -49,5 +51,5 @@ class Dad(commands.Cog, name="dad"):
                     break
 
 
-async def setup(bot):
+async def setup(bot: DiscordBot):
     await bot.add_cog(Dad(bot))
