@@ -4,6 +4,7 @@ import os
 from classes.discordbot import DiscordBot
 from classes.utilities import load_config ,cogs_manager, reload_views, cogs_directory, root_directory
 
+from datetime import datetime
 from discord.ext import commands
 
 class Admin(commands.Cog, name="admin"):
@@ -144,6 +145,14 @@ class Admin(commands.Cog, name="admin"):
 			await ctx.send(f":warning: Prefix changed to `{new_prefix}`")
 		except Exception as e:
 			await ctx.send(f"Error: {e}")
+
+	@commands.command(name="uptime")
+	@commands.bot_has_permissions(send_messages=True)
+	@commands.is_owner()
+	async def show_uptime(self, ctx: commands.Context):
+		"""Show the bot uptime."""
+		uptime = datetime.now() - self.bot.uptime
+		await ctx.send(f":clock1: <t:{round(self.bot.uptime.timestamp())}:R> ||`{uptime}`||")
 
 	@commands.command(name="shutdown")
 	@commands.bot_has_permissions(send_messages=True)

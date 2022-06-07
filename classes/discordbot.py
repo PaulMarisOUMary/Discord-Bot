@@ -1,3 +1,4 @@
+from datetime import datetime
 from discord.ext import commands
 from logging import Logger
 from typing import Any
@@ -18,6 +19,9 @@ class DiscordBot(commands.Bot):
 
     prefixes: dict
     """List of prefixes per guild."""
+
+    uptime: datetime = datetime.now()
+    """Bot's uptime."""
 
     def __init__(self,**kwargs: Any) -> None:
         super().__init__(**kwargs)
