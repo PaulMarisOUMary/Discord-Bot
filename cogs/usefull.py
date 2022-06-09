@@ -7,6 +7,7 @@ from discord.ext import commands
 from discord import app_commands
 from discord.app_commands import Choice
 
+from classes.ansi import Format as fmt, Foreground as fg, Background as bg
 from classes.discordbot import DiscordBot
 
 class Usefull(commands.Cog, name="usefull"):
@@ -67,6 +68,22 @@ class Usefull(commands.Cog, name="usefull"):
 
 		for message in embed_list:
 			await ctx.send(embed=message)
+
+	@commands.command(name="colors")
+	@commands.cooldown(1, 10, commands.BucketType.user)
+	async def codeblock_colors(self, ctx: commands.Context):
+		codeblock = '```ansi\n'
+
+		for item, text in [
+			(fmt._member_map_, "Format"),
+			(fg._member_map_, "Foreground"),
+			(bg._member_map_, "Background")
+		]:
+			codeblock += f"{fmt.UNDERLINE + fg.GRAY + bg.WHITE}{text}{fmt.RESET}:\n"
+			for key, value in item.items():
+				codeblock += f"ESC[{value.value}m {value}{key}{fmt.RESET}\n"
+
+		await ctx.send(f"{codeblock}```")
 
 
 

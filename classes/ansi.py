@@ -34,6 +34,7 @@ class Format(SingleANSI):
 class Foreground(SingleANSI):
     """Foreground color codes."""
     GRAY = 30
+    GREY = GRAY
     RED = 31
     GREEN = 32
     YELLOW = 33
@@ -49,6 +50,8 @@ class Background(SingleANSI):
     MARBLE_BLUE = 42
     GREYISH_TURQUOISE = 43
     GRAY = 44
+    GREY = GRAY
     INDIGO = 45
     LIGHT_GRAY = 46
+    LIGHT_GREY = LIGHT_GRAY
     WHITE = 47
