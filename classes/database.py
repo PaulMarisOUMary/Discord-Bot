@@ -115,6 +115,10 @@ class DataSQL():
     async def update(self, table: str, dict: str, condition: str = None) -> query:
         query = self.__query_update(table, dict, condition)
         return await self.query(query)
+    
+    async def delete(self, table: str, condition: str = '') -> query:
+        query = f"DELETE FROM `{table}` WHERE {condition};"
+        return await self.query(query + ';')
 
     async def increment(self, table: str, target: str, value: int = 1, condition: Union[str, None] = None) -> update:
         await self.update(table, {target: MixedTypes(f"{target} + {value}")}, condition)
