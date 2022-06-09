@@ -97,6 +97,17 @@ class DataSQL():
 
         if close: query += ';'
         return query
+    
+    def __query_delete(self, table: str, dict: dict, condition: Union[str, None] = None, close: bool = True) -> str:
+        query = f"DELETE FROM `{table}` WHERE "
+
+        assignement = self.__to_update_variables_values(dict)
+        query += assignement
+
+        if condition: query += f" WHERE {condition}"
+
+        if close: query += ';'
+        return query
 
     async def insert(self, table: str, dict: dict) -> query:
         query = self.__query_insert(table, dict)
@@ -114,6 +125,10 @@ class DataSQL():
 
     async def update(self, table: str, dict: str, condition: str = None) -> query:
         query = self.__query_update(table, dict, condition)
+        return await self.query(query)
+    
+    async def delete(self, table: str, dict: str, condition: str = None) -> query:
+        query = self.__query_delete(table, dict, condition)
         return await self.query(query)
 
     async def increment(self, table: str, target: str, value: int = 1, condition: Union[str, None] = None) -> update:
