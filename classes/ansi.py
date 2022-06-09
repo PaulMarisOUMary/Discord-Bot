@@ -1,32 +1,38 @@
 from enum import IntEnum
-from typing import Any
 
-ESCAPE: str = '\u001b'
+ESCAPE = '\u001b'
 
-class ANSI(IntEnum):
+def _to_color(*colors_code: str) -> str:
+    """Color code to ANSI escape sequence."""
+    return f"{ESCAPE}[{';'.join(colors_code)}m"
 
-    def _to_color(self, *colors_code: str) -> str:
-        return f"{ESCAPE}[{';'.join(colors_code)}m"
+class StackANSI():
+    def __init__(self, num: int):
+        self.series = [num]
 
-    def __call__(self) -> str:
-        return self._to_color(str(self))
+    def __add__(self, __x: 'SingleANSI') -> 'StackANSI':
+        self.series.append(__x.value)
+        return self
 
     def __str__(self) -> str:
-        return str(self.value)
+        return _to_color(*set([str(x) for x in self.series]))
 
-    def __add__(self, __x: Any) -> str:
-        if isinstance(self, (Background, Format, Foreground)):
-            print(self.value, type(self.value))
-        print(f"{type(self)} + {type(__x)}")
-        return self._to_color(str(self), str(__x))
+class SingleANSI(IntEnum):
+    def __add__(self, __x: 'SingleANSI') -> int:
+        return StackANSI(self.value) + __x
 
-class Format(ANSI):
+    def __str__(self) -> str:
+        return _to_color(str(self.value))
+
+class Format(SingleANSI):
+    """Formating codes."""
     RESET = 0
     NORMAL = RESET
     BOLD = 1
     UNDERLINE = 4
 
-class Foreground(ANSI):
+class Foreground(SingleANSI):
+    """Foreground color codes."""
     GRAY = 30
     RED = 31
     GREEN = 32
@@ -36,7 +42,8 @@ class Foreground(ANSI):
     CYAN = 36
     WHITE = 37
 
-class Background(ANSI):
+class Background(SingleANSI):
+    """Background color codes."""
     FIREFLY_DARK_BLUE = 40
     ORANGE = 41
     MARBLE_BLUE = 42
@@ -45,14 +52,3 @@ class Background(ANSI):
     INDIGO = 45
     LIGHT_GRAY = 46
     WHITE = 47
-
-a = Format.RESET
-b = Background.GRAY
-c = Foreground.BLUE
-
-# print(type(a), a)
-# print(type(b), b)
-# print(type(c), c)
-#print(type(a + b))
-print(a+b)
-print(a + b + c)
