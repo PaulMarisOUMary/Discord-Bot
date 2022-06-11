@@ -34,12 +34,12 @@ class Invite(commands.Cog, name="invite"):
         return emoji, label, description
 
     async def __seek_invite(self, before: dict[str, discord.Invite], after: dict[str, discord.Invite]) -> Optional[discord.Invite]:
-        # Seek increment use in invites 
+        # Seek increment uses in invites
         for id, invite in after.items():
             if invite.uses > before[id].uses:
                 return invite
 
-        # Seek missing invite
+        # Seek missing invite (only expirable)
         before_after = set(before.items()) - set(after.items())
         for id, invite in before_after:
             if expire := invite.expires_at:
@@ -54,10 +54,13 @@ class Invite(commands.Cog, name="invite"):
         if not guilds:
             guilds = self.bot.guilds
 
-        for guild in guilds:
-            if guild.id not in self.invites:
-                self.invites[guild.id] = dict()
-            self.invites[guild.id] = {invite.id: invite for invite in await guild.invites()}
+        try:
+            for guild in guilds:
+                if guild.id not in self.invites:
+                    self.invites[guild.id] = dict()
+                self.invites[guild.id] = {invite.id: invite for invite in await guild.invites()}
+        except discord.Forbidden or discord.HTTPException:
+            pass
 
     async def cog_load(self):
         self.init_invites.start()
@@ -72,17 +75,6 @@ class Invite(commands.Cog, name="invite"):
     async def on_invite_create(self, invite: discord.Invite) -> None:
         """Trigger when an invite is created."""
         await self.__update_invites(invite.guild)
-
-    """@commands.Cog.listener("on_invite_delete")
-    async def on_invite_delete(self, invite: discord.Invite) -> None:
-        #Triggered when:
-        #    - An invite has reached its max uses (only, X/X uses) | then trigger on_member_join
-        #    - An invite has been revoked by an admin
-        #
-        #Not triggered when an invite expires.
-        
-        pass
-    """
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member: discord.Member) -> None:
@@ -115,6 +107,10 @@ class Invite(commands.Cog, name="invite"):
 
             await system_channel.send(embed=embed)
         except KeyError: # Guild not in invites -> Missing manage_guild permission
+            pass
+        except discord.Forbidden or discord.HTTPException: # Missing manage_channels permission
+            pass
+        except ValueError: # Invalid formating
             pass
 
 
