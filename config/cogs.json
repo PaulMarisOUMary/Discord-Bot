@@ -30,7 +30,9 @@
         "seed": 2
     },
     "invite": {
-        "default_message": "{invite.inviter.mention} invited {member.mention} to <#{invite.channel.id}>\n\nInvitation created: <t:{created_at_timestamp}:R>\nUses: **{invite.uses}** out of **{max_uses}**\nCode: *{invite.id}*"
+        "table": "table_invite",
+        
+        "default_message": "{invite.inviter.mention} invited {member.mention} to <#{invite.channel.id}>\n\nCreated: <t:{created_at_timestamp}:R>\nUses: **{invite.uses}** out of **{max_uses}**\nCode: *{invite.id}*"
     },
     "me": {
         "table": "table_me",
