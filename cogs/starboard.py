@@ -31,42 +31,77 @@ class Starboard(commands.Cog, name="starboard"):
 		description = "Allows users to star messages."
 		return emoji, label, description
 
+	def __star_gradient_colour(self, stars: int) -> int:
+		p = stars / 13
+		if p > 1.0:
+			p = 1.0
+
+		red = 255
+		green = int((194 * p) + (253 * (1 - p)))
+		blue = int((12 * p) + (247 * (1 - p)))
+		return (red << 16) + (green << 8) + blue
+
+	def __get_starboard_embeds(self, message: discord.Message, n_star: int) -> list[discord.Embed]:
+		embed = discord.Embed(description=message.content, color=self.__star_gradient_colour(n_star), timestamp=message.created_at, url="https://youtu.be/L_jWHffIx5E?t=36")
+		embeds = [embed]
+		embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
+		embed.add_field(name="Original", value=f"[Jump !]({message.jump_url})")
+
+		reference = message.reference
+		if reference and isinstance(reference.resolved, discord.Message):
+			embed.add_field(name="Replying to...", value=f"[{reference.resolved.author}]({reference.resolved.jump_url})", inline=False)
+
+		if message.attachments:
+			images = [attachment.url for attachment in message.attachments if attachment.url.lower().endswith(("png", "jpg", "jpeg", "gif", "webp"))]
+			for i, image_url in enumerate(images):
+				if i == 0:
+					embed.set_image(url=image_url)
+				else:
+					embeds.append(discord.Embed(url="https://youtu.be/L_jWHffIx5E?t=36").set_image(url=image_url))
+
+		return embeds
+
 	@commands.Cog.listener("on_reaction_add")
 	async def on_reaction_add(self, reaction: discord.Reaction, _: discord.User):
 		if reaction.emoji == self.star_emoji:
-			message = await reaction.message.channel.fetch_message(reaction.message.id)
+			message = reaction.message
 
-			embed = discord.Embed(description=message.content, color=0x00ff00)
-			embed.set_author(name=message.author.name, icon_url=message.author.display_avatar.url)
-			embed.add_field(name="Original", value=f"[Jump !]({message.jump_url})")
-			embed.timestamp = message.created_at
-
-			if message.attachments:
-				file = message.attachments[0]
-				spoiler = file.is_spoiler()
-				if file.url.lower().endswith(("png", "jpg", "jpeg", "gif", "webp")):
-					embed.set_image(url=file.url)
-				elif spoiler:
-					embed.add_field(name="Attachment", value=f"||[{file.filename}]({file.url})||", inline=False)
-				else:
-					embed.add_field(name="Attachment", value=f"[{file.filename}]({file.url})", inline=False)
-
-			ref = message.reference
-			if ref and isinstance(ref.resolved, discord.Message):
-				embed.add_field(name="Replying to...", value=f"[{ref.resolved.author}]({ref.resolved.jump_url})", inline=False)
-
-			guild = reaction.message.guild
-			star_count = reaction.emoji.count(self.star_emoji)
-			channel_name = "starboard"
-			for i in enumerate(guild.text_channels):
-				if i[1].name.lower() == channel_name:
-					channel = i[1]
+			starboard_channel = None
+			for text_channel in message.guild.text_channels:
+				if "starboard" in text_channel.name:
+					starboard_channel = text_channel
 					break
-			await channel.send(content=f"{self.star_emoji} **{star_count}** {message.channel.mention} ID: {message.id}", embed=embed)
-			reference_message = message.id
-			display_message = channel.last_message.id
 
-			await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"reference_message": reference_message, "display_message": display_message, "star_count": star_count})
+			if not starboard_channel:
+				return
+
+			try:
+				n_star = [reaction.count for reaction in message.reactions if reaction.emoji == self.star_emoji][0]
+			except IndexError:
+				n_star = 0
+
+			if n_star == 1:
+				embeds = self.__get_starboard_embeds(message, n_star)
+				display_message = await starboard_channel.send(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=embeds)
+				await self.bot.database.insert(self.subconfig_data["table"], {"reference_message": message.jump_url, "display_message": display_message.jump_url, "star_count": n_star})
+			else:
+				response = await self.bot.database.lookup(self.subconfig_data["table"], "display_message", {"reference_message": message.jump_url})
+				if not response:
+					return
+				_, channel_id, display_id = response[0][0].split('/')[-3:]
+
+				display_channel = reaction.message.guild.get_channel(int(channel_id))
+				if not display_channel:
+					await self.bot.database.delete(self.subconfig_data["table"], f"display_message = {response[0][0]}")
+					return
+
+				display_message = await display_channel.fetch_message(int(display_id))
+				if not display_message:
+					return
+
+				await display_message.edit(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
+
+				await self.bot.database.update(self.subconfig_data["table"], {"star_count": n_star}, f"display_message = '{display_message.jump_url}'")
 
 	# @commands.Cog.listener("on_reaction_remove")
 	# async def on_raw_reaction_remove(self , reaction: discord.RawReactionActionEvent):
@@ -77,14 +112,14 @@ class Starboard(commands.Cog, name="starboard"):
 	# 	await display_message.delete()
 	# 	await self.bot.database.delete(self.subconfig_data["table"], {"display_message": display_message})
 
-	@commands.Cog.listener("on_message_delete")
+	"""@commands.Cog.listener("on_message_delete")
 	async def on_raw_message_delete(self , message: discord.Message):
 		guild = self.bot.get_guild(953311718275153941)
 		if guild:
 			channel = guild.get_channel(984100935649345606)
 			display_message = channel.last_message
 		await self.bot.database.delete(self.subconfig_data["table"], f"display_message = {display_message.id}")
-		await channel.delete_messages([display_message])
+		await channel.delete_messages([display_message])"""
 
 
 async def setup(bot: DiscordBot):

@@ -200,6 +200,20 @@ CHARACTER SET utf8mb4,
 COLLATE utf8mb4_unicode_ci;
 ```
 
+- `table_starboard`
+```sql
+CREATE TABLE IF NOT EXISTS `table_starboard`
+(
+    `reference_message`   VARCHAR(100) NOT NULL,
+    `display_message`     VARCHAR(100) NOT NULL,
+    `star_count`          SMALLINT unsigned NOT NULL,
+UNIQUE(`reference_message`)
+)
+ENGINE = InnoDB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_unicode_ci;
+```
+
 ## Workflows
 
 ### Update and restart discord bot
