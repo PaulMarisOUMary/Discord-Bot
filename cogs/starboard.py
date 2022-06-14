@@ -9,7 +9,7 @@ from classes.discordbot import DiscordBot
 
 
 @app_commands.guild_only()
-class Stars(commands.Cog, name="stars"):
+class Starboard(commands.Cog, name="starboard"):
 	"""
 		stars commands.
 		
@@ -85,4 +85,4 @@ class Stars(commands.Cog, name="stars"):
 
 
 async def setup(bot: DiscordBot):
-	await bot.add_cog(Stars(bot))
+	await bot.add_cog(Starboard(bot))
