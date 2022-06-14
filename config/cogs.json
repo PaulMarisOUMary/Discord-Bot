@@ -50,7 +50,7 @@
         ],
         "cooldown": 15
     },
-    "stars": {
+    "starboard": {
         "table": "table_stars"
     }
 }
