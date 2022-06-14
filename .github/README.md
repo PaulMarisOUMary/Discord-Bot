@@ -90,7 +90,7 @@ $ pip install -r requirements.txt
 
 ### Acknowledgement
 > **Warning** If you have not plan to use a SQL database:
-> - in the folder `cogs` you should remove the following files: `birthday.py`, `croissants.py`, `me.py`, `invite.py`, `metrics.py`.
+> - in the folder `cogs` you should remove the following files: `birthday.py`, `croissants.py`, `invite.py`, `me.py`, `metrics.py`, `starboard.py`.
 > - in `cogs/admin.py` remove the `change_guild_prefix` method.
 > - in `bot.py` replace the `command_prefix=__getprefix` `line 12` with `command_prefix="?"` (define the bot's prefix).
 > - in `bot.py` delete the `Database initialization` (line 41-44) and the `Prefix per guild initialization` (line 46-48).
