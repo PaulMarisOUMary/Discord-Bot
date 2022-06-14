@@ -26,13 +26,16 @@ class Bot(DiscordBot):
 		return commands.when_mentioned_or(prefix)(client, message)
 
 	async def on_ready(self):
-		print(f"Logged as: {self.user} | discord.py{discord.__version__}\nGuilds: {len(self.guilds)} Users: {len(self.users)} Config: {len(self.config)}")
+		self.logger.name = "discord.on_ready"
+		self.logger.info(msg=f"Logged as: {self.user} | discord.py{discord.__version__} Guilds: {len(self.guilds)} Users: {len(self.users)} Config: {len(self.config)}")
 
 	async def close(self):
-		await self.database.close()
-		await super().close()
+		self.logger.name = "discord.close"
 
-		print("Shutting down...")
+		await self.database.close()
+		self.logger.info(msg="Database connection closed")
+
+		await super().close()
 
 	async def startup(self):
 		"""Sync application commands"""
@@ -65,5 +68,10 @@ if __name__ == '__main__':
 
 	bot = Bot()
 	bot.config = load_config()
-	bot.logger = set_logging(console_level=logging.WARN, filename="discord.log")
-	bot.run(bot.config["bot"]["token"], reconnect=True)
+	bot.logger, streamHandler = set_logging(file_level=logging.DEBUG, console_level=logging.INFO, filename="discord.log")
+	bot.run(
+		bot.config["bot"]["token"],
+		reconnect=True,
+		log_handler=streamHandler,
+		log_level=logging.DEBUG # Must be set to DEBUG, change the log_level of each handler in set_logging() method
+	)
