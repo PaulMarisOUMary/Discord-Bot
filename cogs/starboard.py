@@ -138,6 +138,9 @@ class Starboard(commands.Cog, name="starboard"):
 
 		display_message = await self.__get_display_message(message)
 
+		if not display_message:
+			return
+
 		await display_message.delete()
 		await self.bot.database.delete(self.subconfig_data["table"], f"display_message = '{display_message.jump_url}'")
 
