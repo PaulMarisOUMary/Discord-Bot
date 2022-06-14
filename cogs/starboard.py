@@ -10,7 +10,7 @@ from classes.discordbot import DiscordBot
 @app_commands.guild_only()
 class Starboard(commands.Cog, name="starboard"):
 	"""
-		stars commands.
+		Starboard.
 		
 		Require intents: 
 			- Intents.reactions
@@ -25,7 +25,6 @@ class Starboard(commands.Cog, name="starboard"):
 		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
 
 		self.star_emoji = '⭐'
-		self.stars: list = ['⭐', '💫', '✨']
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '⭐'
@@ -55,11 +54,18 @@ class Starboard(commands.Cog, name="starboard"):
 
 		if message.attachments:
 			images = [attachment.url for attachment in message.attachments if attachment.url.lower().endswith(("png", "jpg", "jpeg", "gif", "webp"))]
-			for i, image_url in enumerate(images):
-				if i == 0:
+			for image_url in images:
+				if not embed.image.url:
 					embed.set_image(url=image_url)
 				else:
 					embeds.append(discord.Embed(url="https://youtu.be/L_jWHffIx5E?t=36").set_image(url=image_url))
+
+		if message.stickers:
+			for image_sticker in [sticker for sticker in message.stickers if sticker.format == discord.StickerFormatType.png or sticker.format == discord.StickerFormatType.apng]:
+				if not embed.image.url:
+					embed.set_image(url=image_sticker.url)
+				else:
+					embeds.append(discord.Embed(url="https://youtu.be/L_jWHffIx5E?t=36").set_image(url=image_sticker.url))
 
 		return embeds
 
@@ -79,56 +85,61 @@ class Starboard(commands.Cog, name="starboard"):
 
 	@commands.Cog.listener("on_reaction_add")
 	async def on_reaction_add(self, reaction: discord.Reaction, _: discord.User):
-		if reaction.emoji == self.star_emoji:
-			message = reaction.message
+		if not reaction.emoji == self.star_emoji:
+			return
 
-			starboard_channel = None
-			for text_channel in message.guild.text_channels:
-				if "starboard" in text_channel.name:
-					starboard_channel = text_channel
-					break
+		message = reaction.message
 
-			if not starboard_channel:
-				return
+		starboard_channel = None
+		for text_channel in message.guild.text_channels:
+			if "starboard" in text_channel.name:
+				starboard_channel = text_channel
+				break
 
-			n_star = reaction.count
+		if not starboard_channel:
+			return
 
-			if n_star == 1:
-				embeds = self.__get_starboard_embeds(message, n_star)
-				display_message = await starboard_channel.send(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=embeds)
-				await self.bot.database.insert(self.subconfig_data["table"], {"reference_message": message.jump_url, "display_message": display_message.jump_url, "star_count": n_star})
-			else:
-				display_message = await self.__get_display_message(message)
-				if not display_message:
-					return
+		n_star = reaction.count
 
-				await display_message.edit(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
-
-				await self.bot.database.update(self.subconfig_data["table"], {"star_count": n_star}, f"display_message = '{display_message.jump_url}'")
-
-	@commands.Cog.listener("on_reaction_remove")
-	async def on_reaction_remove(self , reaction: discord.Reaction, _: discord.User):
-		if reaction.emoji == self.star_emoji:
-			display_message = await self.__get_display_message(reaction.message)
+		if n_star == 1:
+			embeds = self.__get_starboard_embeds(message, n_star)
+			display_message = await starboard_channel.send(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=embeds)
+			await self.bot.database.insert(self.subconfig_data["table"], {"reference_message": message.jump_url, "display_message": display_message.jump_url, "star_count": n_star})
+		else:
+			display_message = await self.__get_display_message(message)
 			if not display_message:
 				return
 
-			if reaction.count == 0:
-				await display_message.delete()
-				await self.bot.database.delete(self.subconfig_data["table"], f"display_message = '{display_message.jump_url}'")
-			else:
-				message = reaction.message
-				await display_message.edit(content=f"{self.star_emoji} **{reaction.count}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
-				await self.bot.database.update(self.subconfig_data["table"], {"star_count": reaction.count}, f"display_message = '{display_message.jump_url}'")
+			await display_message.edit(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
 
-	"""@commands.Cog.listener("on_message_delete")
-	async def on_raw_message_delete(self , message: discord.Message):
-		guild = self.bot.get_guild(953311718275153941)
-		if guild:
-			channel = guild.get_channel(984100935649345606)
-			display_message = channel.last_message
-		await self.bot.database.delete(self.subconfig_data["table"], f"display_message = {display_message.id}")
-		await channel.delete_messages([display_message])"""
+			await self.bot.database.update(self.subconfig_data["table"], {"star_count": n_star}, f"display_message = '{display_message.jump_url}'")
+
+	@commands.Cog.listener("on_reaction_remove")
+	async def on_reaction_remove(self , reaction: discord.Reaction, _: discord.User):
+		if not reaction.emoji == self.star_emoji:
+			return
+
+		display_message = await self.__get_display_message(reaction.message)
+		if not display_message:
+			return
+
+		if reaction.count == 0:
+			await display_message.delete()
+			await self.bot.database.delete(self.subconfig_data["table"], f"display_message = '{display_message.jump_url}'")
+		else:
+			message = reaction.message
+			await display_message.edit(content=f"{self.star_emoji} **{reaction.count}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
+			await self.bot.database.update(self.subconfig_data["table"], {"star_count": reaction.count}, f"display_message = '{display_message.jump_url}'")
+
+	@commands.Cog.listener("on_message_delete")
+	async def on_message_delete(self , message: discord.Message):
+		if not self.star_emoji in [reaction.emoji for reaction in message.reactions]:
+			return
+
+		display_message = await self.__get_display_message(message)
+
+		await display_message.delete()
+		await self.bot.database.delete(self.subconfig_data["table"], f"display_message = '{display_message.jump_url}'")
 
 
 async def setup(bot: DiscordBot):
