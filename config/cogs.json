@@ -49,5 +49,8 @@
             "Use slash-commands !"
         ],
         "cooldown": 15
+    },
+    "stars": {
+        "table": "table_stars"
     }
 }
