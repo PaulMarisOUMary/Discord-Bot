@@ -1,4 +1,5 @@
 import discord
+import math
 
 from typing import Optional
 
@@ -26,12 +27,17 @@ class Starboard(commands.Cog, name="starboard"):
 		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
 
 		self.star_emoji = '⭐'
+		self.stars_emoji = ['⭐', '🌟', '✨', '💫', '☄️', '🎇', '🎆', '🌠', '💖', '🪄']
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '⭐'
 		label = "Starboard"
 		description = "Allows users to star messages."
 		return emoji, label, description
+
+	def __star_emoji_upgrade(self, stars: int) -> str:
+		index = round(math.log(stars))
+		return self.stars_emoji[index]
 
 	def __star_gradient_colour(self, stars: int) -> int:
 		p = stars / 13
@@ -102,17 +108,17 @@ class Starboard(commands.Cog, name="starboard"):
 				return
 
 			n_star = reaction.count
-
+			star_emoji = self.__star_emoji_upgrade(n_star)
 			if n_star == 1:
 				embeds = self.__get_starboard_embeds(message, n_star)
-				display_message = await starboard_channel.send(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=embeds)
+				display_message = await starboard_channel.send(content=f"{star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=embeds)
 				await self.bot.database.insert(self.subconfig_data["table"], {"reference_message": message.jump_url, "display_message": display_message.jump_url, "star_count": n_star})
 			else:
 				display_message = await self.__get_display_message(message)
 				if not display_message:
 					return
 
-				await display_message.edit(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
+				await display_message.edit(content=f"{star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
 
 				await self.bot.database.update(self.subconfig_data["table"], {"star_count": n_star}, f"display_message = '{display_message.jump_url}'")
 		except discord.Forbidden:
@@ -125,6 +131,7 @@ class Starboard(commands.Cog, name="starboard"):
 				return
 
 			display_message = await self.__get_display_message(reaction.message)
+			star_emoji = self.__star_emoji_upgrade(reaction.count)
 			if not display_message:
 				return
 
@@ -133,7 +140,7 @@ class Starboard(commands.Cog, name="starboard"):
 				await display_message.delete()
 			else:
 				message = reaction.message
-				await display_message.edit(content=f"{self.star_emoji} **{reaction.count}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
+				await display_message.edit(content=f"{star_emoji} **{reaction.count}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
 				await self.bot.database.update(self.subconfig_data["table"], {"star_count": reaction.count}, f"display_message = '{display_message.jump_url}'")
 		except discord.Forbidden:
 			pass
