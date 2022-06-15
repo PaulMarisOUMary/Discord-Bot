@@ -26,7 +26,7 @@ class Starboard(commands.Cog, name="starboard"):
 		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
 
 		self.star_emoji = '⭐'
-		self.stars_emoji = ['⭐', '🌟', '✨', '💫', '☄️', '🎇', '🎆', '🌠', '💖', '🪄']
+		self.stars_emojis = ['⭐', '🌟', '✨', '💫', '☄️', '🎇', '🎆', '🌠', '💖', '🪄']
 
 	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '⭐'
@@ -34,9 +34,11 @@ class Starboard(commands.Cog, name="starboard"):
 		description = "Allows users to star messages."
 		return emoji, label, description
 
-	def __star_emoji_upgrade(self, stars: int) -> str:
-		index = round(log(stars+1))
-		return self.stars_emoji[index]
+	def __star_emoji_upgrade(self, stars: int) -> Optional[str]:
+		if not stars == 0:
+			index = round(log(stars))
+			return self.stars_emojis[index]
+		return None
 
 	def __star_gradient_colour(self, stars: int) -> int:
 		p = stars / 13
@@ -137,7 +139,7 @@ class Starboard(commands.Cog, name="starboard"):
 				if not display_message:
 					return
 
-				await display_message.edit(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
+				await display_message.edit(content=f"{star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
 
 				await self.bot.database.update(self.subconfig_data["table"], {"star_count": n_star}, f"display_message = '{display_message.jump_url}'")
 		except discord.Forbidden or discord.NotFound:
