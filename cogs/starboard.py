@@ -36,8 +36,9 @@ class Starboard(commands.Cog, name="starboard"):
 		return emoji, label, description
 
 	def __star_emoji_upgrade(self, stars: int) -> str:
-		index = round(math.log(stars))
-		return self.stars_emoji[index]
+		if not stars == 0:
+			index = round(math.log(stars))
+			return self.stars_emoji[index]
 
 	def __star_gradient_colour(self, stars: int) -> int:
 		p = stars / 13
