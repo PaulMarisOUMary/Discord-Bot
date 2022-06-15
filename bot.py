@@ -14,7 +14,8 @@ class Bot(DiscordBot):
 			allowed_mentions=discord.AllowedMentions(everyone=False),
 			case_insensitive = True, 
 			command_prefix = self.__get_prefix, 
-			intents = discord.Intents.all(), 
+			intents = discord.Intents.all(),
+			max_messages=2500
 		)
 
 	def __get_prefix(self, client: DiscordBot, message: discord.Message):

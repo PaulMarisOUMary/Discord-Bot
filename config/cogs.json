@@ -54,5 +54,8 @@
             "Use slash-commands !"
         ],
         "cooldown": 15
+    },
+    "starboard": {
+        "table": "table_starboard"
     }
 }
