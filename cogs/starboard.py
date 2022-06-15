@@ -13,6 +13,7 @@ class Starboard(commands.Cog, name="starboard"):
 		Starboard.
 		
 		Require intents: 
+			- Intents.messages
 			- Intents.reactions
 		
 		Require bot permission:
@@ -152,6 +153,8 @@ class Starboard(commands.Cog, name="starboard"):
 			await display_message.delete()
 		except discord.Forbidden:
 			pass
+
+
 
 async def setup(bot: DiscordBot):
 	await bot.add_cog(Starboard(bot))
