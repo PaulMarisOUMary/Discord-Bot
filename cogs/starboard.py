@@ -85,65 +85,73 @@ class Starboard(commands.Cog, name="starboard"):
 
 	@commands.Cog.listener("on_reaction_add")
 	async def on_reaction_add(self, reaction: discord.Reaction, _: discord.User):
-		if not reaction.emoji == self.star_emoji:
-			return
-
-		message = reaction.message
-
-		starboard_channel = None
-		for text_channel in message.guild.text_channels:
-			if "starboard" in text_channel.name:
-				starboard_channel = text_channel
-				break
-
-		if not starboard_channel:
-			return
-
-		n_star = reaction.count
-
-		if n_star == 1:
-			embeds = self.__get_starboard_embeds(message, n_star)
-			display_message = await starboard_channel.send(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=embeds)
-			await self.bot.database.insert(self.subconfig_data["table"], {"reference_message": message.jump_url, "display_message": display_message.jump_url, "star_count": n_star})
-		else:
-			display_message = await self.__get_display_message(message)
-			if not display_message:
+		try:
+			if not reaction.emoji == self.star_emoji:
 				return
 
-			await display_message.edit(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
+			message = reaction.message
 
-			await self.bot.database.update(self.subconfig_data["table"], {"star_count": n_star}, f"display_message = '{display_message.jump_url}'")
+			starboard_channel = None
+			for text_channel in message.guild.text_channels:
+				if "starboard" in text_channel.name:
+					starboard_channel = text_channel
+					break
+
+			if not starboard_channel:
+				return
+
+			n_star = reaction.count
+
+			if n_star == 1:
+				embeds = self.__get_starboard_embeds(message, n_star)
+				display_message = await starboard_channel.send(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=embeds)
+				await self.bot.database.insert(self.subconfig_data["table"], {"reference_message": message.jump_url, "display_message": display_message.jump_url, "star_count": n_star})
+			else:
+				display_message = await self.__get_display_message(message)
+				if not display_message:
+					return
+
+				await display_message.edit(content=f"{self.star_emoji} **{n_star}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
+
+				await self.bot.database.update(self.subconfig_data["table"], {"star_count": n_star}, f"display_message = '{display_message.jump_url}'")
+		except discord.Forbidden:
+			pass
 
 	@commands.Cog.listener("on_reaction_remove")
 	async def on_reaction_remove(self , reaction: discord.Reaction, _: discord.User):
-		if not reaction.emoji == self.star_emoji:
-			return
+		try:
+			if not reaction.emoji == self.star_emoji:
+				return
 
-		display_message = await self.__get_display_message(reaction.message)
-		if not display_message:
-			return
+			display_message = await self.__get_display_message(reaction.message)
+			if not display_message:
+				return
 
-		if reaction.count == 0:
-			await display_message.delete()
-			await self.bot.database.delete(self.subconfig_data["table"], f"display_message = '{display_message.jump_url}'")
-		else:
-			message = reaction.message
-			await display_message.edit(content=f"{self.star_emoji} **{reaction.count}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
-			await self.bot.database.update(self.subconfig_data["table"], {"star_count": reaction.count}, f"display_message = '{display_message.jump_url}'")
+			if reaction.count == 0:
+				await self.bot.database.delete(self.subconfig_data["table"], f"display_message = '{display_message.jump_url}'")
+				await display_message.delete()
+			else:
+				message = reaction.message
+				await display_message.edit(content=f"{self.star_emoji} **{reaction.count}** {message.channel.mention} ID: {message.id}", embeds=display_message.embeds)
+				await self.bot.database.update(self.subconfig_data["table"], {"star_count": reaction.count}, f"display_message = '{display_message.jump_url}'")
+		except discord.Forbidden:
+			pass
 
 	@commands.Cog.listener("on_message_delete")
 	async def on_message_delete(self , message: discord.Message):
-		if not self.star_emoji in [reaction.emoji for reaction in message.reactions]:
-			return
+		try:
+			if not self.star_emoji in [reaction.emoji for reaction in message.reactions]:
+				return
 
-		display_message = await self.__get_display_message(message)
+			display_message = await self.__get_display_message(message)
 
-		if not display_message:
-			return
+			if not display_message:
+				return
 
-		await display_message.delete()
-		await self.bot.database.delete(self.subconfig_data["table"], f"display_message = '{display_message.jump_url}'")
-
+			await self.bot.database.delete(self.subconfig_data["table"], f"display_message = '{display_message.jump_url}'")
+			await display_message.delete()
+		except discord.Forbidden:
+			pass
 
 async def setup(bot: DiscordBot):
 	await bot.add_cog(Starboard(bot))
