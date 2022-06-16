@@ -113,6 +113,9 @@ class Starboard(commands.Cog, name="starboard"):
 	@commands.Cog.listener("on_raw_reaction_add")
 	async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
 		try:
+			if str(payload.emoji) != self.star_emoji:
+				return
+
 			message, reaction = await self.__get_message_from_payload(payload)
 
 			if not reaction: # not a self.star_emoji
@@ -125,6 +128,9 @@ class Starboard(commands.Cog, name="starboard"):
 					break
 
 			if not starboard_channel:
+				return
+
+			if starboard_channel.id == payload.channel_id:
 				return
 
 			n_star = reaction.count
