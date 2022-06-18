@@ -10,7 +10,7 @@ from discord.app_commands import Choice
 from classes.ansi import Format as fmt, Foreground as fg, Background as bg
 from classes.discordbot import DiscordBot
 
-class Usefull(commands.Cog, name="usefull"):
+class Useful(commands.Cog, name="useful"):
 	"""
 		Usefull commands for Devs & more.
 
@@ -72,7 +72,7 @@ class Usefull(commands.Cog, name="usefull"):
 	@commands.command(name="colors")
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	async def codeblock_colors(self, ctx: commands.Context):
-		codeblock = '```ansi\n'
+		codeblock = "```ansi\n"
 
 		for item, text in [
 			(fmt._member_map_, "Format"),
@@ -85,7 +85,22 @@ class Usefull(commands.Cog, name="usefull"):
 
 		await ctx.send(f"{codeblock}```")
 
+	@commands.command(name="cleanup")
+	@commands.bot_has_permissions(manage_messages=True, read_message_history=True)
+	async def cleanup(self, ctx: commands.Context, n_message: int):
+		if n_message < 1 or n_message > 150:
+			raise ValueError("Invalid number of messages to delete.")
+
+		prefix = self.bot.prefixes[ctx.guild.id]
+
+		def check(message: discord.Message):
+			return (message.author == ctx.me or message.content.startswith(prefix)) and not (message.mentions or message.role_mentions)
+
+		deleted = await ctx.channel.purge(limit=n_message, check=check, before=ctx.message)
+		
+		await ctx.message.reply(content=f"🗑️ Deleted {len(deleted)} messages.", delete_after=5, mention_author=False)
+
 
 
 async def setup(bot: DiscordBot):
-	await bot.add_cog(Usefull(bot))
+	await bot.add_cog(Useful(bot))
