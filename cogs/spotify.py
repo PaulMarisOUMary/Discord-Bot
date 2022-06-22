@@ -6,6 +6,7 @@ from discord.ext import commands
 from discord import app_commands
 
 from classes.discordbot import DiscordBot
+from classes.utilities import bot_has_permissions
 
 class Spotify(commands.Cog, name="spotify"):
 	"""
@@ -26,6 +27,7 @@ class Spotify(commands.Cog, name="spotify"):
 		description = "Spotify status commands."
 		return emoji, label, description
 
+	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="spotify")
 	@app_commands.describe(user="The user to get spotify informations from.")
 	async def spotify_activity(self, interaction: discord.Interaction, user: discord.Member = None):

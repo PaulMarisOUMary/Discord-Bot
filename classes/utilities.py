@@ -12,7 +12,7 @@ from os import listdir
 from os.path import dirname, abspath, join, basename, splitext
 from sys import modules
 from types import ModuleType
-from typing import Any
+from typing import Any, Union
 
 root_directory = dirname(dirname(abspath(__file__)))
 config_directory = join(root_directory, "config")
@@ -80,8 +80,14 @@ def clean_close() -> None:
 		asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 
 def bot_has_permissions(**perms: bool):
-	def wrapped(command: app_commands.Command[Any, ..., Any]) -> app_commands.Command[Any, ..., Any]:
-		if not isinstance(command, app_commands.Command):
+	"""A decorator that add specified permissions to Command.extras and add bot_has_permissions check to Command with specified permissions.
+	
+	Warning:
+	- This decorator must be on the top of the decorator stack
+	- This decorator is not compatible with commands.check()
+	"""
+	def wrapped(command: Union[app_commands.Command[Any, ..., Any], commands.Command[Any, ..., Any]]) -> Union[app_commands.Command[Any, ..., Any], commands.Command[Any, ..., Any]]:
+		if not isinstance(command, Union[app_commands.Command, commands.Command]):
 			raise TypeError(f"Cannot decorate a class that is not a subclass of Command, get: {type(command)} must be Command")
 
 		valid_required_permissions = [
@@ -89,7 +95,10 @@ def bot_has_permissions(**perms: bool):
 		]
 		command.extras.update({"bot_permissions": valid_required_permissions})
 		
-		app_commands.checks.bot_has_permissions(**perms)(command)
+		if isinstance(command, app_commands.Command):
+			app_commands.checks.bot_has_permissions(**perms)(command)
+		elif isinstance(command, commands.Command):
+			commands.bot_has_permissions(**perms)(command)
 
 		return command
 
