@@ -7,6 +7,7 @@ from discord.app_commands import Choice
 from typing import Union
 
 from classes.discordbot import DiscordBot
+from classes.utilities import bot_has_permissions
 
 class PrivateVocal(commands.Cog, name="privatevocal"):
 	"""
@@ -79,9 +80,9 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 				del guild_id["channels"][before.channel.id]
 				await before.channel.delete()
 
+	@bot_has_permissions(send_messages=True)
 	@commands.hybrid_command(name="userlimit", description="Limit the number of user(s) in your private channel.")
 	@commands.cooldown(1, 10, commands.BucketType.user)
-	@commands.bot_has_permissions(send_messages=True)
 	@app_commands.choices(limit=[Choice(name=str(i), value=i) for i in range(1, 26)])
 	@app_commands.describe(limit="The number of max user(s) in your private channel.")
 	async def lock_private_vocal(self, ctx: commands.Context, limit: int = None):

@@ -1,14 +1,18 @@
 import asyncio
+import discord
 import logging
 import platform
 
-from sys import modules
+from discord.ext import commands
+from discord import app_commands
+
+from importlib import reload
 from json import load
-from types import ModuleType
 from os import listdir
 from os.path import dirname, abspath, join, basename, splitext
-from discord.ext import commands
-from importlib import reload
+from sys import modules
+from types import ModuleType
+from typing import Any, Union
 
 root_directory = dirname(dirname(abspath(__file__)))
 config_directory = join(root_directory, "config")
@@ -74,3 +78,28 @@ def set_logging(file_level: int = logging.DEBUG, console_level: int = logging.IN
 def clean_close() -> None:
 	if platform.system().lower() == 'windows':
 		asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
+def bot_has_permissions(**perms: bool):
+	"""A decorator that add specified permissions to Command.extras and add bot_has_permissions check to Command with specified permissions.
+	
+	Warning:
+	- This decorator must be on the top of the decorator stack
+	- This decorator is not compatible with commands.check()
+	"""
+	def wrapped(command: Union[app_commands.Command[Any, ..., Any], commands.Command[Any, ..., Any]]) -> Union[app_commands.Command[Any, ..., Any], commands.Command[Any, ..., Any]]:
+		if not isinstance(command, Union[app_commands.Command, commands.Command]):
+			raise TypeError(f"Cannot decorate a class that is not a subclass of Command, get: {type(command)} must be Command")
+
+		valid_required_permissions = [
+			perm for perm, value in perms.items() if getattr(discord.Permissions.none(), perm) != value
+		]
+		command.extras.update({"bot_permissions": valid_required_permissions})
+		
+		if isinstance(command, app_commands.Command):
+			app_commands.checks.bot_has_permissions(**perms)(command)
+		elif isinstance(command, commands.Command):
+			commands.bot_has_permissions(**perms)(command)
+
+		return command
+
+	return wrapped

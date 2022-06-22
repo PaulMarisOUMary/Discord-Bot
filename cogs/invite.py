@@ -9,6 +9,7 @@ from typing import Optional
 from classes.database import MixedTypes
 
 from classes.discordbot import DiscordBot
+from classes.utilities import bot_has_permissions
 
 class Invite(commands.Cog, name="invite"):
     """
@@ -137,9 +138,9 @@ class Invite(commands.Cog, name="invite"):
         except ValueError: # Invalid formating
             pass
 
+    @bot_has_permissions(manage_channels=True, manage_guild=True, view_channel=True)
     @commands.command(name="logs")
     @commands.has_permissions(administrator=True)
-    @commands.bot_has_permissions(manage_channels=True, manage_guild=True, view_channel=True)
     @commands.cooldown(1, 25, commands.BucketType.guild)
     async def config_invite_logs(self, ctx: commands.Context, channel: discord.TextChannel) -> None:
         """Set the invite tracker channel."""
@@ -150,9 +151,9 @@ class Invite(commands.Cog, name="invite"):
         await self.__update_granted_guilds()
         await self.__update_invites(ctx.guild)
 
+    @bot_has_permissions(manage_channels=True, manage_guild=True, view_channel=True)
     @commands.command(name="logscustom")
     @commands.has_permissions(administrator=True)
-    @commands.bot_has_permissions(manage_channels=True, manage_guild=True, view_channel=True)
     @commands.cooldown(1, 25, commands.BucketType.guild)
     async def config_invite_logs_custom_message(self, ctx: commands.Context, *, message: str = None) -> None:
         """Set a custom message for the invite tracker.

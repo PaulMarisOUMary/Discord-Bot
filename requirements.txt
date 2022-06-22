@@ -21,5 +21,5 @@ PyNaCl
 #Require this specific version (internal package error, issue #299 of github.com/ssut/py-googletrans)
 googletrans == 4.0.0-rc1
 
-#discordpy master branch commit 903e2e64e9182b8d3330ef565af7bb46ff9f04da
-git+https://github.com/Rapptz/discord.py@903e2e64e9182b8d3330ef565af7bb46ff9f04da
+#discordpy master branch commit 1be36c9c3ede72eaa2262dfa0e62cbd8b8929e66
+git+https://github.com/Rapptz/discord.py@1be36c9c3ede72eaa2262dfa0e62cbd8b8929e66

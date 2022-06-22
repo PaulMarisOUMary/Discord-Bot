@@ -9,6 +9,7 @@ from discord.app_commands import Choice
 
 from classes.ansi import Format as fmt, Foreground as fg, Background as bg
 from classes.discordbot import DiscordBot
+from classes.utilities import bot_has_permissions
 
 class Useful(commands.Cog, name="useful"):
 	"""
@@ -29,10 +30,10 @@ class Useful(commands.Cog, name="useful"):
 		description = "Usefull commands."
 		return emoji, label, description"""
 
+	@bot_has_permissions(send_messages=True)
 	@app_commands.command(name="reminder", description="Reminds you of something.")
 	@app_commands.describe(hours="Hours.", minutes="Minutes.", seconds="Seconds.", message="Your reminder message.")
 	@app_commands.choices(hours=[Choice(name=str(i), value=i) for i in range(0, 25)], minutes=[Choice(name=str(i), value=i) for i in range(0, 56, 5)], seconds=[Choice(name=str(i), value=i) for i in range(5, 56, 5)])
-	@app_commands.checks.bot_has_permissions(send_messages=True)
 	async def reminder(self, interaction: discord.Interaction, hours: int, minutes: int, seconds: int, message: str) -> None:
 		"""Reminds you of something."""
 		remind_in = round(datetime.timestamp(datetime.now() + timedelta(hours=hours, minutes=minutes, seconds=seconds)))
@@ -85,8 +86,8 @@ class Useful(commands.Cog, name="useful"):
 
 		await ctx.send(f"{codeblock}```")
 
+	@bot_has_permissions(manage_messages=True, read_message_history=True)
 	@commands.command(name="cleanup")
-	@commands.bot_has_permissions(manage_messages=True, read_message_history=True)
 	async def cleanup(self, ctx: commands.Context, n_message: int):
 		if n_message < 1 or n_message > 150:
 			raise ValueError("Invalid number of messages to delete.")

@@ -20,7 +20,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 			- default
 		
 		Require bot permission:
-			- None
+			- view_channel
 	"""
 	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot

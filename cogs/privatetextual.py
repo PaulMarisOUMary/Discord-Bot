@@ -5,6 +5,8 @@ from discord.ext import commands
 from discord import app_commands
 
 from classes.discordbot import DiscordBot
+from classes.utilities import bot_has_permissions
+
 from views.modal import CustomModal
 
 @app_commands.guild_only()
@@ -40,8 +42,8 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 				if len(role.name.split(':')) > 1:
 					return role
 
+	@bot_has_permissions(manage_channels=True, manage_roles=True, view_channel=True)
 	@app_commands.command(name="create", description="Create a private textual channel.")
-	@app_commands.checks.bot_has_permissions(manage_channels=True, manage_roles=True, view_channel=True)
 	@app_commands.checks.cooldown(1, 300.0, key=lambda i: (i.guild_id, i.user.id))
 	async def create(self, interaction: discord.Interaction):
 		"""Create a private textual channel.
@@ -115,8 +117,8 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 
 		await interaction.response.send_modal(modal)
 
+	@bot_has_permissions(manage_channels=True, manage_roles=True, view_channel=True)
 	@app_commands.command(name="delete", description="Delete a private textual channel.")
-	@app_commands.checks.bot_has_permissions(manage_channels=True, manage_roles=True, view_channel=True)
 	@app_commands.checks.cooldown(1, 30.0, key=lambda i: (i.channel_id, i.user.id))
 	async def delete(self, interaction: discord.Interaction):
 		"""Delete a private textual channel."""
@@ -137,10 +139,10 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 		await interaction.response.send_message(self.dashlock)
 		await interaction.channel.delete(reason=reason)
 
+	@bot_has_permissions(manage_roles=True)
 	@app_commands.command(name="add", description="Add a user in the private textual channel.")
 	@app_commands.describe(user="User to add.")
 	@app_commands.checks.cooldown(1, 2.5, key=lambda i: (i.channel_id, i.user.id))
-	@app_commands.checks.bot_has_permissions(manage_roles=True)
 	async def add(self, interaction: discord.Interaction, user: discord.Member):
 		channel_role = self.__get_private_role(interaction.channel)
 
@@ -152,10 +154,10 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 
 		await interaction.response.send_message(f"{user.mention} joined {interaction.channel.mention} !")
 
+	@bot_has_permissions(manage_roles=True)
 	@app_commands.command(name="remove", description="Remove a user from the private textual channel.")
 	@app_commands.describe(user="User to remove.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.channel_id, i.user.id))
-	@app_commands.checks.bot_has_permissions(manage_roles=True)
 	async def remove(self, interaction: discord.Interaction, user: discord.Member):
 		channel_role = self.__get_private_role(interaction.channel)
 
@@ -191,10 +193,10 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 		owner = channel_role.name.split(":")[1]
 		await interaction.response.send_message(f"Owner: <@{owner}>\nCreated: <t:{round(interaction.channel.created_at.timestamp())}:F>", ephemeral=True)
 
+	@bot_has_permissions(manage_roles=True)
 	@app_commands.command(name="transferownership", description="Transfer ownership of a private textual channel.")
 	@app_commands.describe(user="User to transfer ownership.")
 	@app_commands.checks.cooldown(1, 60.0, key=lambda i: (i.channel_id, i.user.id))
-	@app_commands.checks.bot_has_permissions(manage_roles=True)
 	async def transferownership(self, interaction: discord.Interaction, user: discord.Member):
 		if user.bot: # Avoid bot
 			await interaction.response.send_message("You can't transfer ownership to a bot.", ephemeral=True)
@@ -218,9 +220,9 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 
 		await interaction.response.send_message(f"{interaction.channel.mention} ownership transfered to {user.mention} !")
 
+	@bot_has_permissions(manage_roles=True, manage_channels=True)
 	@app_commands.command(name="edit", description="Edit a private textual channel.")
 	@app_commands.checks.cooldown(1, 60.0, key=lambda i: (i.channel_id, i.user.id))
-	@app_commands.checks.bot_has_permissions(manage_roles=True, manage_channels=True)
 	async def edit(self, interaction: discord.Interaction):
 		channel_role = self.__get_private_role(interaction.channel)
 

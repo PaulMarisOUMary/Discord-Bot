@@ -9,6 +9,7 @@ from discord.ext import commands
 from discord import app_commands
 
 from classes.discordbot import DiscordBot
+from classes.utilities import bot_has_permissions
 
 def statServer(guild) -> dict:
 	status = {}
@@ -49,9 +50,9 @@ class Info(commands.Cog, name="info"):
 		description = "Commands about additionals informations such as stats."
 		return emoji, label, description
 
+	@bot_has_permissions(use_external_emojis=True)
 	@app_commands.command(name="statistics", description="Display statistics about the guild.")
 	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
-	@app_commands.checks.bot_has_permissions(use_external_emojis=True)
 	async def stat(self, interaction: discord.Interaction) -> None:
 		"""Show a graphic pie about the server's members.""" 
 		plt.clf()
@@ -69,17 +70,17 @@ class Info(commands.Cog, name="info"):
 		embed.set_footer(text=f"Requested by : {interaction.user} at {time.strftime('%H:%M:%S')}", icon_url=interaction.user.display_avatar.url)
 		await interaction.response.send_message(file=discord.File(fp=image_binary, filename="stat.png"), embed=embed)
 
+	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="avatar", description="Display the avatar.")
 	@app_commands.describe(user="The user to get the avatar from.")
-	@app_commands.checks.bot_has_permissions(embed_links=True)
 	async def avatar(self, interaction: discord.Interaction, user: discord.Member = None):
 		if not user:
 			user = interaction.user
 		await interaction.response.send_message(user.display_avatar.url)
 
+	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="banner", description="Display the banner.")
 	@app_commands.describe(user="The user to get the banner from.")
-	@app_commands.checks.bot_has_permissions(embed_links=True)
 	async def banner(self, interaction: discord.Interaction, user: discord.Member = None):
 		if not user: 
 			user = interaction.user
@@ -89,9 +90,9 @@ class Info(commands.Cog, name="info"):
 		except:
 			await interaction.response.send_message("This user doesn't have a banner.")
 
+	@bot_has_permissions(use_external_emojis=True)
 	@app_commands.command(name="lookup", description="Shows additional informations about user.")
 	@app_commands.describe(user="The user to get informations from.")
-	@app_commands.checks.bot_has_permissions(use_external_emojis=True)
 	async def lookup(self, interaction: discord.Interaction, user: discord.Member = None):
 		"""Show few information about a discord Member"""
 		if not user: 
