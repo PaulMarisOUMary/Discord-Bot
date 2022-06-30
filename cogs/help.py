@@ -1,13 +1,33 @@
 import discord
 
+from discord import app_commands
 from discord.ext import commands
 from datetime import datetime, timedelta
-from views import help as vhelp
+from typing import Optional, Union
 
+from views import help as vhelp
 from classes.discordbot import DiscordBot
 
 class HelpCommand(commands.HelpCommand):
     """Help command"""
+
+    async def command_callback(self, ctx: commands.Context, /, *, command: Optional[str] = None) -> None:
+        """Need to:
+        Check if:
+        - Group
+        - Cog
+        - Command/AppCommand
+        """
+        await super().command_callback(ctx, command=command) # waiting for implementation
+
+    def get_bot_mapping(self) -> dict[Optional[commands.Cog], list[Optional[Union[commands.Command, app_commands.Command]]]]:
+        mapping = super().get_bot_mapping()
+        
+        for command in self.context.bot.tree.walk_commands(type=discord.AppCommandType.chat_input):
+            if hasattr(command, "binding"):
+                mapping[command.binding] = command # type: ignore
+
+        return mapping # type: ignore
 
     async def on_help_command_error(self, ctx, error):
         handledErrors = [
@@ -19,7 +39,7 @@ class HelpCommand(commands.HelpCommand):
             print("! Help command Error :", error, type(error), type(error).__name__)
             return await super().on_help_command_error(ctx, error)
 
-    def command_not_found(self, string):
+    def command_not_found(self, string: str):
         raise commands.CommandNotFound(f"Command {string} is not found")
 
     async def send_bot_help(self, mapping):
@@ -32,7 +52,11 @@ class HelpCommand(commands.HelpCommand):
         view = vhelp.View(mapping = mapping, ctx = self.context, homeembed = embed, ui = 2)
         await self.context.send(embed = embed, view = view, delete_after=60*allowed)
 
-    async def send_command_help(self, command):
+    async def send_command_help(self, command: commands.Command):
+        """
+        CommandType
+        from extras: bot_permissions
+        """
         cog = command.cog
         if "help_custom" in dir(cog):
             emoji, label, _ = cog.help_custom()
@@ -72,12 +96,13 @@ class Help(commands.Cog, name="help"):
 			- send_messages
     """
     def __init__(self, bot: DiscordBot) -> None:
+        self.bot = bot
         self._original_help_command = bot.help_command
 
         attributes = {
-            'name': "help",
-            'aliases': ['h', '?'],
-            'cooldown': commands.CooldownMapping.from_cooldown(1, 5, commands.BucketType.user) # discordpy2.0
+            "name": "help",
+            "aliases": ['h', '?'],
+            "cooldown": commands.CooldownMapping.from_cooldown(1, 5, commands.BucketType.user)
         } 
 
         bot.help_command = HelpCommand(command_attrs=attributes)
