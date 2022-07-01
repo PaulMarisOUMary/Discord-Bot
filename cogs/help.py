@@ -5,7 +5,7 @@ from discord.ext import commands
 from datetime import datetime, timedelta
 from typing import Optional, Union
 
-from views.helpview import View as HelpView
+from views.helpmenu import View as HelpView
 from classes.discordbot import DiscordBot
 
 class HelpCommand(commands.HelpCommand):
@@ -53,7 +53,7 @@ class HelpCommand(commands.HelpCommand):
         close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
 
         embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = f"`Welcome to the help page.`\n\n**The prefix on this server is**: `{self.context.clean_prefix}`.\n\nUse `{self.context.clean_prefix}help command` for more info on a command.\nUse `{self.context.clean_prefix}help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Discord-Bot')
-        embed.add_field(name="Time remaining :", value=f"This help session will end <t:{close_in}:R>.\nType `{self.context.clean_prefix} help` to open a new session.\n\u200b", inline=False)
+        embed.add_field(name="Time remaining :", value=f"This help session will end <t:{close_in}:R>.\nType `{self.context.clean_prefix}help` to open a new session.\n\u200b", inline=False)
         embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*.\nI have a lot of features !\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Discord-Bot) !")
 
         view = HelpView(timeout=allowed*60, context=self.context, mapping=mapping, homeembed=embed, ui=2)
