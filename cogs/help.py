@@ -5,7 +5,7 @@ from discord.ext import commands
 from datetime import datetime, timedelta
 from typing import Optional, Union
 
-from views import help as vhelp
+from views.helpview import View as HelpView
 from classes.discordbot import DiscordBot
 
 class HelpCommand(commands.HelpCommand):
@@ -20,12 +20,18 @@ class HelpCommand(commands.HelpCommand):
         """
         await super().command_callback(ctx, command=command) # waiting for implementation
 
-    def get_bot_mapping(self) -> dict[Optional[commands.Cog], list[Optional[Union[commands.Command, app_commands.Command]]]]:
+    def get_bot_mapping(self) -> dict[Optional[commands.Cog], list[Union[commands.Command, app_commands.Command]]]:
         mapping = super().get_bot_mapping()
         
         for command in self.context.bot.tree.walk_commands(type=discord.AppCommandType.chat_input):
             if hasattr(command, "binding"):
-                mapping[command.binding] = command # type: ignore
+                if command.binding is None: # type: ignore
+                    continue
+
+                if command.binding in mapping: # type: ignore
+                    mapping[command.binding].append(command) # type: ignore
+                else:
+                    mapping[command.binding] = [command] # type: ignore
 
         return mapping # type: ignore
 
@@ -42,14 +48,15 @@ class HelpCommand(commands.HelpCommand):
     def command_not_found(self, string: str):
         raise commands.CommandNotFound(f"Command {string} is not found")
 
-    async def send_bot_help(self, mapping):
+    async def send_bot_help(self, mapping: dict[Optional[commands.Cog], list[Optional[Union[commands.Command, app_commands.Command]]]]):
         allowed = 5
         close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
-        embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = f"`Welcome to the help page.`\n\n**The prefix on this server is**: `{self.context.clean_prefix}`.\n\nUse `help command` for more info on a command.\nUse `help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Discord-Bot')
-        embed.add_field(name="Time remaining :", value=f"This help session will end <t:{close_in}:R>.\nType `help` to open a new session.\n\u200b", inline=False)
-        embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*. Made for Algosup in 2020.\nI have a lot of features such translator, events manager, utils, and more.\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Discord-Bot) !")
 
-        view = vhelp.View(mapping = mapping, ctx = self.context, homeembed = embed, ui = 2)
+        embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = f"`Welcome to the help page.`\n\n**The prefix on this server is**: `{self.context.clean_prefix}`.\n\nUse `{self.context.clean_prefix}help command` for more info on a command.\nUse `{self.context.clean_prefix}help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Discord-Bot')
+        embed.add_field(name="Time remaining :", value=f"This help session will end <t:{close_in}:R>.\nType `{self.context.clean_prefix} help` to open a new session.\n\u200b", inline=False)
+        embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*.\nI have a lot of features !\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Discord-Bot) !")
+
+        view = HelpView(timeout=allowed*60, context=self.context, mapping=mapping, homeembed=embed, ui=2)
         await self.context.send(embed = embed, view = view, delete_after=60*allowed)
 
     async def send_command_help(self, command: commands.Command):
