@@ -29,14 +29,14 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
 <a name="major-features"/>
 
 > **Note**: Major features
-> - [ContextMenus](https://discordpy.readthedocs.io/en/master/interactions/api.html#discord.app_commands.ContextMenu) (Right-click commands)
-> - [AppCommands](https://discordpy.readthedocs.io/en/master/interactions/api.html#discord.app_commands.AppCommand) (Slash-commands)
-> - [HybridCommands](https://discordpy.readthedocs.io/en/master/ext/commands/api.html#discord.ext.commands.HybridCommand) (Slash-commands + Commands)
-> - [Groups](https://discordpy.readthedocs.io/en/master/ext/commands/api.html#discord.ext.commands.Group)
-> - [Commands](https://discordpy.readthedocs.io/en/master/ext/commands/api.html#discord.ext.commands.Group)
-> - [Custom-Modals](https://discordpy.readthedocs.io/en/master/interactions/api.html#discord.ui.Modal) (Forms)
-> - [Custom-Views](https://discordpy.readthedocs.io/en/master/interactions/api.html?#discord.ui.View) (Buttons, Dropdown, ..)
-> - [Cogs](https://discordpy.readthedocs.io/en/master/ext/commands/api.html#discord.ext.commands.Cog)/[GroupCogs](https://discordpy.readthedocs.io/en/master/ext/commands/api.html?highlight=cogs#discord.ext.commands.GroupCog)
+> - [ContextMenus](https://discordpy.readthedocs.io/en/latest/interactions/api.html#discord.app_commands.ContextMenu) (Right-click commands)
+> - [AppCommands](https://discordpy.readthedocs.io/en/latest/interactions/api.html#discord.app_commands.AppCommand) (Slash-commands)
+> - [HybridCommands](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.HybridCommand) (Slash-commands + Commands)
+> - [Groups](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Group)
+> - [Commands](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Group)
+> - [Custom-Modals](https://discordpy.readthedocs.io/en/latest/interactions/api.html#discord.ui.Modal) (Forms)
+> - [Custom-Views](https://discordpy.readthedocs.io/en/latest/interactions/api.html?#discord.ui.View) (Buttons, Dropdown, ..)
+> - [Cogs](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Cog)/[GroupCogs](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?highlight=cogs#discord.ext.commands.GroupCog)
 > - Custom prefix per guild
 > - Dynamic structure (Does not require a reboot to apply changes in files)
 > - Database support (SQL)
@@ -92,8 +92,8 @@ $ pip install -r requirements.txt
 > **Warning** If you have not plan to use a SQL database:
 > - in the folder `cogs` you should remove the following files: `birthday.py`, `croissants.py`, `invite.py`, `me.py`, `metrics.py`, `starboard.py`.
 > - in `cogs/admin.py` remove the `change_guild_prefix` method.
-> - in `bot.py` replace the `command_prefix=__getprefix` `line 12` with `command_prefix="?"` (define the bot's prefix).
-> - in `bot.py` delete the `Database initialization` (line 41-44) and the `Prefix per guild initialization` (line 46-48).
+> - in `bot.py` replace the `command_prefix=__getprefix` `line 16` with `command_prefix="?"` (define the bot's prefix).
+> - in `bot.py` delete the `Database initialization` (line 57-59) and the `Prefix per guild initialization` (line 62-64).
 
 > **Note** If you have plan to use a database:
 > - you should use a SQL Database.
