@@ -1,4 +1,5 @@
 from googletrans import Translator as GT # pip install googletrans==4.0.0-rc1
+from typing import Any
 
 class Translator:
 
@@ -48,7 +49,7 @@ class Translator:
         "ko": "kr",
         "ku": "iq",
         "ky": "kg",
-        "la": None, # ! critical invalid flag
+        "la": "", # ! critical invalid flag
         "lb": "lu",
         "lo": "la",
         "mi": "nz",
@@ -83,7 +84,7 @@ class Translator:
         "vi": "vn",
         "xh": "za",
         "yi": "il", # invalid flag
-        "yo": None, # ! critical invalid flag
+        "yo": "", # ! critical invalid flag
         "zh-cn": "cn",
         "zh-tw": "tw",
         "zu": "za" # invalid flag
@@ -103,7 +104,7 @@ class Translator:
         return GT().detect(content).lang
 
     @staticmethod
-    def translate(content: str, dest: str, src: str = None) -> str:
+    def translate(content: str, dest: str, src: str = Any) -> str:
         return GT().translate(content, dest=dest, src=src).text
 
     @staticmethod

@@ -18,7 +18,7 @@ class StackANSI():
         return _to_color(*set([str(x) for x in self.series]))
 
 class SingleANSI(IntEnum):
-    def __add__(self, __x: 'SingleANSI') -> int:
+    def __add__(self, __x: 'SingleANSI') -> 'StackANSI':
         return StackANSI(self.value) + __x
 
     def __str__(self) -> str:

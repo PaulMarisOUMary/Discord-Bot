@@ -13,12 +13,15 @@ class Bot(DiscordBot):
 		super().__init__(
 			allowed_mentions=discord.AllowedMentions(everyone=False),
 			case_insensitive = True, 
-			command_prefix = self.__get_prefix, 
+			command_prefix = self.__prefix_callable, 
 			intents = discord.Intents.all(),
-			max_messages=2500
+			max_messages=2500,
 		)
 
-	def __get_prefix(self, client: DiscordBot, message: discord.Message):
+	def __prefix_callable(self, client: DiscordBot, message: discord.Message):
+		if message.guild is None:
+			return commands.when_mentioned_or(self.config["bot"]["default_prefix"])(client, message)
+
 		guild_id = message.guild.id
 		if guild_id in client.prefixes: 
 			prefix = client.prefixes[guild_id]
@@ -45,9 +48,12 @@ class Bot(DiscordBot):
 		await self.tree.sync()
 		
 	async def setup_hook(self):
-		"""Initialize the db, prefixes & cogs."""
+		"""Initialize the bot, database, prefixes & cogs."""
 
-		#Database initialization
+		# Retrieve the bot's application info
+		self.info = await self.application_info()
+
+		# Database initialization
 		server = self.config["database"]["server"]
 		self.database = DataSQL(server["host"], server["port"])
 		await self.database.auth(server["user"], server["password"], server["database"])

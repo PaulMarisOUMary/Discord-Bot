@@ -1,18 +1,18 @@
 import aiomysql
 import asyncio
 
-from typing import Union
 from datetime import datetime, date
+from typing import Any, Union
 
 class MixedTypes():
-    def __init__(self, value: any) -> None:
+    def __init__(self, value: Any) -> None:
         self.value = value
 
     def __str__(self) -> str:
         return str(self.value)
 
 class DataSQL():
-    def __init__(self, host: str = "127.0.0.1", port: int = 3306, loop: asyncio.AbstractEventLoop = None) -> None:
+    def __init__(self, host: str = "127.0.0.1", port: int = 3306, loop: asyncio.AbstractEventLoop = Any) -> None:
         self.loop, self.host, self.port = loop, host, port
 
     async def auth(self, user: str = "root", password: str = '', database: str = "mysql", autocommit: bool = True) -> None:
@@ -44,7 +44,7 @@ class DataSQL():
                 except Exception as e:
                     raise e
 
-    def __toKindFormat(self, value: any = None) -> any:
+    def __toKindFormat(self, value: Any = None) -> Any:
         keeper = value
         if isinstance(value, (str)): value = f"'{value}'"
         elif isinstance(value, date): value = f"'{value.strftime('%Y-%m-%d')}'"
@@ -112,7 +112,7 @@ class DataSQL():
 
         return await self.query(query)
 
-    async def update(self, table: str, dict: str, condition: str = None) -> query:
+    async def update(self, table: str, dict: Any, condition: str = Any) -> query:
         query = self.__query_update(table, dict, condition)
         return await self.query(query)
     
