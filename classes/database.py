@@ -44,7 +44,7 @@ class DataSQL():
                 except Exception as e:
                     raise e
 
-    def __toKindFormat(self, value: Any = None) -> Any:
+    def __toKindFormat(self, value: Any) -> Any:
         keeper = value
         if isinstance(value, (str)): value = f"'{value}'"
         elif isinstance(value, date): value = f"'{value.strftime('%Y-%m-%d')}'"
@@ -78,19 +78,19 @@ class DataSQL():
 
         return assignment
 
-    def __query_insert(self, table: str, dict: dict, close: bool = True) -> str:
+    def __query_insert(self, table: str, dictionnary: dict, close: bool = True) -> str:
         query = f"INSERT INTO `{table}` ("
 
-        variables, values = self.__to_insert_variables_values(dict)
+        variables, values = self.__to_insert_variables_values(dictionnary)
         query += f"{variables} ) VALUES ({values})"	 
 
         if close: query += ';'
         return query
     
-    def __query_update(self, table: str, dict: dict, condition: Union[str, None] = None, close: bool = True) -> str:
+    def __query_update(self, table: str, dictionnary: dict, condition: Union[str, None] = None, close: bool = True) -> str:
         query = f"UPDATE `{table}` SET "
 
-        assignement = self.__to_update_variables_values(dict)
+        assignement = self.__to_update_variables_values(dictionnary)
         query += assignement
 
         if condition: query += f" WHERE {condition}"
@@ -98,11 +98,11 @@ class DataSQL():
         if close: query += ';'
         return query
 
-    async def insert(self, table: str, dict: dict) -> query:
-        query = self.__query_insert(table, dict)
+    async def insert(self, table: str, dictionnary: dict) -> query: # return query()
+        query = self.__query_insert(table, dictionnary)
         return await self.query(query)
 
-    async def insert_onduplicate(self, table: str, insert_dict: dict, update_dict: Union[dict, None] = None) -> query:
+    async def insert_onduplicate(self, table: str, insert_dict: dict, update_dict: Union[dict, None] = None) -> query: # return query()
         if not update_dict: update_dict = insert_dict
 
         insert_query = self.__query_insert(table, insert_dict, close=False)
@@ -112,36 +112,36 @@ class DataSQL():
 
         return await self.query(query)
 
-    async def update(self, table: str, dict: Any, condition: str = Any) -> query:
-        query = self.__query_update(table, dict, condition)
+    async def update(self, table: str, dictionnary: dict, condition: Union[str, None] = None) -> query: # return query()
+        query = self.__query_update(table, dictionnary, condition)
         return await self.query(query)
     
-    async def delete(self, table: str, condition: str = '') -> query:
+    async def delete(self, table: str, condition: Union[str, None] = None) -> query: # return query()
         query = f"DELETE FROM `{table}` WHERE {condition};"
         return await self.query(query + ';')
 
-    async def increment(self, table: str, target: str, value: int = 1, condition: Union[str, None] = None) -> update:
+    async def increment(self, table: str, target: str, value: int = 1, condition: Union[str, None] = None) -> update: # return update()
         await self.update(table, {target: MixedTypes(f"{target} + {value}")}, condition)
 
-    async def select(self, table: str, target: str, condition: str = '', order: str = '', limit: str = '') -> query:
+    async def select(self, table: str, target: str, condition: Union[str, None] = None, order: Union[str, None] = None, limit: Union[str, None] = None) -> query: # return query()
         query = f"SELECT {target} FROM `{table}`"
         if condition: query += f" WHERE {condition}"
         if order: query += f" ORDER BY {order}"
         if limit: query += f" LIMIT {limit}"
         return await self.query(query + ';')
 
-    async def count(self, table: str, what: str, condition: str = '') -> select:
+    async def count(self, table: str, what: str, condition: Union[str, None] = None) -> select: # return select()
         return await self.select(table, f"COUNT({what})", condition)
 
-    async def lookup(self, table: str, target: str, dict: dict) -> select:
+    async def lookup(self, table: str, target: str, dictionnary: dict) -> select: # return select()
         condition = ''
-        for i, items in enumerate(dict.items()):
+        for i, items in enumerate(dictionnary.items()):
             key, value = items
-            condition += f"`{key}` = {self.__toKindFormat(value)} AND" if i+1 < len(dict) else f"`{key}` = {self.__toKindFormat(value)}"
+            condition += f"`{key}` = {self.__toKindFormat(value)} AND" if i+1 < len(dictionnary) else f"`{key}` = {self.__toKindFormat(value)}"
 
         return await self.select(table, target, condition)
     
-    async def exist(self, table: str, target: str, condition: str = '') -> bool:
+    async def exist(self, table: str, target: str, condition: Union[str, None] = None) -> bool:
         response = await self.count(table, target, condition)
         return response[0][0] > 0
 
