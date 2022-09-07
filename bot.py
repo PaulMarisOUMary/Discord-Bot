@@ -55,7 +55,7 @@ class Bot(DiscordBot):
 
 		# Database initialization
 		server = self.config["database"]["server"]
-		self.database = DataSQL(server["host"], server["port"])
+		self.database = DataSQL(server["host"], server["port"], self.loop)
 		await self.database.auth(server["user"], server["password"], server["database"])
 
 		# Prefix per guild initialization
@@ -80,5 +80,5 @@ if __name__ == '__main__':
 		bot.config["bot"]["token"],
 		reconnect=True,
 		log_handler=streamHandler,
-		log_level=logging.DEBUG # Must be set to DEBUG, change the log_level of each handler in set_logging() method
+		log_level=logging.DEBUG, # Must be set to DEBUG, change the log_level of each handler in set_logging() method
 	)
