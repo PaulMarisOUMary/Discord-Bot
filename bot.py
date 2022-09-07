@@ -51,7 +51,7 @@ class Bot(DiscordBot):
 		"""Initialize the bot, database, prefixes & cogs."""
 
 		# Retrieve the bot's application info
-		self.info = await self.application_info()
+		self.appinfo = await self.application_info()
 
 		# Database initialization
 		server = self.config["database"]["server"]
