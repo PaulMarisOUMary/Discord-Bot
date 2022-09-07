@@ -94,7 +94,7 @@ class View(Parent):
 
 	async def quit(self, interaction : discord.Interaction):
 		await interaction.response.defer()
-		await interaction.delete_original_message()
+		await interaction.delete_original_response()
 		await self.ctx.message.add_reaction("<a:checkmark_a:842800730049871892>")
 
 	async def to_page(self, page : int, interaction : discord.Interaction):

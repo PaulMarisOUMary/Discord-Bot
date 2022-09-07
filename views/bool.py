@@ -19,7 +19,7 @@ class View(Parent):
 		if self.invoker == interaction.user:
 			self.value = value
 			await interaction.response.defer()
-			await interaction.delete_original_message()
+			await interaction.delete_original_response()
 			message = "✅ Confirmed" if self.value else "❌ Canceled"
 			await self.source.reply(message)
 		else:
