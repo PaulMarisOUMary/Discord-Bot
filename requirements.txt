@@ -13,7 +13,7 @@ pytz == 2022.2.1
 
 tzlocal == 4.2
 
-matplotlib == 3.5.3
+matplotlib == 3.6.0
 Pillow == 9.2.0
 
 PyNaCl
