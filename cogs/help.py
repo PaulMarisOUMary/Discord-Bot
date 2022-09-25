@@ -11,15 +11,6 @@ from classes.discordbot import DiscordBot
 class HelpCommand(commands.HelpCommand):
     """Help command"""
 
-    async def command_callback(self, ctx: commands.Context, /, *, command: Optional[str] = None) -> None:
-        """Need to:
-        Check if:
-        - Group
-        - Cog
-        - Command/AppCommand
-        """
-        await super().command_callback(ctx, command=command) # waiting for implementation
-
     def get_bot_mapping(self) -> dict[Optional[commands.Cog], list[Union[commands.Command, app_commands.Command]]]:
         mapping = super().get_bot_mapping()
         
@@ -48,7 +39,7 @@ class HelpCommand(commands.HelpCommand):
     def command_not_found(self, string: str):
         raise commands.CommandNotFound(f"Command {string} is not found")
 
-    async def send_bot_help(self, mapping: dict[Optional[commands.Cog], list[Optional[Union[commands.Command, app_commands.Command]]]]):
+    async def send_bot_help(self, mapping: dict[Optional[commands.Cog], list[Union[commands.Command, app_commands.Command]]]):
         allowed = 5
         close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
 
@@ -60,33 +51,10 @@ class HelpCommand(commands.HelpCommand):
         await self.context.send(embed = embed, view = view, delete_after=60*allowed)
 
     async def send_command_help(self, command: commands.Command):
-        """
-        CommandType
-        from extras: bot_permissions
-        """
-        cog = command.cog
-        if "help_custom" in dir(cog):
-            emoji, label, _ = cog.help_custom()
-            embed = discord.Embed(title = f"{emoji} Help · {label} : {command.name}", description=f"**Command** : {command.name}\n{command.help}", url="https://github.com/PaulMarisOUMary/Discord-Bot")
-            params = ""
-            for param in command.clean_params: 
-                params += f" <{param}>"
-            embed.add_field(name="Usage", value=f"{command.name}{params}", inline=False)
-            embed.add_field(name="Aliases", value=f"{command.aliases}`")
-            embed.set_footer(text="Remind : Hooks such as <> must not be used when executing commands.", icon_url=self.context.message.author.display_avatar.url)
-            await self.context.send(embed=embed)
+        pass # Not implemented
 
     async def send_cog_help(self, cog):
-        if "help_custom" in dir(cog):
-            emoji, label, _ = cog.help_custom()
-            embed = discord.Embed(title = f"{emoji} Help · {label}",description=f"`{cog.__doc__}`", url="https://github.com/PaulMarisOUMary/Discord-Bot")
-            for command in cog.get_commands():
-                params = ""
-                for param in command.clean_params: 
-                    params += f" <{param}>"
-                embed.add_field(name=f"{command.name}{params}", value=f"{command.help}\n\u200b", inline=False)
-            embed.set_footer(text="Remind : Hooks such as <> must not be used when executing commands.", icon_url=self.context.message.author.display_avatar.url)
-            await self.context.send(embed=embed)
+        pass # Not implemented
 
     async def send_group_help(self, group):
         await self.context.send("Group commands unavailable.")

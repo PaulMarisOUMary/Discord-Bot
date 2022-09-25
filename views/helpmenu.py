@@ -148,7 +148,7 @@ class View(Parent):
 							params += f" <{param}>"
 					else:
 						help = command.description
-						name = '/'+' '.join(dig_parent(command)[::-1])
+						name = "</"+' '.join(dig_parent(command)[::-1])+":01234567890123456789>"
 						for param in command._params.keys():
 							params += f" <{param}>"
 					embed.add_field(
