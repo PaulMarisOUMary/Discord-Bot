@@ -1,4 +1,5 @@
 from datetime import datetime
+from discord import AppInfo
 from discord.ext import commands
 from logging import Logger
 from typing import Any
@@ -7,6 +8,9 @@ from classes.database import DataSQL
 
 class DiscordBot(commands.Bot):
     """A Subclass of `commands.Bot`."""
+
+    appinfo: AppInfo
+    """Application info for the bot provided by Discord."""
 
     config: dict
     """The config loaded directly from 'config/*.json'."""

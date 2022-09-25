@@ -43,18 +43,20 @@ class Errors(commands.Cog, name="errors"):
 	@commands.Cog.listener("on_command_error")
 	async def get_command_error(self, ctx: commands.Context, error: commands.CommandError):
 		"""Command Error handler
-		doc: https://discordpy.readthedocs.io/en/master/ext/commands/api.html#exception-hierarchy
+		doc: https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#exception-hierarchy
 		"""
 		try:
 			if ctx.interaction: # HybridCommand Support
 				await self.__respond_to_interaction(ctx.interaction)
-				edit = ctx.interaction.edit_original_message
+				edit = ctx.interaction.edit_original_response
 				if isinstance(error, commands.HybridCommandError):
 					error = error.original # Access to the original error
 			else:
-				discord_message = await ctx.send(self.default_error_message)
+				try:
+					discord_message = await ctx.send(self.default_error_message)
+				except discord.errors.Forbidden:
+					return
 				edit = discord_message.edit
-
 			raise error
 
 		# ConversionError
@@ -109,11 +111,11 @@ class Errors(commands.Cog, name="errors"):
 	@commands.Cog.listener("on_app_command_error")
 	async def get_app_command_error(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
 		"""App command Error Handler
-		doc: https://discordpy.readthedocs.io/en/master/interactions/api.html#exception-hierarchy
+		doc: https://discordpy.readthedocs.io/en/latest/interactions/api.html#exception-hierarchy
 		"""
 		try:
 			await self.__respond_to_interaction(interaction)
-			edit = interaction.edit_original_message
+			edit = interaction.edit_original_response
 
 			raise error
 		except app_commands.CommandInvokeError as d_error:
