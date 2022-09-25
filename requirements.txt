@@ -8,18 +8,17 @@
 # $ pip freeze | xargs pip uninstall -y
 
 aiomysql == 0.1.1
-requests == 2.28.0
-pytz == 2022.1
+requests == 2.28.1
+pytz == 2022.2.1
 
 tzlocal == 4.2
 
-matplotlib == 3.5.2
-Pillow == 9.1.1
+matplotlib == 3.5.3
+Pillow == 9.2.0
 
 PyNaCl
 
 #Require this specific version (internal package error, issue #299 of github.com/ssut/py-googletrans)
 googletrans == 4.0.0-rc1
 
-#discordpy master branch commit b3a24846bddc894ae6d9bfb49ed8ee93b2d12fcb
-git+https://github.com/Rapptz/discord.py@b3a24846bddc894ae6d9bfb49ed8ee93b2d12fcb
+discord.py[speed] == 2.0.1

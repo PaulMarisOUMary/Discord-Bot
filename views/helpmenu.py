@@ -191,5 +191,5 @@ class View(Parent):
 
 	async def quit(self, interaction: discord.Interaction, *args: Any):
 		await interaction.response.defer()
-		await interaction.delete_original_message()
+		await interaction.delete_original_response()
 		self.stop()
