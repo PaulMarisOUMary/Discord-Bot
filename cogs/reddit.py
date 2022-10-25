@@ -46,6 +46,7 @@ class Reddit(commands.Cog, name="reddit"):
     async def cog_unload(self):
         for task in self.tasks:
             task.cancel()
+        await self.reddit.close()
 
     async def listen(self, subreddit: str, channel: str) -> None:
         sub = await self.reddit.subreddit(subreddit)
