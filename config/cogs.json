@@ -51,12 +51,12 @@
         "client": {
             "client_id": "**********************",
             "client_secret": "******************************",
-            "user_agent": "Discord-Bot/0.1 by Paul Maris"
+            "user_agent": "git/PaulMarisOUMary/Discord-Bot"
         },
         "connections": [
             {
                 "subreddit": "ProgrammerHumor",
-                "channel": "image-only"
+                "channel": "reddit"
             }
         ]
     },
