@@ -29,17 +29,23 @@ class Reddit(commands.Cog, name="reddit"):
     def help_custom(self) -> tuple[str, str, str]:
         emoji = '🟠'
         label = "Reddit"
-        description = "Reddit go brrrrrr"
+        description = "Reddit goes brrrrrr"
         return emoji, label, description
 
-    async def run(self) -> None:
+    async def cog_load(self):
         self.reddit = self.create_reddit()
         self.tasks = []
         for connection in self.subconfig_data["connections"]:
             try:
-                asyncio.create_task(self.listen(**connection))
+                self.tasks.append(
+                    asyncio.create_task(self.listen(**connection))
+                )
             except Exception as e:
                 self.bot.logger.error(e)
+
+    async def cog_unload(self):
+        for task in self.tasks:
+            task.cancel()
 
     async def listen(self, subreddit: str, channel: str) -> None:
         sub = await self.reddit.subreddit(subreddit)
@@ -49,7 +55,8 @@ class Reddit(commands.Cog, name="reddit"):
                 if channel.lower() in chan.name.lower():
                     channels.append(chan)
 
-        self.bot.logger.info("listening on r/"+subreddit)
+        self.bot.logger.name = "discord.reddit"
+        self.bot.logger.info("Listening on: r/"+subreddit)
         async for submission in sub.stream.submissions(skip_existing=True):
             try:
                 # self.bot.logger.debug(f"r/{subreddit}: {submission.title}")
@@ -72,7 +79,10 @@ class Reddit(commands.Cog, name="reddit"):
         embed.set_footer(text="r/"+submission.subreddit.display_name)
 
         for channel in channels:
-            await channel.send(embed=embed)
+            try:
+                await channel.send(embed=embed)
+            except:
+                pass # Missing permissions
 
     def create_reddit(self) -> asyncpraw.Reddit:
         reddit = asyncpraw.Reddit(**self.subconfig_data["client"])
@@ -80,4 +90,3 @@ class Reddit(commands.Cog, name="reddit"):
 
 async def setup(bot: DiscordBot):
     await bot.add_cog(Reddit(bot))
-    await bot.get_cog("reddit").run()
