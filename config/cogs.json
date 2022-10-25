@@ -47,6 +47,19 @@
         "channel_name": "Vocal: #{user.discriminator}",
         "cooldown": 30
     },
+    "reddit": {
+        "client": {
+            "client_id": "**********************",
+            "client_secret": "******************************",
+            "user_agent": "git/PaulMarisOUMary/Discord-Bot"
+        },
+        "connections": [
+            {
+                "subreddit": "ProgrammerHumor",
+                "channel": "reddit"
+            }
+        ]
+    },
     "status": {
         "status": [
             "V2.0 Soon !",
