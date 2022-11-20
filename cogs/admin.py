@@ -118,8 +118,10 @@ class Admin(commands.Cog, name="admin"):
 		else:
 			tree = await self.bot.tree.sync()
 
-		self.bot.logger.name = f"discord.cogs.admin.sync_tree"
-		self.bot.logger.info(msg=f"{ctx.author} synced the tree({len(tree)}): {tree}")
+		self.bot.log(
+			message = f"{ctx.author} synced the tree({len(tree)}): {tree}",
+			name = "discord.cogs.admin.sync_tree",
+		)
 
 		await ctx.send(f":pinched_fingers: `{len(tree)}` synced!")
 

@@ -2,6 +2,7 @@ import discord
 
 from discord.ext import commands
 from discord import app_commands
+from logging import ERROR as LOG_ERROR, CRITICAL as LOG_CRITICAL
 
 from classes.discordbot import DiscordBot
 
@@ -20,8 +21,12 @@ class Errors(commands.Cog, name="errors"):
 		return emoji, label, description"""
 
 	def trace_error(self, level: str, error: Exception):
-		self.bot.logger.name = f"discord.{level}"
-		self.bot.logger.error(msg=type(error).__name__, exc_info=error)
+		self.bot.log(
+			message = type(error).__name__,
+			name = f"discord.{level}",
+			level = LOG_ERROR,
+			exc_info = error,
+		)
 		
 		raise error
 
@@ -38,7 +43,11 @@ class Errors(commands.Cog, name="errors"):
 	@commands.Cog.listener("on_error")
 	async def get_error(self, event, *args, **kwargs):
 		"""Error handler"""
-		print(f"! Unexpected Internal Error: (event) {event}, (args) {args}, (kwargs) {kwargs}.")
+		self.bot.log(
+			message = f"Unexpected Internal Error: (event) {event}, (args) {args}, (kwargs) {kwargs}.",
+			name = "discord.get_error",
+			level = LOG_CRITICAL,
+		)
 
 	@commands.Cog.listener("on_command_error")
 	async def get_command_error(self, ctx: commands.Context, error: commands.CommandError):

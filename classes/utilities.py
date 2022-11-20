@@ -12,7 +12,7 @@ from os import listdir
 from os.path import dirname, abspath, join, basename, splitext
 from sys import modules
 from types import ModuleType
-from typing import Any, Union
+from typing import Union
 
 root_directory = dirname(dirname(abspath(__file__)))
 config_directory = join(root_directory, "config")
