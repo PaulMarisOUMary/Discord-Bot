@@ -2,7 +2,7 @@ import aiomysql
 import asyncio
 
 from datetime import datetime, date
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 class MixedTypes():
     def __init__(self, value: Any) -> None:
@@ -98,11 +98,11 @@ class DataSQL():
         if close: query += ';'
         return query
 
-    async def insert(self, table: str, dictionnary: dict) -> query: # return query()
+    async def insert(self, table: str, dictionnary: dict): # return query()
         query = self.__query_insert(table, dictionnary)
         return await self.query(query)
 
-    async def insert_onduplicate(self, table: str, insert_dict: dict, update_dict: Optional[dict] = None) -> query: # return query()
+    async def insert_onduplicate(self, table: str, insert_dict: dict, update_dict: Optional[dict] = None): # return query()
         if not update_dict: update_dict = insert_dict
 
         insert_query = self.__query_insert(table, insert_dict, close=False)
@@ -112,28 +112,28 @@ class DataSQL():
 
         return await self.query(query)
 
-    async def update(self, table: str, dictionnary: dict, condition: Optional[str] = None) -> query: # return query()
+    async def update(self, table: str, dictionnary: dict, condition: Optional[str] = None): # return query()
         query = self.__query_update(table, dictionnary, condition)
         return await self.query(query)
     
-    async def delete(self, table: str, condition: Optional[str] = None) -> query: # return query()
+    async def delete(self, table: str, condition: Optional[str] = None): # return query()
         query = f"DELETE FROM `{table}` WHERE {condition};"
         return await self.query(query + ';')
 
-    async def increment(self, table: str, target: str, value: int = 1, condition: Optional[str] = None) -> update: # return update()
+    async def increment(self, table: str, target: str, value: int = 1, condition: Optional[str] = None): # return update()
         await self.update(table, {target: MixedTypes(f"{target} + {value}")}, condition)
 
-    async def select(self, table: str, target: str, condition: Optional[str] = None, order: Optional[str] = None, limit: Optional[str] = None) -> query: # return query()
+    async def select(self, table: str, target: str, condition: Optional[str] = None, order: Optional[str] = None, limit: Optional[str] = None): # return query()
         query = f"SELECT {target} FROM `{table}`"
         if condition: query += f" WHERE {condition}"
         if order: query += f" ORDER BY {order}"
         if limit: query += f" LIMIT {limit}"
         return await self.query(query + ';')
 
-    async def count(self, table: str, what: str, condition: Optional[str] = None) -> select: # return select()
+    async def count(self, table: str, what: str, condition: Optional[str] = None): # return select()
         return await self.select(table, f"COUNT({what})", condition)
 
-    async def lookup(self, table: str, target: str, dictionnary: dict) -> select: # return select()
+    async def lookup(self, table: str, target: str, dictionnary: dict): # return select()
         condition = ''
         for i, items in enumerate(dictionnary.items()):
             key, value = items

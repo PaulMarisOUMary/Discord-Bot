@@ -48,7 +48,7 @@ def reload_views():
 	mods = [module[1] for module in modules.items() if isinstance(module[1], ModuleType)]
 	for mod in mods:
 		try:
-			if basename(dirname(mod.__file__)) == "views":
+			if basename(dirname(str(mod.__file__))) == "views":
 				reload(mod)
 				yield mod.__name__
 		except: 

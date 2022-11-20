@@ -31,7 +31,7 @@ class Dad(commands.Cog, name="dad"):
     @commands.Cog.listener("on_message")
     async def on_receive_message(self, message : discord.Message):
         author_id = message.author.id
-        if author_id != self.bot.user.id:
+        if author_id != self.bot.user.id: # type: ignore
             content = message.content
 
             for joke in self.subconfig_data["jokes"]:

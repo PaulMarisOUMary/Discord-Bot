@@ -2,6 +2,7 @@ import discord
 
 from discord.ext import commands
 from discord import app_commands
+from typing import Union
 
 from classes.discordbot import DiscordBot
 
@@ -46,14 +47,14 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 	@app_commands.command(name="show", description="Show the /me of other users.")
 	@app_commands.describe(user="The user you want to show the /me of.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	async def show_me(self, interaction: discord.Interaction, user: discord.Member = None):
+	async def show_me(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]):
 		"""Allows you to show the description of other users."""
 		if not user:
 			user = interaction.user
 		await self.show_me_message(interaction, user)
 
-	async def show_me_message(self, interaction: discord.Interaction, user: discord.Member) -> None:
-		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_me", {"guild_id": str(user.guild.id),"user_id":  str(user.id)})
+	async def show_me_message(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]) -> None:
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_me", {"guild_id": str(user.guild.id),"user_id":  str(user.id)}) # type: ignore
 		message = " ".join(response[0]) if len(response) else "No description provided.."
 		await interaction.response.send_message(f"• **{user.display_name}** {message}")
 

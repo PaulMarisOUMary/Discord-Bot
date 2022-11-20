@@ -35,10 +35,13 @@ class ContextMenu(commands.Cog):
 
     async def cog_unload(self):
         for command in self.context_commands:
-            self.bot.tree.remove_command(command, command.type)
+            self.bot.tree.remove_command(command, command.type) # type: ignore
 
     async def join_date(self, interaction: discord.Interaction, member: discord.Member):
-        await interaction.response.send_message(f"{member.mention} joined the {discord.utils.format_dt(member.joined_at)}", ephemeral=True)
+        if joined_at := member.joined_at:
+            await interaction.response.send_message(f"{member.mention} joined the {discord.utils.format_dt(joined_at)}", ephemeral=True)
+        else:
+            await interaction.response.send_message(f"I'm not able to fetch the join date for {member.mention}", ephemeral=True)
 
     async def translate(self, interaction: discord.Interaction, message: discord.Message, destination: str = "en"):
         content = message.content
