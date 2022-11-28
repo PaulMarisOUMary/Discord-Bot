@@ -25,4 +25,4 @@ googletrans == 4.0.0-rc1
 git+https://github.com/Rapptz/discord.py@1be36c9c3ede72eaa2262dfa0e62cbd8b8929e66
 
 #reddit api
-asyncpraw == 7.6.0
+asyncpraw == 7.6.1
