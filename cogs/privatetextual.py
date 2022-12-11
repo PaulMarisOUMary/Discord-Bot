@@ -3,6 +3,7 @@ import discord
 from datetime import datetime
 from discord.ext import commands
 from discord import app_commands
+from typing import Optional
 
 from classes.discordbot import DiscordBot
 from classes.utilities import bot_has_permissions
@@ -32,11 +33,14 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 		label = "Private Textual"
 		description = "Add and edit textuals channels."
 		return emoji, label, description
+	
+	def __get_owner(self, private_channel: discord.TextChannel) -> Optional[discord.Member]:
+		raise NotImplementedError
 
 	def __is_dash_channel(self, channel: discord.TextChannel) -> bool:
 		return self.dashlock == channel.name[0]
 
-	def __get_private_role(self, channel: discord.TextChannel) -> discord.Role:
+	def __get_private_role(self, channel: discord.TextChannel) -> Optional[discord.Role]:
 		for role, permissions in channel.overwrites.items():
 			if permissions.send_messages:
 				if len(role.name.split(':')) > 1:
@@ -260,6 +264,25 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 		)
 
 		await interaction.response.send_modal(modal)
+
+	@bot_has_permissions(manage_roles=True, manage_channels=True)
+	@app_commands.command(name="leave", description="Leave a private textual channel owned by someone else.")
+	@app_commands.checks.cooldown(1, 60.0, key=lambda i: (i.channel_id, i.user.id))
+	async def leave(self, interaction: discord.Interaction):
+		channel_role = self.__get_private_role(interaction.channel)
+
+		if not self.__is_dash_channel(interaction.channel) or not channel_role: # Private channel check
+			await interaction.response.send_message("You can't leave a non private textual channel.\nTry to type this command in a private channel.", ephemeral=True)
+			return
+
+		if channel_role.name.split(":")[1] == str(interaction.user.id): # Avoid owner to leave: must be member
+			await interaction.response.send_message("You can't leave a textual channel that you own.\nType `/private delete` to delete your private textual channel.\nOr transfer the ownership with /private transferownership.", ephemeral=True)
+			return
+		
+		await interaction.user.remove_roles(channel_role, reason=f"Leave private textual channel {interaction.channel.mention} requested by {interaction.user}.")
+
+		await interaction.response.send_message(f"{interaction.user.mention} left {interaction.channel.mention} !")
+
 
 
 
