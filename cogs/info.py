@@ -127,7 +127,7 @@ class Info(commands.Cog, name="info"):
 		embed.add_field(name="\u200b", value="\u200b", inline=False)
 		embed.add_field(name="<:isbot:698250069165473852> Is a bot?", value=f"{yes if realuser.bot else no}", inline=True)
 		embed.add_field(name="<:phone:948279755248111756> Is on mobile?", value=f"{yes if realuser.is_on_mobile() else no}", inline=True)
-		embed.add_field(name="<a:nitro:948271095566434357> Is a booster?", value=f"<t:{round(datetime.timestamp(realuser.premium_since))}:F>" if realuser.premium_since else no, inline=True)
+		embed.add_field(name="<a:nitro:948271095566434357> Boost this server?", value=f"<t:{round(datetime.timestamp(realuser.premium_since))}:F>" if realuser.premium_since else no, inline=True)
 		embed.add_field(name="\u200b", value="\u200b", inline=False)
 		embed.add_field(name="<:plus:948272417304883270> Account created at:", value=f"<t:{round(datetime.timestamp(realuser.created_at))}:F>", inline=True)
 		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"<t:{round(datetime.timestamp(realuser.joined_at))}:F>", inline=True) # type: ignore
