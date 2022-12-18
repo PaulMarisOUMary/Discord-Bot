@@ -11,11 +11,13 @@ from discord.ext import commands
 class Bot(DiscordBot):
 	def __init__(self):
 		super().__init__(
+			activity = discord.Game(name = "Booting.."),
 			allowed_mentions=discord.AllowedMentions(everyone=False),
 			case_insensitive = True, 
 			command_prefix = self.__prefix_callable, 
 			intents = discord.Intents.all(),
 			max_messages = 2500,
+			status = discord.Status.idle,
 		)
 
 	def __prefix_callable(self, client: DiscordBot, message: discord.Message):
