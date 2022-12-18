@@ -29,7 +29,7 @@ class Invite(commands.Cog, name="invite"):
         self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
 
         self.invites: dict[int, dict[str, discord.Invite]] = dict()
-        self.granted_guilds: dict[int, tuple[discord.TextChannel, str]] = dict()
+        self.granted_guilds: dict[int, tuple[discord.abc.GuildChannel, str]] = dict()
 
     def help_custom(self) -> tuple[str, str, str]:
         emoji = '📨'
@@ -41,15 +41,24 @@ class Invite(commands.Cog, name="invite"):
         return guild.id in self.granted_guilds
 
     async def __update_granted_guilds(self) -> None:
-        granted_guilds: tuple[tuple[int, int, str]] = await self.bot.database.select(self.subconfig_data["table"], "*")
+        granted_guilds: tuple[Optional[tuple[int, int, str]]] = await self.bot.database.select(self.subconfig_data["table"], "*")
         for guild, channel, custom_message in granted_guilds:
-            channel_object = get(self.bot.guilds, id=guild).get_channel(channel)
+            guild_object = get(self.bot.guilds, id=guild)
+
+            if not guild_object:
+                continue
+
+            channel_object = guild_object.get_channel(channel)
+
+            if not channel_object:
+                continue
+
             self.granted_guilds[guild] = (channel_object, custom_message)
 
     async def __seek_invite(self, before: dict[str, discord.Invite], after: dict[str, discord.Invite]) -> Optional[discord.Invite]:
         # Seek increment uses in invites
         for id, invite in after.items():
-            if invite.uses > before[id].uses:
+            if invite.uses > before[id].uses: # type: ignore
                 return invite
 
         # Seek missing invite (only expirable)
@@ -155,7 +164,7 @@ class Invite(commands.Cog, name="invite"):
     @commands.command(name="logscustom")
     @commands.has_permissions(administrator=True)
     @commands.cooldown(1, 25, commands.BucketType.guild)
-    async def config_invite_logs_custom_message(self, ctx: commands.Context, *, message: str = None) -> None:
+    async def config_invite_logs_custom_message(self, ctx: commands.Context, *, message: Optional[str] = None) -> None:
         """Set a custom message for the invite tracker.
         
         Formating variables: 
