@@ -2,8 +2,7 @@
     "birthday": {
         "table": "table_birthday",
 
-        "guild_id": 780212419141828619,
-        "channel_id": 859832702960926770
+        "guild_id": 780212419141828619
     },
     "croissants": {
         "table": "table_croissants",

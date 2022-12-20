@@ -41,37 +41,36 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 
 	@tasks.loop(hours=1)
 	async def daily_birthday(self):
-		if not datetime.now().hour == 9:
+		if not datetime.now().hour == 16:
 			return
 		
-		guild = get(self.bot.guilds, id=self.subconfig_data["guild_id"])
-		channel = get(guild.channels, id=self.subconfig_data["channel_id"])
-
-		if not channel:
-			raise Exception("daily_birthday, birthday channel not found.")
-
-		response: tuple[tuple[int, datetime.date]] = await self.bot.database.select(self.subconfig_data["table"], "*", condition="DAY(`user_birth`) = DAY(CURRENT_DATE()) AND MONTH(`user_birth`) = MONTH(CURRENT_DATE())")
+		response: tuple[tuple[int, date]] = await self.bot.database.select(self.subconfig_data["table"], "*", condition="DAY(`user_birth`) = DAY(CURRENT_DATE()) AND MONTH(`user_birth`) = MONTH(CURRENT_DATE())")
 
 		if not response:
 			self.bot.logger.info("No birthday today.")
 			return
+		
+		async for guild in self.bot.fetch_guilds():
+			if guild.id != self.bot.config["guild_id"]:
+				continue
+			for channel in guild.channels:
+				if channel.name == "birthday":
+					for data in response:
+						user_id, user_birth = data
 
-		for data in response:
-			user_id, user_birth = data
+						timestamp = round(datetime.combine(user_birth, datetime.min.time()).timestamp())
 
-			timestamp = round(datetime.combine(user_birth, datetime.min.time()).timestamp())
+						message = f"Remember this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
+						images = [
+							"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
+							"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
+							"https://winkgo.com/wp-content/uploads/2018/08/101-Best-Happy-Birthday-Memes-01-720x720.jpg",
+							"https://www.the-best-wishes.com/wp-content/uploads/2022/01/success-kid-cute-birthday-meme-for-her.jpg"
+						]
 
-			message = f"Remember this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
-			images = [
-				"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
-				"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
-				"https://winkgo.com/wp-content/uploads/2018/08/101-Best-Happy-Birthday-Memes-01-720x720.jpg",
-				"https://www.the-best-wishes.com/wp-content/uploads/2022/01/success-kid-cute-birthday-meme-for-her.jpg"
-			]
-
-			embed = discord.Embed(title="🎉 Happy birthday !", description=message, colour=discord.Colour.dark_gold())
-			embed.set_image(url=images[random.randint(0, len(images)-1)])
-			await channel.send(embed=embed)
+						embed = discord.Embed(title="🎉 Happy birthday !", description=message, colour=discord.Colour.dark_gold())
+						embed.set_image(url=images[random.randint(0, len(images)-1)])
+						await channel.send(embed=embed)
 
 	@daily_birthday.before_loop
 	async def before_daily_birthday(self):
