@@ -51,7 +51,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 			return
 		
 		async for guild in self.bot.fetch_guilds():
-			if guild.id != self.bot.config["guild_id"]:
+			if guild.id != self.subconfig_data["guild_id"]:
 				continue
 			for channel in guild.channels:
 				if channel.name == "birthday":
