@@ -3,7 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from datetime import datetime, timedelta
-from typing import Optional, Union
+from typing import Any, Dict, List, Optional, Union
 
 from views.helpmenu import View as HelpView
 from classes.discordbot import DiscordBot
@@ -11,20 +11,21 @@ from classes.discordbot import DiscordBot
 class HelpCommand(commands.HelpCommand):
     """Help command"""
 
-    def get_bot_mapping(self) -> dict[Optional[commands.Cog], list[Union[commands.Command, app_commands.Command]]]:
+    def get_bot_mapping(self) -> Dict[Optional[commands.Cog], Union[List[commands.Command[Any, ..., Any]], List[app_commands.Command[Any, ..., Any]], List[commands.HybridCommand[Any, ..., Any]]]]:
         mapping = super().get_bot_mapping()
+
+        compound_mapping: Dict[Optional[commands.Cog], Union[List[commands.Command[Any, ..., Any]], List[app_commands.Command[Any, ..., Any]], List[commands.HybridCommand[Any, ..., Any]]]] = mapping | dict()
         
         for command in self.context.bot.tree.walk_commands(type=discord.AppCommandType.chat_input):
-            if hasattr(command, "binding"):
-                if command.binding is None: # type: ignore
-                    continue
+            if isinstance(command, app_commands.Group): # Get only Subcommands
+                continue
 
-                if command.binding in mapping: # type: ignore
-                    mapping[command.binding].append(command) # type: ignore
-                else:
-                    mapping[command.binding] = [command] # type: ignore
+            if command.binding in mapping:
+                compound_mapping[command.binding].append(command) # type: ignore
+            else:
+                compound_mapping[command.binding] = [command]
 
-        return mapping # type: ignore
+        return compound_mapping
 
     async def on_help_command_error(self, ctx, error):
         handledErrors = [
@@ -75,14 +76,15 @@ class Help(commands.Cog, name="help"):
         self._original_help_command = bot.help_command
 
         attributes = {
-            "name": "help",
             "aliases": ['h', '?'],
-            "cooldown": commands.CooldownMapping.from_cooldown(1, 5, commands.BucketType.user)
+            "cooldown": commands.CooldownMapping.from_cooldown(1, 5, commands.BucketType.user),
+            #"hidden": True,
+            "name": "help",
         } 
 
         bot.help_command = HelpCommand(command_attrs=attributes)
         bot.help_command.cog = self
-        
+
     async def cog_unload(self) -> None:
         self.bot.help_command = self._original_help_command
 
