@@ -11,6 +11,15 @@ from classes.discordbot import DiscordBot
 class HelpCommand(commands.HelpCommand):
     """Help command"""
 
+    async def __get_contexted_app_command(self, ctx: commands.Context, target: app_commands.Command) -> Optional[app_commands.AppCommand]:
+        tree_commands = await ctx.bot.tree.fetch_commands()
+        for command in tree_commands:
+            if command.name == target.qualified_name:
+                return command
+
+    def __format_permissions(self, extras: dict):
+        print(extras)
+
     def get_bot_mapping(self) -> Dict[Optional[commands.Cog], Union[List[commands.Command[Any, ..., Any]], List[app_commands.Command[Any, ..., Any]], List[commands.HybridCommand[Any, ..., Any]]]]:
         mapping = super().get_bot_mapping()
 
@@ -27,20 +36,70 @@ class HelpCommand(commands.HelpCommand):
 
         return compound_mapping
 
-    async def on_help_command_error(self, ctx, error):
-        handledErrors = [
-            commands.CommandOnCooldown, 
-            commands.CommandNotFound
-        ]
+    async def command_callback(self, ctx: commands.Context, *, command: Optional[str] = None):
+        await self.prepare_help_command(ctx, command)
 
-        if not type(error) in handledErrors:
-            print("! Help command Error :", error, type(error), type(error).__name__)
-            return await super().on_help_command_error(ctx, error)
+        bot = ctx.bot
 
-    def command_not_found(self, string: str):
-        raise commands.CommandNotFound(f"Command {string} is not found")
+        if command is None:
+            mapping = self.get_bot_mapping()
+            return await self.send_bot_help(mapping)
+        
+        def from_cog(potential_cog: str) -> Optional[commands.Cog]:
+            return bot.get_cog(potential_cog) 
+        
+        def from_command(potential_command: str) -> List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]:
+            mapping = self.get_bot_mapping()
+            commands_found = list()
+            for mapped_commands in mapping.values():
+                for cmd in mapped_commands:
+                    if cmd.name == potential_command:
+                        commands_found.append(cmd)
+            return commands_found
+        
+        def from_group(potential_group: str) -> Optional[app_commands.Group]:
+            for cmd in self.context.bot.tree.walk_commands(type=discord.AppCommandType.chat_input):
+                if isinstance(cmd, app_commands.Group) and cmd.name == potential_group:
+                    return cmd
 
-    async def send_bot_help(self, mapping: dict[Optional[commands.Cog], list[Union[commands.Command, app_commands.Command]]]):
+        keys = command.split(' ')
+        is_keys = len(keys) > 1
+        fkey = keys[0]
+
+        if fkey == "cog" and is_keys:
+            cog = from_cog(keys[1])
+            if cog:
+                return await self.send_cog_help(cog)
+            else:
+                return self.command_not_found(keys[1])
+        elif fkey == "command" and is_keys:
+            cmd = from_command(keys[1])
+            if cmd:
+                return await self.send_command_help(cmd)
+            else:
+                return self.command_not_found(keys[1])
+        elif fkey == "group" and is_keys:
+            group = from_group(keys[1])
+            if group:
+                return await self.send_group_help(group)
+            else:
+                return self.command_not_found(keys[1])
+
+        cog = from_cog(command)
+        if cog:
+            return await self.send_cog_help(cog)
+
+        commands_found = from_command(command)
+        if commands_found:
+            return await self.send_command_help(commands_found)
+
+        group = from_group(command)
+        if group:
+            return await self.send_group_help(group)
+        
+        return self.command_not_found(keys[0])
+
+    async def send_bot_help(self, mapping: Dict[Optional[commands.Cog], Union[List[commands.Command[Any, ..., Any]], List[app_commands.Command[Any, ..., Any]], List[commands.HybridCommand[Any, ..., Any]]]]):
         allowed = 5
         close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
 
@@ -51,14 +110,38 @@ class HelpCommand(commands.HelpCommand):
         view = HelpView(timeout=allowed*60, context=self.context, mapping=mapping, homeembed=embed, ui=2)
         await self.context.send(embed = embed, view = view, delete_after=60*allowed)
 
-    async def send_command_help(self, command: commands.Command):
-        pass # Not implemented
+    async def send_command_help(self, commands_list: List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]):
+        embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Commands", url = "https://github.com/PaulMarisOUMary/Discord-Bot")
+        for command in commands_list:
+            if isinstance(command, app_commands.Command):
+                object = await self.__get_contexted_app_command(self.context, command)
+                if not object:
+                    continue
+                embed.add_field(name=f"{object.mention}", value=f"{object.description}", inline=False)
+            else:
+                embed.add_field(name=f"{self.context.clean_prefix}{command.qualified_name}", value=f"{command.description}", inline=False)
 
-    async def send_cog_help(self, cog):
-        pass # Not implemented
+        await self.context.send(embed = embed)
+
+    async def send_cog_help(self, cog: commands.Cog):
+        await self.context.send("send_cog_help")
+        await self.context.send(f"{cog}")
 
     async def send_group_help(self, group):
-        await self.context.send("Group commands unavailable.")
+        await self.context.send("send_group_help")
+        await self.context.send(f"{group}")
+
+    def command_not_found(self, string: str):
+        raise commands.CommandNotFound(f"`{string}` not found !")
+
+    async def on_help_command_error(self, _: commands.Context, error):
+        handledErrors = [
+            commands.CommandOnCooldown, 
+            commands.CommandNotFound
+        ]
+
+        if not type(error) in handledErrors:
+            raise error
 
 class Help(commands.Cog, name="help"):
     """
