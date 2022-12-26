@@ -94,7 +94,10 @@ def bot_has_permissions(**perms: bool):
 			perm for perm, value in perms.items() if getattr(discord.Permissions.none(), perm) != value
 		]
 		command.extras.update({"bot_permissions": valid_required_permissions})
-		
+
+		if isinstance(command, commands.HybridCommand) and command.app_command:
+			command.app_command.extras.update({"bot_permissions": valid_required_permissions})
+
 		if isinstance(command, (app_commands.Command, commands.HybridCommand)):
 			app_commands.checks.bot_has_permissions(**perms)(command)
 		if isinstance(command, (commands.Command, commands.HybridCommand)):
