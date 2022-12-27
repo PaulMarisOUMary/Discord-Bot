@@ -178,9 +178,10 @@ class HelpCommand(commands.HelpCommand):
     async def send_cog_help(self, cog: commands.Cog, view_invoked: Optional[bool] = False):
         emoji = '👋'
         label = cog.qualified_name
+        description = cog.description
         if hasattr(cog, "help_custom"):
-            emoji, label, _ = cog.help_custom() # type: ignore
-        embed = discord.Embed(color=discord.Color.dark_grey(), title = f"{emoji} Help · Cog", description=f"· **{label}**", url = "https://github.com/PaulMarisOUMary/Discord-Bot")
+            emoji, label, description = cog.help_custom() # type: ignore
+        embed = discord.Embed(color=discord.Color.dark_grey(), title = f"{emoji} Help · Cog", description=f"· **{label}**\n{description}", url = "https://github.com/PaulMarisOUMary/Discord-Bot")
 
         for command in cog.get_commands():
             await self.__add_help_field_to_embed(embed, command, False)
