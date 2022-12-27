@@ -15,8 +15,10 @@ class CustomDropdown(discord.ui.Select):
                 [
                     discord.SelectOption(
                         label=option["label"],
+                        value=option.get("value", discord.utils.MISSING),
                         description=option.get("description", None),
-                        emoji=option.get("emoji", None)
+                        emoji=option.get("emoji", None),
+                        default=option.get("default", False), # type: ignore
                     ) 
                     for option in options
                 ]
