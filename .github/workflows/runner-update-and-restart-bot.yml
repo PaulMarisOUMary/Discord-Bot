@@ -27,6 +27,7 @@ jobs:
           apt-get install jq -y
           jq '.token = "${{ secrets.DISCORD_TOKEN }}"' config/bot.json > tmp.$$.json && mv tmp.$$.json config/bot.json
           jq '.server.host = "${{ secrets.DATABASE_HOST }}" | .server.user = "${{ secrets.DATABASE_USER }}" | .server.password = "${{ secrets.DATABASE_PASSWORD }}" | .server.database = "${{ secrets.DATABASE_DATABASE }}"' config/database.json > tmp.$$.json && mv tmp.$$.json config/database.json
+          jq '.reddit.client.client_id = "${{ secrets.REDDIT_ID }}" | .reddit.client.client_secret = "${{ secrets.REDDIT_SECRET }}"' config/cogs.json > tmp.$$.json && mv tmp.$$.json config/cogs.json
           echo "Setup Credentials: Success"
       - name: Restart Bot
         id: restart-bot

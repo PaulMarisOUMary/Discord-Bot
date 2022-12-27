@@ -26,8 +26,8 @@ class Useful(commands.Cog, name="useful"):
 
 	"""def help_custom(self) -> tuple[str]:
 		emoji = '🚩'
-		label = "Usefull"
-		description = "Usefull commands."
+		label = "Useful"
+		description = "Useful commands."
 		return emoji, label, description"""
 
 	@bot_has_permissions(send_messages=True)
@@ -54,7 +54,7 @@ class Useful(commands.Cog, name="useful"):
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	@commands.guild_only()
 	async def getcustomemojis(self, ctx):
-		"""Return a list of each cutom emojis from the current server."""
+		"""Return a list of each custom emojis from the current server."""
 		embed_list, embed = [], discord.Embed(title=f"Custom Emojis List ({len(ctx.guild.emojis)}) :")
 		for i, emoji in enumerate(ctx.guild.emojis, start=1):
 			if i == 0 : 

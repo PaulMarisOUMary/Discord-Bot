@@ -73,7 +73,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 		if response:
 			text = f"{user.mention} have `{response[0][0]}` croissants {self.EMOJI} !"
 		else:
-			text = f"Well job, {user.mention} have no croissants {self.EMOJI} ||[yet](<https://youtu.be/S2t59dPf9K0>)||."
+			text = f"Good job, {user.mention} have no croissants {self.EMOJI} ||[yet](<https://youtu.be/S2t59dPf9K0>)||."
 
 		await interaction.response.send_message(content=text, ephemeral=True)
 
