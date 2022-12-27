@@ -11,14 +11,65 @@ from classes.discordbot import DiscordBot
 class HelpCommand(commands.HelpCommand):
     """Help command"""
 
-    async def __get_contexted_app_command(self, ctx: commands.Context, target: app_commands.Command) -> Optional[app_commands.AppCommand]:
+    async def __get_contexted_app_command(self, ctx: commands.Context, target: app_commands.Command) -> Optional[Union[app_commands.AppCommand, app_commands.AppCommandGroup]]:
         tree_commands = await ctx.bot.tree.fetch_commands()
         for command in tree_commands:
+            if not command.type == discord.AppCommandType.chat_input:
+                continue
+
+            for option in command.options:
+                if isinstance(option, app_commands.AppCommandGroup):
+                    if f"{command.name} {option.name}" == target.qualified_name:
+                        return option
+
             if command.name == target.qualified_name:
                 return command
 
+    def __extend_group(self, group: Any, seen: Optional[List[Union[commands.Command, app_commands.Command, commands.HybridCommand]]] = None) -> List[Union[commands.Command, app_commands.Command, commands.HybridCommand]]:
+        if not seen:
+            seen = [group]
+        for child in group.commands:
+            if isinstance(child, (commands.Group, app_commands.Group, commands.HybridGroup)):
+                seen.append(child) # type: ignore
+                self.__extend_group(child, seen)
+            else:
+                seen.append(child)
+        return seen
+
+    def __remove_group_from_extended(self, extended_list: List[Union[commands.Command, app_commands.Command, commands.HybridCommand]]) -> List[Union[commands.Command, app_commands.Command, commands.HybridCommand]]:
+        return [
+            comand
+            for comand in extended_list 
+            if not isinstance(comand, (commands.Group, app_commands.Group))
+        ]
+
+    def __return_none_if_not(self, value: str) -> str:
+        if not value:
+            return "*None*"
+        return value
+
     def __format_permissions(self, extras: dict):
-        print(extras)
+        if not "bot_permissions" in extras or not extras["bot_permissions"]:
+            return "*None*"
+        return f"`{'` `'.join(extras['bot_permissions'])}`"
+    
+    async def __add_help_field_to_embed(self, embed: discord.Embed, command: Union[commands.Command, app_commands.Command, commands.HybridCommand], show_permissions: Optional[bool] = True):
+        if isinstance(command, app_commands.Command):
+            object = await self.__get_contexted_app_command(self.context, command)
+            if not object:
+                return
+            command_mention = f"{object.mention}"
+            details = f"__Description__:\n{self.__return_none_if_not(object.description)}"
+        else:
+            command_mention = f"{self.context.clean_prefix}{command.qualified_name}" 
+            details = f"__Description__:\n{self.__return_none_if_not(command.description)}"
+        if show_permissions:
+            details += f"\n\n__Required permissions__:\n{self.__format_permissions(command.extras)}"
+        embed.add_field(
+            name=command_mention, 
+            value=details, 
+            inline=False
+        )
 
     def get_bot_mapping(self) -> Dict[Optional[commands.Cog], Union[List[commands.Command[Any, ..., Any]], List[app_commands.Command[Any, ..., Any]], List[commands.HybridCommand[Any, ..., Any]]]]:
         mapping = super().get_bot_mapping()
@@ -103,7 +154,7 @@ class HelpCommand(commands.HelpCommand):
         allowed = 5
         close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
 
-        embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = f"`Welcome to the help page.`\n\n**The prefix on this server is**: `{self.context.clean_prefix}`.\n\nUse `{self.context.clean_prefix}help command` for more info on a command.\nUse `{self.context.clean_prefix}help category` for more info on a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Discord-Bot')
+        embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Home", description = f"`Welcome to the help page.`\n\n**The prefix on this server is**: `{self.context.clean_prefix}`.\n\nUse `{self.context.clean_prefix}help command <name>` for more info about a command.\nUse `{self.context.clean_prefix}help group <name>` for more info about a command group.\nUse `{self.context.clean_prefix}help cog <name>` for more info about a category.\nUse the dropdown menu below to select a category.\n\u200b", url='https://github.com/PaulMarisOUMary/Discord-Bot')
         embed.add_field(name="Time remaining :", value=f"This help session will end <t:{close_in}:R>.\nType `{self.context.clean_prefix}help` to open a new session.\n\u200b", inline=False)
         embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*.\nI have a lot of features !\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Discord-Bot) !")
 
@@ -113,23 +164,38 @@ class HelpCommand(commands.HelpCommand):
     async def send_command_help(self, commands_list: List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]):
         embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Commands", url = "https://github.com/PaulMarisOUMary/Discord-Bot")
         for command in commands_list:
-            if isinstance(command, app_commands.Command):
-                object = await self.__get_contexted_app_command(self.context, command)
-                if not object:
-                    continue
-                embed.add_field(name=f"{object.mention}", value=f"{object.description}", inline=False)
-            else:
-                embed.add_field(name=f"{self.context.clean_prefix}{command.qualified_name}", value=f"{command.description}", inline=False)
+            await self.__add_help_field_to_embed(embed, command)
 
         await self.context.send(embed = embed)
 
     async def send_cog_help(self, cog: commands.Cog):
-        await self.context.send("send_cog_help")
-        await self.context.send(f"{cog}")
+        emoji = '👋'
+        if hasattr(cog, "help_custom"):
+            emoji, _, _ = cog.help_custom() # type: ignore
+        embed = discord.Embed(color=discord.Color.dark_grey(), title = f"{emoji} Help · Cog", url = "https://github.com/PaulMarisOUMary/Discord-Bot")
 
-    async def send_group_help(self, group):
-        await self.context.send("send_group_help")
-        await self.context.send(f"{group}")
+        for command in cog.get_commands():
+            await self.__add_help_field_to_embed(embed, command, False)
+            if isinstance(command, commands.HybridCommand):
+                await self.__add_help_field_to_embed(embed, command.app_command, False) # type: ignore
+
+        for command in cog.__cog_app_commands__:
+            await self.__add_help_field_to_embed(embed, command, False) # type: ignore
+
+        await self.context.send(embed = embed)
+
+    async def send_group_help(self, group: Union[commands.Group, app_commands.Group, commands.HybridGroup]):
+        embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Group", url = "https://github.com/PaulMarisOUMary/Discord-Bot")
+        embed.add_field(
+                    name=f"Group: {group.name}", 
+                    value=f"__Description__:\n*{self.__return_none_if_not(group.description)}*", 
+                    inline=False
+                )
+        subcommands = self.__remove_group_from_extended(self.__extend_group(group))
+        for command in subcommands:
+            await self.__add_help_field_to_embed(embed, command)
+
+        await self.context.send(embed = embed)
 
     def command_not_found(self, string: str):
         raise commands.CommandNotFound(f"`{string}` not found !")
