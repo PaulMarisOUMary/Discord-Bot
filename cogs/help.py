@@ -5,8 +5,9 @@ from discord.ext import commands
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 
-from views.helpmenu import View as HelpView
+from classes.ansi import Background as bg, Foreground as fg, Format as fmt
 from classes.discordbot import DiscordBot
+from views.helpmenu import View as HelpView
 
 class HelpCommand(commands.HelpCommand):
     """Help command"""
@@ -45,29 +46,35 @@ class HelpCommand(commands.HelpCommand):
 
     def __return_none_if_not(self, value: str) -> str:
         if not value:
-            return "*None*"
+            return "None"
         return value
+    
+    def __list_to_block(self, list: List[str], block: str = '`') -> str:
+        if not list:
+            return ''
+        return f"{block}{f'{block} {block}'.join(list)}{block}"
 
     def __format_permissions(self, extras: dict):
         if not "bot_permissions" in extras or not extras["bot_permissions"]:
-            return "*None*"
-        return f"`{'` `'.join(extras['bot_permissions'])}`"
+            return "None"
+        return self.__list_to_block(extras['bot_permissions'], block='')
     
     async def __add_help_field_to_embed(self, embed: discord.Embed, command: Union[commands.Command, app_commands.Command, commands.HybridCommand], show_permissions: Optional[bool] = True):
+        details = f"```ansi\n{fg.BLUE + fmt.UNDERLINE}Description{fmt.RESET}:\n"
         if isinstance(command, app_commands.Command):
             object = await self.__get_contexted_app_command(self.context, command)
             if not object:
                 return
-            command_mention = f"{object.mention}"
-            details = f"__Description__:\n{self.__return_none_if_not(object.description)}"
+            command_mention = f"{object.mention} {self.__list_to_block([param for param in command._params.keys()])}"
+            details += f"{fg.WHITE}{self.__return_none_if_not(object.description)}{fmt.RESET}"
         else:
-            command_mention = f"{self.context.clean_prefix}{command.qualified_name}" 
-            details = f"__Description__:\n{self.__return_none_if_not(command.description)}"
+            command_mention = f"{self.context.clean_prefix}{command.qualified_name} {self.__list_to_block([param for param in command.clean_params.keys()])}" 
+            details += f"{fg.WHITE}{self.__return_none_if_not(command.description)}{fmt.RESET}"
         if show_permissions:
-            details += f"\n\n__Required permissions__:\n{self.__format_permissions(command.extras)}"
+            details += f"\n{fg.CYAN + fmt.UNDERLINE}Required permissions{fmt.RESET}:\n{fg.GREY}{self.__format_permissions(command.extras)}{fmt.RESET}\n"
         embed.add_field(
             name=command_mention, 
-            value=details, 
+            value=f"{details}\n```", 
             inline=False
         )
 
