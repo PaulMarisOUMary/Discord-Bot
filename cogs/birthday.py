@@ -60,23 +60,28 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 		if not response:
 			self.bot.log(message = "No birthday today", name = "discord.cogs.birthday.daily_birthday")
 			return
+		
+		async for guild in self.bot.fetch_guilds():
+			if guild.id != self.subconfig_data["guild_id"]:
+				continue
+			for channel in guild.channels:
+				if "birthday" in channel.name:
+					for data in response:
+						user_id, user_birth = data
 
-		for data in response:
-			user_id, user_birth = data
+						timestamp = round(datetime.combine(user_birth, datetime.min.time()).timestamp())
 
-			timestamp = round(datetime.combine(user_birth, datetime.min.time()).timestamp())
+						message = f"Remember this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
+						images = [
+							"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
+							"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
+							"https://winkgo.com/wp-content/uploads/2018/08/101-Best-Happy-Birthday-Memes-01-720x720.jpg",
+							"https://www.the-best-wishes.com/wp-content/uploads/2022/01/success-kid-cute-birthday-meme-for-her.jpg"
+						]
 
-			message = f"Remember this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
-			images = [
-				"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
-				"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
-				"https://winkgo.com/wp-content/uploads/2018/08/101-Best-Happy-Birthday-Memes-01-720x720.jpg",
-				"https://www.the-best-wishes.com/wp-content/uploads/2022/01/success-kid-cute-birthday-meme-for-her.jpg"
-			]
-
-			embed = discord.Embed(title="🎉 Happy birthday !", description=message, colour=discord.Colour.dark_gold())
-			embed.set_image(url=images[random.randint(0, len(images)-1)])
-			await channel.send(embed=embed)
+						embed = discord.Embed(title="🎉 Happy birthday !", description=message, colour=discord.Colour.dark_gold())
+						embed.set_image(url=images[random.randint(0, len(images)-1)])
+						await channel.send(embed=embed)
 
 	@daily_birthday.before_loop
 	async def before_daily_birthday(self):

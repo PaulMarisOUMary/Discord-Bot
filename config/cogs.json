@@ -2,8 +2,7 @@
     "birthday": {
         "table": "table_birthday",
 
-        "guild_id": 780212419141828619,
-        "channel_id": 859832702960926770
+        "guild_id": 780212419141828619
     },
     "croissants": {
         "table": "table_croissants",
@@ -46,6 +45,19 @@
         "main_channel_name": "\u2795",
         "channel_name": "Vocal: #{user.discriminator}",
         "cooldown": 30
+    },
+    "reddit": {
+        "client": {
+            "client_id": "**********************",
+            "client_secret": "******************************",
+            "user_agent": "git/PaulMarisOUMary/Discord-Bot"
+        },
+        "connections": [
+            {
+                "subreddit": "ProgrammerHumor",
+                "channel": "reddit"
+            }
+        ]
     },
     "status": {
         "status": [
