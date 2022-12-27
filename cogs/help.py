@@ -165,21 +165,22 @@ class HelpCommand(commands.HelpCommand):
         embed.add_field(name="Time remaining :", value=f"This help session will end <t:{close_in}:R>.\nType `{self.context.clean_prefix}help` to open a new session.\n\u200b", inline=False)
         embed.add_field(name="Who am I ?", value="I'm a bot made by *WarriorMachine*.\nI have a lot of features !\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Discord-Bot) !")
 
-        view = HelpView(timeout=allowed*60, context=self.context, mapping=mapping, homeembed=embed, ui=2)
-        await self.context.send(embed = embed, view = view, delete_after=60*allowed)
+        view = HelpView(mapping=mapping, help_object=self, home_embed=embed)
+        await self.context.send(embed = embed, view = view, delete_after = 60*allowed)
 
-    async def send_command_help(self, commands_list: List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]):
+    async def send_command_help(self, commands_list: List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]) -> Optional[discord.Embed]:
         embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Commands", url = "https://github.com/PaulMarisOUMary/Discord-Bot")
         for command in commands_list:
             await self.__add_help_field_to_embed(embed, command)
 
         await self.context.send(embed = embed)
 
-    async def send_cog_help(self, cog: commands.Cog):
+    async def send_cog_help(self, cog: commands.Cog, view_invoked: Optional[bool] = False):
         emoji = '👋'
+        label = cog.qualified_name
         if hasattr(cog, "help_custom"):
-            emoji, _, _ = cog.help_custom() # type: ignore
-        embed = discord.Embed(color=discord.Color.dark_grey(), title = f"{emoji} Help · Cog", url = "https://github.com/PaulMarisOUMary/Discord-Bot")
+            emoji, label, _ = cog.help_custom() # type: ignore
+        embed = discord.Embed(color=discord.Color.dark_grey(), title = f"{emoji} Help · Cog", description=f"· **{label}**", url = "https://github.com/PaulMarisOUMary/Discord-Bot")
 
         for command in cog.get_commands():
             await self.__add_help_field_to_embed(embed, command, False)
@@ -189,6 +190,8 @@ class HelpCommand(commands.HelpCommand):
         for command in cog.__cog_app_commands__:
             await self.__add_help_field_to_embed(embed, command, False) # type: ignore
 
+        if view_invoked:
+            return embed
         await self.context.send(embed = embed)
 
     async def send_group_help(self, group: Union[commands.Group, app_commands.Group, commands.HybridGroup]):
