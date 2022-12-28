@@ -78,10 +78,10 @@ class HelpCommand(commands.HelpCommand):
             inline=False
         )
 
-    def get_bot_mapping(self) -> Dict[Optional[commands.Cog], Union[List[commands.Command[Any, ..., Any]], List[app_commands.Command[Any, ..., Any]], List[commands.HybridCommand[Any, ..., Any]]]]:
+    def get_bot_mapping(self) -> Dict[Optional[commands.Cog], List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]]:
         mapping = super().get_bot_mapping()
 
-        compound_mapping: Dict[Optional[commands.Cog], Union[List[commands.Command[Any, ..., Any]], List[app_commands.Command[Any, ..., Any]], List[commands.HybridCommand[Any, ..., Any]]]] = mapping | dict()
+        compound_mapping: Dict[Optional[commands.Cog], List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]] = mapping | dict() # type: ignore
         
         for command in self.context.bot.tree.walk_commands(type=discord.AppCommandType.chat_input):
             if isinstance(command, app_commands.Group): # Get only Subcommands
@@ -157,7 +157,7 @@ class HelpCommand(commands.HelpCommand):
         
         return self.command_not_found(keys[0])
 
-    async def send_bot_help(self, mapping: Dict[Optional[commands.Cog], Union[List[commands.Command[Any, ..., Any]], List[app_commands.Command[Any, ..., Any]], List[commands.HybridCommand[Any, ..., Any]]]]):
+    async def send_bot_help(self, mapping: Dict[Optional[commands.Cog], List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]]):
         allowed = 5
         close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
 
