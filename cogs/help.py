@@ -5,7 +5,7 @@ from discord.ext import commands
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional, Union
 
-from classes.ansi import Background as bg, Foreground as fg, Format as fmt
+from classes.ansi import Foreground as fg, Format as fmt
 from classes.discordbot import DiscordBot
 from views.helpmenu import View as HelpView
 
