@@ -34,7 +34,7 @@ class Button(discord.ui.Button):
 class View(Parent):
     def __init__(self, *,
         timeout: Optional[float] = 300,
-        mapping: Dict[Optional[commands.Cog], Union[List[commands.Command], List[app_commands.Command], List[commands.HybridCommand]]],
+        mapping: Dict[Optional[commands.Cog], Union[list[commands.Command[Any, ..., Any]], list[app_commands.Command[Any, ..., Any]], list[commands.HybridCommand[Any, ..., Any]]]],
         help_object: commands.HelpCommand,
         home_embed: discord.Embed,
     ):
