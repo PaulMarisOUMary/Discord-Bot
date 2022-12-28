@@ -85,20 +85,21 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	@app_commands.choices(limit=[Choice(name=str(i), value=i) for i in range(1, 26)])
 	@app_commands.describe(limit="The number of max user(s) in your private channel.")
-	async def lock_private_vocal(self, ctx: commands.Context, limit: int = None):
+	@app_commands.guild_only()
+	async def lock_private_vocal(self, ctx: commands.Context, limit: int = 1):
 		"""Limit the number of user(s) in your private channel."""
-		voice = ctx.author.voice
+		voice = ctx.author.voice  # type: ignore
 		if not voice:
 			await ctx.send("You're not in a voice channel.", ephemeral=True)
 			return
-		elif not self.__is_private_vocal(voice.channel, self.tracker[ctx.guild.id]["channels"]):
+		elif not self.__is_private_vocal(voice.channel, self.tracker[ctx.guild.id]["channels"]): # type: ignore
 			await ctx.send("You're not in a private vocal channel.", ephemeral=True)
 			return
 		
-		if not limit or limit < 1 or limit > 99:
-			limit = len(voice.channel.members)
+		if limit < 1 or limit > 99:
+			limit = len(voice.channel.members) # type: ignore
 
-		await voice.channel.edit(user_limit=limit)
+		await voice.channel.edit(user_limit=limit) # type: ignore
 		await ctx.send(f"Vocal user-limit set to `{limit}`.", ephemeral=True)
 
 

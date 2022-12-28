@@ -69,19 +69,19 @@ class View(Parent):
 					min_length = 5,
 					max_length = 300
 				),
-				"mood": discord.ui.Select(
-					placeholder="Mood (required)",
-					min_values=1,
-					max_values=5,
-					options=[
-						discord.SelectOption(label="Happy", value='😁', emoji='😁'),
-						discord.SelectOption(label="Good", value='😊', emoji='😊'),
-						discord.SelectOption(label="Neutral", value='😐', emoji='😐'),
-						discord.SelectOption(label="Sad", value='😢', emoji='😢'),
-						discord.SelectOption(label="Angry", value='😡', emoji='😡'),
-					],
-					disabled=False # Must be False, else the user will not be able to send the modal
-				)
+				# "mood": discord.ui.Select(
+				# 	placeholder="Mood (required)",
+				# 	min_values=1,
+				# 	max_values=5,
+				# 	options=[
+				# 		discord.SelectOption(label="Happy", value='😁', emoji='😁'),
+				# 		discord.SelectOption(label="Good", value='😊', emoji='😊'),
+				# 		discord.SelectOption(label="Neutral", value='😐', emoji='😐'),
+				# 		discord.SelectOption(label="Sad", value='😢', emoji='😢'),
+				# 		discord.SelectOption(label="Angry", value='😡', emoji='😡'),
+				# 	],
+				# 	disabled=False # Must be False, else the user will not be able to send the modal
+				# ),
 			},
 			when_submit = when_submit
 		)

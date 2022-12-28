@@ -12,7 +12,7 @@ from os import listdir
 from os.path import dirname, abspath, join, basename, splitext
 from sys import modules
 from types import ModuleType
-from typing import Any, Union
+from typing import Union
 
 root_directory = dirname(dirname(abspath(__file__)))
 config_directory = join(root_directory, "config")
@@ -48,7 +48,7 @@ def reload_views():
 	mods = [module[1] for module in modules.items() if isinstance(module[1], ModuleType)]
 	for mod in mods:
 		try:
-			if basename(dirname(mod.__file__)) == "views":
+			if basename(dirname(str(mod.__file__))) == "views":
 				reload(mod)
 				yield mod.__name__
 		except: 
@@ -94,7 +94,10 @@ def bot_has_permissions(**perms: bool):
 			perm for perm, value in perms.items() if getattr(discord.Permissions.none(), perm) != value
 		]
 		command.extras.update({"bot_permissions": valid_required_permissions})
-		
+
+		if isinstance(command, commands.HybridCommand) and command.app_command:
+			command.app_command.extras.update({"bot_permissions": valid_required_permissions})
+
 		if isinstance(command, (app_commands.Command, commands.HybridCommand)):
 			app_commands.checks.bot_has_permissions(**perms)(command)
 		if isinstance(command, (commands.Command, commands.HybridCommand)):

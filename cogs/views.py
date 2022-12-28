@@ -37,7 +37,7 @@ class Views(commands.Cog, name="views"):
 				for value in _class.values:
 					message += f"`{value}` "
 				await interaction.response.defer()
-				await interaction.delete_original_message()
+				await interaction.delete_original_response()
 				await _class.view.invoke.reply(message)
 			else:
 				await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)

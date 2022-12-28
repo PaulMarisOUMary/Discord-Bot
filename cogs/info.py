@@ -7,6 +7,7 @@ from datetime import datetime
 from discord.utils import get
 from discord.ext import commands
 from discord import app_commands
+from typing import Optional, Union
 
 from classes.discordbot import DiscordBot
 from classes.utilities import bot_has_permissions
@@ -53,10 +54,11 @@ class Info(commands.Cog, name="info"):
 	@bot_has_permissions(use_external_emojis=True)
 	@app_commands.command(name="statistics", description="Display statistics about the guild.")
 	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
+	@app_commands.guild_only()
 	async def stat(self, interaction: discord.Interaction) -> None:
-		"""Show a graphic pie about the server's members.""" 
+		"""Show a graphic pie about the server's members."""
 		plt.clf()
-		ax, data, colors = plt.subplot(), statServer(interaction.guild.members), ["#747f8d","#f04747","#faa81a","#43b582"]
+		ax, data, colors = plt.subplot(), statServer(interaction.guild.members), ["#747f8d","#f04747","#faa81a","#43b582"] # type: ignore
 		ax.pie([data["offline"], data["dnd"], data["idle"], data["online"]], colors=colors, startangle=-40, wedgeprops=dict(width=0.5))
 		leg = ax.legend(["Offline","dnd","idle","Online"],frameon=False, loc="lower center", ncol=5)
 		for color,text in zip(colors,leg.get_texts()):
@@ -73,7 +75,7 @@ class Info(commands.Cog, name="info"):
 	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="avatar", description="Display the avatar.")
 	@app_commands.describe(user="The user to get the avatar from.")
-	async def avatar(self, interaction: discord.Interaction, user: discord.Member = None):
+	async def avatar(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
 		if not user:
 			user = interaction.user
 		await interaction.response.send_message(user.display_avatar.url)
@@ -81,24 +83,25 @@ class Info(commands.Cog, name="info"):
 	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="banner", description="Display the banner.")
 	@app_commands.describe(user="The user to get the banner from.")
-	async def banner(self, interaction: discord.Interaction, user: discord.Member = None):
+	async def banner(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
 		if not user: 
 			user = interaction.user
 		user = await self.bot.fetch_user(user.id)
-		try:
-			await interaction.response.send_message(user.banner.url)
-		except:
+		if banner := user.banner:
+			await interaction.response.send_message(banner.url)
+		else:
 			await interaction.response.send_message("This user doesn't have a banner.")
 
 	@bot_has_permissions(use_external_emojis=True)
 	@app_commands.command(name="lookup", description="Shows additional informations about user.")
 	@app_commands.describe(user="The user to get informations from.")
-	async def lookup(self, interaction: discord.Interaction, user: discord.Member = None):
+	@app_commands.guild_only()
+	async def lookup(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
 		"""Show few information about a discord Member"""
 		if not user: 
 			user = interaction.user
 
-		realuser: discord.Member = get(user.guild.members, id=user.id)
+		realuser: discord.Member = get(user.guild.members, id=user.id) # type: ignore
 
 		user = await self.bot.fetch_user(realuser.id)
 		if user.banner:
@@ -124,10 +127,10 @@ class Info(commands.Cog, name="info"):
 		embed.add_field(name="\u200b", value="\u200b", inline=False)
 		embed.add_field(name="<:isbot:698250069165473852> Is a bot?", value=f"{yes if realuser.bot else no}", inline=True)
 		embed.add_field(name="<:phone:948279755248111756> Is on mobile?", value=f"{yes if realuser.is_on_mobile() else no}", inline=True)
-		embed.add_field(name="<a:nitro:948271095566434357> Is a booster?", value=f"<t:{round(datetime.timestamp(realuser.premium_since))}:F>" if realuser.premium_since else no, inline=True)
+		embed.add_field(name="<a:nitro:948271095566434357> Boost this server?", value=f"<t:{round(datetime.timestamp(realuser.premium_since))}:F>" if realuser.premium_since else no, inline=True)
 		embed.add_field(name="\u200b", value="\u200b", inline=False)
 		embed.add_field(name="<:plus:948272417304883270> Account created at:", value=f"<t:{round(datetime.timestamp(realuser.created_at))}:F>", inline=True)
-		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"<t:{round(datetime.timestamp(realuser.joined_at))}:F>", inline=True)
+		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"<t:{round(datetime.timestamp(realuser.joined_at))}:F>", inline=True) # type: ignore
 		embed.set_thumbnail(url=realuser.display_avatar.url)
 		if user_banner: 
 			embed.set_image(url=user_banner)

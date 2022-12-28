@@ -8,6 +8,7 @@ from discord.ext import commands, tasks
 from discord.utils import get
 from discord import app_commands
 from discord.app_commands import Choice
+from typing import Optional, Union
 
 from classes.discordbot import DiscordBot
 
@@ -44,10 +45,20 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 		if not datetime.now().hour == 9:
 			return
 		
+		guild = get(self.bot.guilds, id=self.subconfig_data["guild_id"])
+		if not guild:
+			self.bot.log(message = "Birthday guild not found", name = "discord.cogs.birthday.daily_birthday")
+			return
+
+		channel = get(guild.text_channels, id=self.subconfig_data["channel_id"])
+		if not channel:
+			self.bot.log(message = "Birthday channel not found", name = "discord.cogs.birthday.daily_birthday")
+			return
+
 		response: tuple[tuple[int, date]] = await self.bot.database.select(self.subconfig_data["table"], "*", condition="DAY(`user_birth`) = DAY(CURRENT_DATE()) AND MONTH(`user_birth`) = MONTH(CURRENT_DATE())")
 
 		if not response:
-			self.bot.logger.info("No birthday today.")
+			self.bot.log(message = "No birthday today", name = "discord.cogs.birthday.daily_birthday")
 			return
 		
 		async for guild in self.bot.fetch_guilds():
@@ -123,13 +134,13 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	@app_commands.command(name="show", description="Display the birthday of a user.")
 	@app_commands.describe(user="The user to get the birthdate from.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	async def show_birthday(self, interaction: discord.Interaction, user: discord.Member = None):
+	async def show_birthday(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
 		"""Allows you to show the birthday of other users."""
 		if not user: 
 			user = interaction.user
 		await self.show_birthday_message(interaction, user)
 
-	async def show_birthday_message(self, interaction: discord.Interaction, user: discord.Member) -> None:
+	async def show_birthday_message(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]) -> None:
 		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_birth", {"user_id": str(user.id)})
 		if response:
 			dataDate : date = response[0][0]

@@ -81,7 +81,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
 	async def croissants_rank(self, interaction: discord.Interaction) -> None:
 		"""Get the global croissants rank."""
-		response = await self.bot.database.select(self.subconfig_data["table"], "*", order="user_count DESC", limit=10)
+		response = await self.bot.database.select(self.subconfig_data["table"], "*", order="user_count DESC", limit="10")
 		
 		embed = discord.Embed(title=f"🏆 Croissants rank {self.EMOJI}", color=0xD3A779)
 		for rank, data in enumerate(response, start=1):

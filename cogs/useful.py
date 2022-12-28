@@ -46,7 +46,7 @@ class Useful(commands.Cog, name="useful"):
 	@app_commands.describe(question="The question of the strawpoll.")
 	async def avatar(self, interaction: discord.Interaction, question: str):
 		await interaction.response.send_message(content=f"__*{interaction.user.mention}*__ : {question}", allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=False))
-		message = await interaction.original_message()
+		message = await interaction.original_response()
 		await message.add_reaction("<a:checkmark_a:842800730049871892>")
 		await message.add_reaction("<a:crossmark:842800737221607474>")
 

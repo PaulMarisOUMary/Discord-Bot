@@ -30,25 +30,26 @@ class Dad(commands.Cog, name="dad"):
 
     @commands.Cog.listener("on_message")
     async def on_receive_message(self, message : discord.Message):
-        author_id = message.author.id
-        if author_id != self.bot.user.id:
-            content = message.content
+        if message.author.bot: 
+            return
 
-            for joke in self.subconfig_data["jokes"]:
-                regex = joke["regex"]
-                response: str = joke["message"]
-                probability = joke["probability"]
+        content = message.content
+        for joke in self.subconfig_data["jokes"]:
+            regex = joke["regex"]
+            response: str = joke["message"]
+            probability = joke["probability"]
 
-                pattern = re.compile(regex, re.VERBOSE + re.IGNORECASE)
+            pattern = re.compile(regex, re.VERBOSE + re.IGNORECASE)
 
-                match = pattern.search(content)
-                if match and random() <= probability:
-                    try:
-                        format = response.format(content = content, bot = self.bot, match = match, value = match.group("value"))
-                    except:
-                        format = response.format(content = content, bot = self.bot, match = match)
-                    await message.reply(format, mention_author=False)
-                    break
+            match = pattern.search(content)
+            if match and random() <= probability:
+                try:
+                    format = response.format(content = content, bot = self.bot, match = match, value = match.group("value"))
+                except:
+                    format = response.format(content = content, bot = self.bot, match = match)
+
+                await message.reply(format, mention_author=False)
+                break
 
 
 async def setup(bot: DiscordBot):

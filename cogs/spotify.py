@@ -4,6 +4,7 @@ import discord
 from discord.utils import get
 from discord.ext import commands
 from discord import app_commands
+from typing import Optional, Union
 
 from classes.discordbot import DiscordBot
 from classes.utilities import bot_has_permissions
@@ -30,11 +31,14 @@ class Spotify(commands.Cog, name="spotify"):
 	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="spotify")
 	@app_commands.describe(user="The user to get spotify informations from.")
-	async def spotify_activity(self, interaction: discord.Interaction, user: discord.Member = None):
+	async def spotify_activity(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
 		"""Show the current Spotify song."""
 		if not user: 
 			user = interaction.user
 		realuser = get(self.bot.get_all_members(), id=user.id)
+		if not realuser:
+			await interaction.response.send_message("User not found.", ephemeral=True)
+			return
 		for activity in realuser.activities:
 			if isinstance(activity, discord.activity.Spotify):
 				embed = discord.Embed(colour=activity.colour)

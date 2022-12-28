@@ -1,5 +1,7 @@
 import discord
+
 from discord.ext import commands
+from typing import Union
 
 from classes.database import MixedTypes
 from classes.discordbot import DiscordBot
@@ -48,9 +50,12 @@ class Metrics(commands.Cog, name="metrics"):
 		elif isinstance(interaction.command, discord.app_commands.commands.Command):
 			await self.add_metrics(interaction.command.qualified_name, "application_commands.Command", interaction.user)
 
-	async def add_metrics(self, command_name: str, command_type: str, invoker: discord.User) -> None:
+	async def add_metrics(self, command_name: str, command_type: str, invoker: Union[discord.Member, discord.User]) -> None:
 		"""Add a metric to the database."""
-		if invoker.id in self.bot.owner_ids or invoker.id == self.bot.owner_id: # Avoid owner from being counted
+		# Avoid owner from being counted
+		if self.bot.owner_ids and invoker.id in self.bot.owner_ids:
+			return
+		if invoker.id == self.bot.owner_id:
 			return
 
 		await self.bot.database.insert_onduplicate(
