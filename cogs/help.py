@@ -78,6 +78,13 @@ class HelpCommand(commands.HelpCommand):
             inline=False
         )
 
+    def filter_mapping(self, mapping: dict):
+        for key, values in mapping.copy().items():
+            if not values or len(values) == 0:
+                del mapping[key]
+
+        return mapping
+
     def get_bot_mapping(self) -> Dict[Optional[commands.Cog], List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]]:
         mapping = super().get_bot_mapping()
 
@@ -92,7 +99,7 @@ class HelpCommand(commands.HelpCommand):
             else:
                 compound_mapping[command.binding] = [command]
 
-        return compound_mapping
+        return self.filter_mapping(compound_mapping)
 
     async def command_callback(self, ctx: commands.Context, *, command: Optional[str] = None):
         await self.prepare_help_command(ctx, command)

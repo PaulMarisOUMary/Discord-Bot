@@ -1,5 +1,6 @@
 import discord
 import functools
+import operator
 
 from discord import app_commands, ButtonStyle
 from discord.ext import commands
@@ -59,17 +60,9 @@ class View(Parent):
             if not cog:
                 continue
             if hasattr(cog, "help_custom"):
-                emoji, label, description = cog.help_custom() # type: ignore
-
-                self.options.append(
-                    {
-                        "label": label,
-                        "description": description,
-                        "emoji": emoji,
-                        "value": cog.qualified_name,
-                    }
-                )
                 self.cogs.append(cog)
+
+        self.cogs[1:] = sorted(self.cogs[1:], key=operator.attrgetter("qualified_name"))
 
         self.add_dropdown()
         self.add_buttons()
@@ -79,13 +72,24 @@ class View(Parent):
             if self.context.author.id == interaction.user.id:
                 cog_name = _class.values[0]
                 if cog_name == "home_page":
-                    embed = self.home_embed
+                    await interaction.response.edit_message(embed=self.home_embed, view=self)
                 else:
                     cog = self.bot.get_cog(cog_name)
-                    embed = await self.help_class.send_cog_help(cog, view_invoked=True) # type: ignore
-                await interaction.response.edit_message(embed=embed, view=self)
+                    index = self.cogs.index(cog, 1)
+                    await self.to_embed(interaction, index)
             else:
                 await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
+
+        for cog in self.cogs[1:]:
+            emoji, label, description = cog.help_custom() # type: ignore
+            self.options.append(
+                {
+                    "label": label,
+                    "description": description,
+                    "emoji": emoji,
+                    "value": cog.qualified_name, # type: ignore
+                }
+            )
 
         self.add_item(
             CustomDropdown(
@@ -101,7 +105,7 @@ class View(Parent):
         buttons_property = [
 			("<<", ButtonStyle.grey, self.to_embed, 0),
 			("Back", ButtonStyle.blurple, self.to_embed, -1),
-			("Next", ButtonStyle.blurple, self.to_embed, +1),
+			("Next", ButtonStyle.blurple, self.to_embed, -2),
 			(">>", ButtonStyle.grey, self.to_embed, len(self.options)-1),
 			("Quit", ButtonStyle.red, self.quit, None)
 		]
@@ -118,8 +122,10 @@ class View(Parent):
             self.add_item(button)
 
     async def to_embed(self, interaction: discord.Interaction, index: int):
-        if index == 1 or index == -1:
+        if index == -1:
             self.index += index
+        elif index == -2:
+            self.index += 1
         else:
             self.index = index
 
