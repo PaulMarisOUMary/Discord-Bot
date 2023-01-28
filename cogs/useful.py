@@ -33,9 +33,13 @@ class Useful(commands.Cog, name="useful"):
 	@bot_has_permissions(send_messages=True)
 	@app_commands.command(name="reminder", description="Reminds you of something.")
 	@app_commands.describe(hours="Hours.", minutes="Minutes.", seconds="Seconds.", message="Your reminder message.")
-	@app_commands.choices(hours=[Choice(name=str(i), value=i) for i in range(0, 25)], minutes=[Choice(name=str(i), value=i) for i in range(0, 56, 5)], seconds=[Choice(name=str(i), value=i) for i in range(5, 56, 5)])
+	@app_commands.choices(hours=[Choice(name=str(i), value=i) for i in range(0, 25)], minutes=[Choice(name=str(i), value=i) for i in range(0, 60, 5)], seconds=[Choice(name=str(i), value=i) for i in range(0, 60, 5)])
 	async def reminder(self, interaction: discord.Interaction, hours: int, minutes: int, seconds: int, message: str) -> None:
 		"""Reminds you of something."""
+		if hours == 0 and minutes == 0 and seconds == 0:
+			await interaction.response.send_message("You must specify a duration to wait")
+			return
+
 		remind_in = round(datetime.timestamp(datetime.now() + timedelta(hours=hours, minutes=minutes, seconds=seconds)))
 		await interaction.response.send_message(f"Your message will be sent <t:{remind_in}:R>.")
 		
