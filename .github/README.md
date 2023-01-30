@@ -46,12 +46,12 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
 > - Powerful, dev & debuging commands
 > - Metrics about usage of the bot
 > - Language detector & Translation
-> - And much more..
+> - And more..
 
 ### Built with
 
 - [Python](https://python.org/) >= 3.8
-- [discord.py](https://discordpy.readthedocs.io) >= 2.0.0a
+- [discord.py](https://discordpy.readthedocs.io) >= 2.1.0
 - SQL
 	- MariaDB (or MySQL)
 
@@ -66,11 +66,11 @@ $ pip install -r requirements.txt
 ```
 
 ### Discord developper configuration
-1. Create a application on [Discord Developpers](https://discord.com/developers/applications)
+1. Create an application on [Discord Developpers](https://discord.com/developers/applications)
 
 2. Enable the bot status in [Discord Developpers/applications/{YOUR_APP_ID}/bot](https://discord.com/developers/applications/{YOUR_APP_ID}/bot)
 
-3. Please make sure you have activated each `Privileged Gateway Intents` in [Discord Developpers/applications/{YOUR_APP_ID}/bot #Privileged Gateway Intents](https://discord.com/developers/applications{YOUR_APP_ID}/bot) for your application.
+3. Please make sure you have enabled each needed `Privileged Gateway Intents` in [Discord Developpers/applications/{YOUR_APP_ID}/bot #Privileged Gateway Intents](https://discord.com/developers/applications{YOUR_APP_ID}/bot) for your application.
 
 4. Copy the token bot from [Discord Developpers/applications/{YOUR_APP_ID}/bot #Token](https://discord.com/developers/applications/{YOUR_APP_ID}/bot)
 
@@ -78,28 +78,28 @@ $ pip install -r requirements.txt
 
 ### Configure the bot
 
-1. Paste your dicord bot token in the `"token"` field inside `/config/bot.json`.
+1. Paste your discord bot token in the `"token"` field inside `/config/bot.json`.
 
 2. Configure the prefix in the `/config/bot.json`.
 
-3. If you're using a database, you need to configure the `/config/database.json` file.
+3. If you are using a database, fill your database credentials in the `/config/database.json` file.
 
-> **Warning** If you're NOT using any database, check [this section of the documentation](#acknowledgement).
+4. Inside your SQL database, create the following tables listed in the [SQL tables structure](#sql-tables-structure) section.
+
+> **Warning** If you are **NOT** using any/or a compatible database, check the [Acknowledgement section](#acknowledgement).
 
 ## Database
 
 ### Acknowledgement
-> **Warning** If you have not plan to use a SQL database:
-> - in the folder `cogs` you should remove the following files: `birthday.py`, `croissants.py`, `invite.py`, `me.py`, `metrics.py`, `starboard.py`.
-> - in `cogs/admin.py` remove the `change_guild_prefix` method.
-> - in `bot.py` replace the `command_prefix=__getprefix` `line 17` with `command_prefix="?"` (define the bot's prefix).
-> - in `bot.py` delete the `Database initialization` (line 55-58) and the `Prefix per guild initialization` (line 60-63).
+> **Warning** If you have not planned to use a SQL database:
+> 1. set the `"use_database"` field to `false` in the `/config/database.json` file.
+> 2. in the folder `/cogs` you should remove the following files (which are using the database): `birthday.py`, `croissants.py`, `invite.py`, `me.py`, `metrics.py`, `starboard.py`.
 
-> **Note** If you have plan to use a database:
+> **Note** If you have planned to use a database:
 > - you should use a SQL Database.
 > - reconfigure the "server" section from `/config/database.json`.
-> - you can change the subjective structure of each tables if needed.
->     - if so you should reconfigure some keys/values of the `/config/database.json`.
+> - you can change the structure of each SQL tables if needed.
+>     - if so you should reconfigure some keys/values of the `/config/cogs.json`.
 
 ### SQL tables structure
 
@@ -124,20 +124,6 @@ CREATE TABLE IF NOT EXISTS `table_croissants`
 (
     `user_id`           BIGINT unsigned NOT NULL,
     `user_count`        SMALLINT unsigned,
-UNIQUE(`user_id`)
-)
-ENGINE = InnoDB,
-CHARACTER SET utf8mb4,
-COLLATE utf8mb4_unicode_ci;
-```
-
-- `table_fridaycake`
-```sql
-CREATE TABLE IF NOT EXISTS `table_fridaycake`
-(
-    `user_isin`         BOOLEAN NOT NULL,
-    `user_id`           BIGINT unsigned NOT NULL,
-    `user_name`         varchar(32) NOT NULL,
 UNIQUE(`user_id`)
 )
 ENGINE = InnoDB,
