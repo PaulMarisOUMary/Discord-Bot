@@ -140,6 +140,9 @@ class Admin(commands.Cog, name="admin"):
 	@commands.guild_only()
 	async def change_guild_prefix(self, ctx: commands.Context, new_prefix: str):
 		"""Change the guild prefix."""
+		if not self.bot.usedatabase:
+			await ctx.send(":warning: Database not used, prefix not changed.")
+			return
 		try:
 			table = self.bot.config["bot"]["prefix_table"]["table"]
 			await self.bot.database.insert_onduplicate(table, {"guild_id": ctx.guild.id, "guild_prefix": new_prefix}) # type: ignore
