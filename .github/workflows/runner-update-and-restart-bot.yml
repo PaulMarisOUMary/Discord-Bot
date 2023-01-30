@@ -18,7 +18,7 @@ jobs:
       - name: Dependencies Update
         id: dependencies-update
         run: |
-          pip3 install -r requirements.txt
+          pip3.11 install -r requirements.txt
           echo "Dependencies Update: Success"
       - name: Setup Credentials
         id: setup-credentials
