@@ -50,7 +50,7 @@ class Useful(commands.Cog, name="useful"):
 	@app_commands.command(name="alarm", description="Reminds you of something.")
 	@app_commands.describe(month="Month.", day="Day.", hour="Hour.", minute="Minute.", second="Second.", message="Your alarm message.")
 	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
-	async def alert(self, interaction: discord.Interaction, month: int=-1, day: int=-1, hour: int=9, minute: int=0, second: int=0, message: str=None) -> None:
+	async def alert(self, interaction: discord.Interaction, message: str, month: int=-1, day: int=-1, hour: int=9, minute: int=0, second: int=0):
 		"""Reminds you of something."""
 		if message is None:
 			await interaction.response.send_message("You must specify an alarm message")
