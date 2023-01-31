@@ -31,11 +31,11 @@ class Useful(commands.Cog, name="useful"):
 		return emoji, label, description"""
 
 	@bot_has_permissions(send_messages=True)
-	@app_commands.command(name="reminder", description="Reminds you of something.")
+	@app_commands.command(name="reminder", description="Reminds you of something at a relative time.")
 	@app_commands.describe(hours="Hours.", minutes="Minutes.", seconds="Seconds.", message="Your reminder message.")
 	@app_commands.choices(hours=[Choice(name=str(i), value=i) for i in range(0, 25)], minutes=[Choice(name=str(i), value=i) for i in range(0, 60, 5)], seconds=[Choice(name=str(i), value=i) for i in range(0, 60, 5)])
 	async def reminder(self, interaction: discord.Interaction, hours: int, minutes: int, seconds: int, message: str) -> None:
-		"""Reminds you of something."""
+		"""Reminds you of something at a relative time."""
 		if hours == 0 and minutes == 0 and seconds == 0:
 			await interaction.response.send_message("You must specify a duration to wait")
 			return
@@ -44,6 +44,35 @@ class Useful(commands.Cog, name="useful"):
 		await interaction.response.send_message(f"Your message will be sent <t:{remind_in}:R>.")
 		
 		await asyncio.sleep(seconds+minutes*60+hours*(60**2))
+		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (<t:{remind_in}:R>): {message}")
+
+	@bot_has_permissions(send_messages=True)
+	@app_commands.command(name="alarm", description="Reminds you of something at a given time.")
+	@app_commands.describe(months="Month (default = current).", days="Day (default = current).", hours="Hour (default = 9).", minutes="Minute (default = 0).", seconds="Second (default = 0).", message="Your alarm message.")
+	@app_commands.choices(months=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
+	async def alarm(self, interaction: discord.Interaction, message: str, months: int=-1, days: int=-1, hours: int=9, minutes: int=0, seconds: int=0):
+		"""Reminds you of something at a given time."""
+		now = datetime.now()
+		if months == -1: 
+			months = now.month
+		if days == -1: 
+			days = now.day
+		
+		try:
+			due = datetime(year=now.year, month=months, day=days, hour=hours, minute=minutes, second=seconds)
+		except ValueError:
+			await interaction.response.send_message("You must specify a valid date and time")
+			return
+
+		dt = due - now
+		if dt.total_seconds() < 0:
+			await interaction.response.send_message("This date and time is already passed")
+			return
+
+		remind_in = round(due.timestamp())
+		await interaction.response.send_message(f"Your message will be sent <t:{remind_in}:R>.")
+		
+		await asyncio.sleep(dt.seconds)
 		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (<t:{remind_in}:R>): {message}")
 
 	@app_commands.command(name="strawpoll", description="Create a strawpoll.")
