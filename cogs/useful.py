@@ -52,10 +52,6 @@ class Useful(commands.Cog, name="useful"):
 	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
 	async def alert(self, interaction: discord.Interaction, message: str, month: int=-1, day: int=-1, hour: int=9, minute: int=0, second: int=0):
 		"""Reminds you of something."""
-		if message is None:
-			await interaction.response.send_message("You must specify an alarm message")
-			return
-
 		now = datetime.now()
 		if month == -1:
 			month = now.month
