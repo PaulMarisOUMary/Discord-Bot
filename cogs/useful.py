@@ -31,11 +31,11 @@ class Useful(commands.Cog, name="useful"):
 		return emoji, label, description"""
 
 	@bot_has_permissions(send_messages=True)
-	@app_commands.command(name="reminder", description="Reminds you of something.")
+	@app_commands.command(name="reminder", description="Reminds you of something at a relative time.")
 	@app_commands.describe(hours="Hours.", minutes="Minutes.", seconds="Seconds.", message="Your reminder message.")
 	@app_commands.choices(hours=[Choice(name=str(i), value=i) for i in range(0, 25)], minutes=[Choice(name=str(i), value=i) for i in range(0, 60, 5)], seconds=[Choice(name=str(i), value=i) for i in range(0, 60, 5)])
 	async def reminder(self, interaction: discord.Interaction, hours: int, minutes: int, seconds: int, message: str) -> None:
-		"""Reminds you of something."""
+		"""Reminds you of something at a relative time."""
 		if hours == 0 and minutes == 0 and seconds == 0:
 			await interaction.response.send_message("You must specify a duration to wait")
 			return
@@ -47,19 +47,19 @@ class Useful(commands.Cog, name="useful"):
 		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (<t:{remind_in}:R>): {message}")
 
 	@bot_has_permissions(send_messages=True)
-	@app_commands.command(name="alarm", description="Reminds you of something.")
-	@app_commands.describe(month="Month.", day="Day.", hour="Hour.", minute="Minute.", second="Second.", message="Your alarm message.")
-	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
-	async def alert(self, interaction: discord.Interaction, message: str, month: int=-1, day: int=-1, hour: int=9, minute: int=0, second: int=0):
-		"""Reminds you of something."""
+	@app_commands.command(name="alarm", description="Reminds you of something at a given time.")
+	@app_commands.describe(months="Month (default = current).", days="Day (default = current).", hours="Hour (default = 9).", minutes="Minute (default = 0).", seconds="Second (default = 0).", message="Your alarm message.")
+	@app_commands.choices(months=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
+	async def alarm(self, interaction: discord.Interaction, message: str, months: int=-1, days: int=-1, hours: int=9, minutes: int=0, seconds: int=0):
+		"""Reminds you of something at a given time."""
 		now = datetime.now()
-		if month == -1:
-			month = now.month
-		if day == -1:
-			day = now.day
+		if months == -1: 
+			months = now.month
+		if days == -1: 
+			days = now.day
 		
 		try:
-			due = datetime(year=now.year, month=month, day=day, hour=hour, minute=minute, second=second)
+			due = datetime(year=now.year, month=months, day=days, hour=hours, minute=minutes, second=seconds)
 		except ValueError:
 			await interaction.response.send_message("You must specify a valid date and time")
 			return
