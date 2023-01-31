@@ -11,15 +11,6 @@ from classes.ansi import Format as fmt, Foreground as fg, Background as bg
 from classes.discordbot import DiscordBot
 from classes.utilities import bot_has_permissions
 
-
-
-_MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
-
-def choice_range(start: int, end: int, step: int=1) -> list[Choice(str, int)]:
-	return [Choice(name=str(i), value=i) for i in range(start, end, step)]
-
-
-
 class Useful(commands.Cog, name="useful"):
 	"""
 		Usefull commands for Devs & more.
