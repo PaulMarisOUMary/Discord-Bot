@@ -78,7 +78,7 @@ class Useful(commands.Cog, name="useful"):
 			return
 
 		dt = due - now
-		if dt < 0:
+		if dt.total_seconds() < 0:
 			await interaction.response.send_message("This date and time is already passed")
 			return
 
