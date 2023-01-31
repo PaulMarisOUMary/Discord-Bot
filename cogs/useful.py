@@ -49,7 +49,7 @@ class Useful(commands.Cog, name="useful"):
 	@bot_has_permissions(send_messages=True)
 	@app_commands.command(name="alarm", description="Reminds you of something.")
 	@app_commands.describe(month="Month.", day="Day.", hour="Hour.", minute="Minute.", second="Second.", message="Your alarm message.")
-	@app_commands.choices(month=[app_commands.Choice(name=m, value=i+1) for i, m in enumerate(_MONTHS)])
+	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
 	async def alert(self, interaction: discord.Interaction, month: int=-1, day: int=-1, hour: int=9, minute: int=0, second: int=0, message: str=None) -> None:
 		"""Reminds you of something."""
 		if message is None:
