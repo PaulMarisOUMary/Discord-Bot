@@ -36,21 +36,67 @@ class Useful(commands.Cog, name="useful"):
 	@app_commands.choices(hours=[Choice(name=str(i), value=i) for i in range(0, 25)], minutes=[Choice(name=str(i), value=i) for i in range(0, 60, 5)], seconds=[Choice(name=str(i), value=i) for i in range(0, 60, 5)])
 	async def reminder(self, interaction: discord.Interaction, hours: int, minutes: int, seconds: int, message: str) -> None:
 		"""Reminds you of something at a relative time."""
+		now = datetime.now()
 		if hours == 0 and minutes == 0 and seconds == 0:
 			await interaction.response.send_message("You must specify a duration to wait")
 			return
 
-		remind_in = round(datetime.timestamp(datetime.now() + timedelta(hours=hours, minutes=minutes, seconds=seconds)))
-		await interaction.response.send_message(f"Your message will be sent <t:{remind_in}:R>.")
+		await interaction.response.send_message(f"Your message will be sent <t:{round(datetime.timestamp(datetime.now() + timedelta(hours=hours, minutes=minutes, seconds=seconds)))}:R>.")
 		
 		await asyncio.sleep(seconds+minutes*60+hours*(60**2))
-		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (<t:{remind_in}:R>): {message}")
+		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (asked <t:{round(now.timestamp())}:R>): {message}")
+
+	async def month_suggest(self, interaction: discord.Interaction, current: str) -> list[Choice]:
+		now = datetime.now()
+		return [Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(now.month, 13)]
+
+	async def day_suggest(self, interaction: discord.Interaction, current: str) -> list[Choice]:
+		now = datetime.now()
+		if "months" in interaction.namespace and interaction.namespace["months"] == now.month:
+			days = [str(i) for i in range(now.day, 32)]
+		else:
+			days = [str(i) for i in range(1, 32)]
+		if not current:
+			out = [app_commands.Choice(name=str(i), value=i) for i in days]
+		else:
+			out = [app_commands.Choice(name=day, value=int(day)) for day in days if str(current) in day]
+		if len(out) > 25:
+			return out[:25]
+		else:
+			return out
+
+	async def hour_suggest(self, interaction: discord.Interaction, current: str) -> list[Choice]:
+		now = datetime.now()
+		if "months" in interaction.namespace and interaction.namespace["months"] == now.month and "days" in interaction.namespace and interaction.namespace["days"] == now.day:
+			hours = [str(i) for i in range(now.hour, 24)]
+		else:
+			hours = [str(i) for i in range(1, 24)]
+		if not current:
+			out = [app_commands.Choice(name=str(i), value=i) for i in hours]
+		else:
+			out = [app_commands.Choice(name=day, value=int(day)) for day in hours if str(current) in day]
+		return out
+
+	async def minute_suggest(self, interaction: discord.Interaction, current: str) -> list[Choice]:
+		now = datetime.now()
+		if "months" in interaction.namespace and interaction.namespace["months"] == now.month and "days" in interaction.namespace and interaction.namespace["days"] == now.day and "hours" in interaction.namespace and interaction.namespace["hours"] == now.hour:
+			minutes = [str(i) for i in range(now.minute, 60)]
+		else:
+			minutes = [str(i) for i in range(1, 60)]
+		if not current:
+			out = [app_commands.Choice(name=str(i), value=i) for i in minutes]
+		else:
+			out = [app_commands.Choice(name=day, value=int(day)) for day in minutes if str(current) in day]
+		if len(out) > 25:
+			return out[:25]
+		else:
+			return out
 
 	@bot_has_permissions(send_messages=True)
 	@app_commands.command(name="alarm", description="Reminds you of something at a given time.")
-	@app_commands.describe(months="Month (default = current).", days="Day (default = current).", hours="Hour (default = 9).", minutes="Minute (default = 0).", seconds="Second (default = 0).", message="Your alarm message.")
-	@app_commands.choices(months=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
-	async def alarm(self, interaction: discord.Interaction, message: str, months: int=-1, days: int=-1, hours: int=9, minutes: int=0, seconds: int=0):
+	@app_commands.describe(months="Month.", days="Day.", hours="Hour.", minutes="Minute.", seconds="Second (default = 30).", message="Your alarm message.")
+	@app_commands.autocomplete(months=month_suggest, days=day_suggest, hours=hour_suggest, minutes=minute_suggest)
+	async def alarm(self, interaction: discord.Interaction, message: str, months: int, days: int, hours: int, minutes: int, seconds: int=30):
 		"""Reminds you of something at a given time."""
 		now = datetime.now()
 		if months == -1: 
@@ -69,11 +115,10 @@ class Useful(commands.Cog, name="useful"):
 			await interaction.response.send_message("This date and time is already passed")
 			return
 
-		remind_in = round(due.timestamp())
-		await interaction.response.send_message(f"Your message will be sent <t:{remind_in}:R>.")
+		await interaction.response.send_message(f"Your message will be sent <t:{round(due.timestamp())}:R>.")
 		
 		await asyncio.sleep(dt.seconds)
-		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (<t:{remind_in}:R>): {message}")
+		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (asked <t:{round(now.timestamp())}:R>): {message}")
 
 	@app_commands.command(name="strawpoll", description="Create a strawpoll.")
 	@app_commands.describe(question="The question of the strawpoll.")
