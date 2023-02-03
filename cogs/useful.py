@@ -82,7 +82,7 @@ class Useful(commands.Cog, name="useful"):
 		if "months" in interaction.namespace and interaction.namespace["months"] == now.month and "days" in interaction.namespace and interaction.namespace["days"] == now.day and "hours" in interaction.namespace and interaction.namespace["hours"] == now.hour:
 			minutes = [str(i) for i in range(now.minute, 60)]
 		else:
-			minutes = [str(i) for i in range(1, 60)]
+			minutes = [str(i) for i in range(0, 60)]
 		if not current:
 			out = [app_commands.Choice(name=str(i), value=i) for i in minutes]
 		else:
