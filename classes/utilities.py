@@ -14,6 +14,8 @@ from sys import modules
 from types import ModuleType
 from typing import Union
 
+from classes.discordbot import DiscordBot
+
 root_directory = dirname(dirname(abspath(__file__)))
 config_directory = join(root_directory, "config")
 cogs_directory = join(root_directory, "cogs")
@@ -30,7 +32,7 @@ def load_config() -> dict:
 			config[filename] = credential(file)
 	return config
 
-async def cogs_manager(bot: commands.Bot, mode: str, cogs: list[str]) -> None:
+async def cogs_manager(bot: DiscordBot, mode: str, cogs: list[str]) -> None:
 	for cog in cogs:
 		try:
 			if mode == "unload":
@@ -41,6 +43,7 @@ async def cogs_manager(bot: commands.Bot, mode: str, cogs: list[str]) -> None:
 				await bot.reload_extension(cog)
 			else:
 				raise ValueError("Invalid mode.")
+			bot.log(f"Cog {cog} {mode}ed.", name="classes.utilities", level=logging.DEBUG)
 		except Exception as e:
 			raise e
 

@@ -1,10 +1,14 @@
 # auto-run github-runner on boot/startup: https://docs.github.com/en/actions/hosting-your-own-runners/configuring-the-self-hosted-runner-application-as-a-service
-name: "Update files & Restart bot on Linux server"
+name: "Update files & Reload bot on Linux server"
 
 on:
   push:
     paths:
-      - 'bot.py'
+      - 'classes/**'
+      - 'cogs/**'
+      - 'config/**'
+      - 'views/**'
+      - 'requirements.txt'
     branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -30,16 +34,9 @@ jobs:
           jq '.server.host = "${{ secrets.DATABASE_HOST }}" | .server.user = "${{ secrets.DATABASE_USER }}" | .server.password = "${{ secrets.DATABASE_PASSWORD }}" | .server.database = "${{ secrets.DATABASE_DATABASE }}"' config/database.json > tmp.$$.json && mv tmp.$$.json config/database.json
           jq '.reddit.client.client_id = "${{ secrets.REDDIT_ID }}" | .reddit.client.client_secret = "${{ secrets.REDDIT_SECRET }}"' config/cogs.json > tmp.$$.json && mv tmp.$$.json config/cogs.json
           echo "Setup Credentials: Success"
-      - name: Restart Bot
-        id: restart-bot
+      - name: Reload Bot
+        id: reload-bot
         if: success()
         run: |
-          systemctl restart discord-bot.service
-          systemctl status discord-bot.service
-          echo "Restart Bot: Success"
-      - name: Runner Status
-        id: runner-status
-        run: |
-          cd /home/warrior/actions-runner
-          ./svc.sh status
-          echo "Runner Status: Success"
+          python3.11 classes/client.py --message "reload"
+          echo "Reload Bot: Success"
