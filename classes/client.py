@@ -33,11 +33,12 @@ async def main(args):
     finally:
         transport.close()
 
-parser = argparse.ArgumentParser(description="Client for discord socket transport cog.")
-parser.add_argument("--host", dest="host", type=str, default="127.0.0.1", help="Host to connect to.")
-parser.add_argument("--port", dest="port", type=int, default=50000, help="Port to connect to.")
-parser.add_argument("--message", dest="message", type=str, default="ping", help="Message to send to the socket server.")
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Client for discord socket transport cog.")
+    parser.add_argument("--host", dest="host", type=str, default="127.0.0.1", help="Host to connect to.")
+    parser.add_argument("--port", dest="port", type=int, default=50000, help="Port to connect to.")
+    parser.add_argument("--message", dest="message", type=str, default="ping", help="Message to send to the socket server.")
 
-args = parser.parse_args()
+    args = parser.parse_args()
 
-asyncio.run(main(args))
+    asyncio.run(main(args))
