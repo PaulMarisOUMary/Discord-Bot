@@ -96,7 +96,7 @@ class Useful(commands.Cog, name="useful"):
 	@app_commands.command(name="alarm", description="Reminds you of something at a given time.")
 	@app_commands.describe(months="Month.", days="Day.", hours="Hour.", minutes="Minute.", seconds="Second (default = 30).", message="Your alarm message.")
 	@app_commands.autocomplete(months=month_suggest, days=day_suggest, hours=hour_suggest, minutes=minute_suggest)
-	async def alarm(self, interaction: discord.Interaction, message: str, months: int, days: int, hours: int, minutes: int, seconds: int=30):
+	async def alarm(self, interaction: discord.Interaction, message: str, months: int, days: int, hours: int, minutes: int, seconds: app_commands.Range[int, 0, 60] = 30):
 		"""Reminds you of something at a given time."""
 		now = datetime.now()
 		if months == -1: 

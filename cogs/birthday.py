@@ -88,34 +88,11 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 		await self.bot.wait_until_ready()
 		while self.bot.database.pool is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
-	async def year_suggest(self, _: discord.Interaction, current: str) -> list[Choice]:
-		years = [str(i) for i in range(datetime.now().year - 99, datetime.now().year - 15)]
-		if not current: 
-			out = [app_commands.Choice(name=str(i), value=i) for i in range(datetime.now().year - 30, datetime.now().year - 15)]
-		else:
-			out = [app_commands.Choice(name=year, value=int(year)) for year in years if str(current) in year]
-		if len(out) > 25:
-			return out[:25]
-		else:
-			return out
-
-	async def day_suggest(self, _: discord.Interaction, current: str) -> list[Choice]:
-		days = [str(i) for i in range(1, 32)]
-		if not current:
-			out = [app_commands.Choice(name=str(i), value=i) for i in range(1, 16)]
-		else:
-			out = [app_commands.Choice(name=day, value=int(day)) for day in days if str(current) in day]
-		if len(out) > 25:
-			return out[:25]
-		else:
-			return out
-
 	@app_commands.command(name="set", description="Set your own birthday.")
 	@app_commands.describe(month="Your month of birth.", day="Your day of birth.", year="Your year of birth.")
 	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
-	@app_commands.autocomplete(day=day_suggest, year=year_suggest)
 	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
-	async def set_birthday(self, interaction: discord.Interaction, month: int, day: int, year: int):
+	async def set_birthday(self, interaction: discord.Interaction, month: int, day: app_commands.Range[int, 1, 31], year: app_commands.Range[int, datetime.now().year - 99, datetime.now().year - 15]):
 		"""Allows you to set/show your birthday."""
 		if day > 31 or day < 0 or year > datetime.now().year - 15 or year < datetime.now().year - 99:
 			raise ValueError("Please provide a real date of birth.")
