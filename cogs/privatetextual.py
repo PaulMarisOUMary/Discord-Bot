@@ -1,8 +1,9 @@
 import discord
 
 from datetime import datetime
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
+from discord.utils import format_dt
 from typing import Optional
 
 from classes.discordbot import DiscordBot
@@ -195,7 +196,7 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 			return
 
 		owner = channel_role.name.split(":")[1]
-		await interaction.response.send_message(f"Owner: <@{owner}>\nCreated: <t:{round(interaction.channel.created_at.timestamp())}:F>", ephemeral=True)
+		await interaction.response.send_message(f"Owner: <@{owner}>\nCreated: {format_dt(interaction.channel.created_at, 'F')}", ephemeral=True)
 
 	@bot_has_permissions(manage_roles=True)
 	@app_commands.command(name="transferownership", description="Transfer ownership of a private textual channel.")

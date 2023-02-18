@@ -4,10 +4,10 @@ import asyncio
 import discord
 
 from datetime import datetime, date
-from discord.ext import commands, tasks
-from discord.utils import get
 from discord import app_commands
 from discord.app_commands import Choice
+from discord.ext import commands, tasks
+from discord.utils import get, format_dt
 from typing import Optional, Union
 
 from classes.discordbot import DiscordBot
@@ -40,7 +40,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	async def cog_unload(self):
 		self.daily_birthday.cancel()
 
-	@tasks.loop(hours=1)
+	@tasks.loop(hours=1) # ! TODO: Need refactoring
 	async def daily_birthday(self):
 		if not datetime.now().hour == 9:
 			return
@@ -69,9 +69,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 					for data in response:
 						user_id, user_birth = data
 
-						timestamp = round(datetime.combine(user_birth, datetime.min.time()).timestamp())
-
-						message = f"Remember this date because it's <@{user_id}>'s birthday !\nHe was born <t:{timestamp}:R> !"
+						message = f"Remember this date because it's <@{user_id}>'s birthday !\nHe was born {format_dt(datetime.combine(user_birth, datetime.min.time()), 'R')} !"
 						images = [
 							"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
 							"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
@@ -120,9 +118,8 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	async def show_birthday_message(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]) -> None:
 		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_birth", {"user_id": str(user.id)})
 		if response:
-			dataDate : date = response[0][0]
-			timestamp = round(time.mktime(dataDate.timetuple()))
-			await interaction.response.send_message(f":birthday: Birthday the <t:{timestamp}:D> and was born <t:{timestamp}:R>.")
+			birthdate : date = datetime.combine(response[0][0], datetime.min.time())
+			await interaction.response.send_message(f":birthday: Birthday the {format_dt(birthdate, 'D')} and was born {format_dt(birthdate, 'R')}.")
 		else:
 			await interaction.response.send_message(":birthday: Nothing was found. Set the birthday and retry.")
 

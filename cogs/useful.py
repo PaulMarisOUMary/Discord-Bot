@@ -3,9 +3,10 @@ import asyncio
 
 from datetime import datetime, timedelta
 
-from discord.ext import commands
 from discord import app_commands
 from discord.app_commands import Choice
+from discord.ext import commands
+from discord.utils import format_dt
 
 from classes.ansi import Format as fmt, Foreground as fg, Background as bg
 from classes.discordbot import DiscordBot
@@ -41,10 +42,10 @@ class Useful(commands.Cog, name="useful"):
 			await interaction.response.send_message("You must specify a duration to wait")
 			return
 
-		await interaction.response.send_message(f"Your message will be sent <t:{round(datetime.timestamp(datetime.now() + timedelta(hours=hours, minutes=minutes, seconds=seconds)))}:R>.")
+		await interaction.response.send_message(f"Your message will be sent {format_dt(datetime.now() + timedelta(hours=hours, minutes=minutes, seconds=seconds), 'R')}.")
 		
 		await asyncio.sleep(seconds+minutes*60+hours*(60**2))
-		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (asked <t:{round(now.timestamp())}:R>): {message}")
+		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (asked {format_dt(now, 'R')}): {message}")
 
 	async def month_suggest(self, interaction: discord.Interaction, current: str) -> list[Choice]:
 		now = datetime.now()
@@ -115,10 +116,10 @@ class Useful(commands.Cog, name="useful"):
 			await interaction.response.send_message("This date and time is already passed")
 			return
 
-		await interaction.response.send_message(f"Your message will be sent <t:{round(due.timestamp())}:R>.")
+		await interaction.response.send_message(f"Your message will be sent {format_dt(due, 'R')}.")
 		
 		await asyncio.sleep(dt.seconds)
-		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (asked <t:{round(now.timestamp())}:R>): {message}")
+		await interaction.channel.send(f":bell: <@{interaction.user.id}> Reminder (asked {format_dt(now, 'R')}): {message}")
 
 	@app_commands.command(name="strawpoll", description="Create a strawpoll.")
 	@app_commands.describe(question="The question of the strawpoll.")

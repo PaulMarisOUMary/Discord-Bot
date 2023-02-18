@@ -7,6 +7,7 @@ from classes.utilities import bot_has_permissions, load_config ,cogs_manager, re
 from typing import Optional
 from datetime import datetime
 from discord.ext import commands
+from discord.utils import format_dt
 
 class Admin(commands.Cog, name="admin"):
 	"""
@@ -158,7 +159,7 @@ class Admin(commands.Cog, name="admin"):
 	async def show_uptime(self, ctx: commands.Context):
 		"""Show the bot uptime."""
 		uptime = datetime.now() - self.bot.uptime
-		await ctx.send(f":clock1: <t:{round(self.bot.uptime.timestamp())}:R> ||`{uptime}`||")
+		await ctx.send(f":clock1: {format_dt(self.bot.uptime, 'R')} ||`{uptime}`||")
 
 	@bot_has_permissions(send_messages=True)
 	@commands.command(name="shutdown")

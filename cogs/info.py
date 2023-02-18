@@ -3,9 +3,8 @@ import time
 import discord
 import matplotlib.pyplot as plt
 
-from datetime import datetime
-from discord.utils import get
 from discord.ext import commands
+from discord.utils import get, format_dt
 from discord import app_commands
 from typing import Optional, Union
 
@@ -127,10 +126,10 @@ class Info(commands.Cog, name="info"):
 		embed.add_field(name="\u200b", value="\u200b", inline=False)
 		embed.add_field(name="<:isbot:698250069165473852> Is a bot?", value=f"{yes if realuser.bot else no}", inline=True)
 		embed.add_field(name="<:phone:948279755248111756> Is on mobile?", value=f"{yes if realuser.is_on_mobile() else no}", inline=True)
-		embed.add_field(name="<a:nitro:948271095566434357> Boost this server?", value=f"<t:{round(datetime.timestamp(realuser.premium_since))}:F>" if realuser.premium_since else no, inline=True)
+		embed.add_field(name="<a:nitro:948271095566434357> Boost this server?", value=f"{format_dt(realuser.premium_since, 'F')}" if realuser.premium_since else no, inline=True)
 		embed.add_field(name="\u200b", value="\u200b", inline=False)
-		embed.add_field(name="<:plus:948272417304883270> Account created at:", value=f"<t:{round(datetime.timestamp(realuser.created_at))}:F>", inline=True)
-		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"<t:{round(datetime.timestamp(realuser.joined_at))}:F>", inline=True) # type: ignore
+		embed.add_field(name="<:plus:948272417304883270> Account created at:", value=f"{format_dt(realuser.created_at, 'F')}", inline=True)
+		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"{format_dt(realuser.joined_at, 'F')}", inline=True) # type: ignore
 		embed.set_thumbnail(url=realuser.display_avatar.url)
 		if user_banner: 
 			embed.set_image(url=user_banner)
