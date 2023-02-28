@@ -21,7 +21,7 @@ PyNaCl
 #Require this specific version (internal package error, issue #299 of github.com/ssut/py-googletrans)
 googletrans == 4.0.0-rc1
 
-discord.py[speed] == 2.1.1
+discord.py[speed] == 2.2.0
 
 #reddit api
 asyncpraw == 7.7.0
