@@ -5,6 +5,7 @@ on:
   push:
     paths:
       - 'bot.py'
+      - 'requirements.txt'
     branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab

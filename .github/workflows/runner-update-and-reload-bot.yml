@@ -8,14 +8,13 @@ on:
       - 'cogs/**'
       - 'config/**'
       - 'views/**'
-      - 'requirements.txt'
     branches: [ main ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-  update-and-restart:
+  update-and-reload:
     runs-on: self-hosted
 
     steps:
