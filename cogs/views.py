@@ -22,16 +22,16 @@ class Views(commands.Cog, name="views"):
 
 	@commands.command(name="bool")
 	@commands.guild_only()
-	async def boo(self, ctx):
+	async def boo(self, ctx) -> None:
 		"""Discover buttons feature with this command."""
 		view = bool.View(flabel="Agree", slabel="Disagree", sstyle=discord.ButtonStyle.red, emojis = True, source=ctx)
 		await ctx.send("Buttons demo right there !", view=view)
 
 	@commands.command(name="dropdown")
 	@commands.guild_only()
-	async def dro(self, ctx):
+	async def dro(self, ctx) -> None:
 		"""Discover select menu feature with this command."""
-		async def when_callback(_class, interaction: discord.Interaction):
+		async def when_callback(_class, interaction: discord.Interaction) -> None:
 			if _class.view.invoke.author == interaction.user:
 				message = "Selected languages : "
 				for value in _class.values:
@@ -73,19 +73,19 @@ class Views(commands.Cog, name="views"):
 
 	@commands.command(name="link")
 	@commands.guild_only()
-	async def lin(self, ctx):
+	async def lin(self, ctx) -> None:
 		"""Discover button link with this feature."""
 		view = link.View(label="Source code on Github", url="https://github.com/PaulMarisOUMary/Discord-Bot")
 		await ctx.send("Find out what is behind Algobot !", view=view)
 
 	@commands.command(name="modal")
 	@commands.guild_only()
-	async def moda(self, ctx):
+	async def moda(self, ctx) -> None:
 		"""Discover button link with this feature."""
 		view = modal.View(invoke=ctx)
 		await ctx.send(view=view)
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Views(bot))

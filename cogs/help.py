@@ -3,7 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, NoReturn, Optional, Union
 
 from classes.ansi import Foreground as fg, Format as fmt
 from classes.discordbot import DiscordBot
@@ -54,12 +54,12 @@ class HelpCommand(commands.HelpCommand):
             return ''
         return f"{block}{f'{block} {block}'.join(list)}{block}"
 
-    def __format_permissions(self, extras: dict):
+    def __format_permissions(self, extras: dict) -> str:
         if not "bot_permissions" in extras or not extras["bot_permissions"]:
             return "None"
         return self.__list_to_block(extras['bot_permissions'], block='')
     
-    async def __add_help_field_to_embed(self, embed: discord.Embed, command: Union[commands.Command, app_commands.Command, commands.HybridCommand], show_permissions: Optional[bool] = True):
+    async def __add_help_field_to_embed(self, embed: discord.Embed, command: Union[commands.Command, app_commands.Command, commands.HybridCommand], show_permissions: Optional[bool] = True) -> None:
         details = f"```ansi\n{fg.BLUE + fmt.UNDERLINE}Description{fmt.RESET}:\n"
         if isinstance(command, app_commands.Command):
             object = await self.__get_contexted_app_command(self.context, command)
@@ -164,7 +164,7 @@ class HelpCommand(commands.HelpCommand):
         
         return self.command_not_found(keys[0])
 
-    async def send_bot_help(self, mapping: Dict[Optional[commands.Cog], List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]]):
+    async def send_bot_help(self, mapping: Dict[Optional[commands.Cog], List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]]) -> None:
         allowed = 5
         close_in = round(datetime.timestamp(datetime.now() + timedelta(minutes=allowed)))
 
@@ -182,7 +182,7 @@ class HelpCommand(commands.HelpCommand):
 
         await self.context.send(embed = embed)
 
-    async def send_cog_help(self, cog: commands.Cog, view_invoked: Optional[bool] = False):
+    async def send_cog_help(self, cog: commands.Cog, view_invoked: Optional[bool] = False) -> discord.Embed | None:
         emoji = '👋'
         label = cog.qualified_name
         description = cog.description
@@ -202,7 +202,7 @@ class HelpCommand(commands.HelpCommand):
             return embed
         await self.context.send(embed = embed)
 
-    async def send_group_help(self, group: Union[commands.Group, app_commands.Group, commands.HybridGroup]):
+    async def send_group_help(self, group: Union[commands.Group, app_commands.Group, commands.HybridGroup]) -> None:
         embed = discord.Embed(color=discord.Color.dark_grey(), title = "👋 Help · Group", url = "https://github.com/PaulMarisOUMary/Discord-Bot")
         embed.add_field(
                     name=f"Group: {group.name}", 
@@ -215,10 +215,10 @@ class HelpCommand(commands.HelpCommand):
 
         await self.context.send(embed = embed)
 
-    def command_not_found(self, string: str):
+    def command_not_found(self, string: str) -> NoReturn:
         raise commands.CommandNotFound(f"`{string}` not found !")
 
-    async def on_help_command_error(self, _: commands.Context, error):
+    async def on_help_command_error(self, _: commands.Context, error) -> None:
         handledErrors = [
             commands.CommandOnCooldown, 
             commands.CommandNotFound,
@@ -262,5 +262,7 @@ class Help(commands.Cog, name="help"):
         description = "Help utilities."
         return emoji, label, description
 
-async def setup(bot: DiscordBot):
+
+
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Help(bot))

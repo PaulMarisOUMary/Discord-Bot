@@ -74,7 +74,7 @@ class Info(commands.Cog, name="info"):
 	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="avatar", description="Display the avatar.")
 	@app_commands.describe(user="The user to get the avatar from.")
-	async def avatar(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
+	async def avatar(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]) -> None:
 		if not user:
 			user = interaction.user
 		await interaction.response.send_message(user.display_avatar.url)
@@ -82,7 +82,7 @@ class Info(commands.Cog, name="info"):
 	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="banner", description="Display the banner.")
 	@app_commands.describe(user="The user to get the banner from.")
-	async def banner(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
+	async def banner(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]) -> None:
 		if not user: 
 			user = interaction.user
 		user = await self.bot.fetch_user(user.id)
@@ -95,7 +95,7 @@ class Info(commands.Cog, name="info"):
 	@app_commands.command(name="lookup", description="Shows additional informations about user.")
 	@app_commands.describe(user="The user to get informations from.")
 	@app_commands.guild_only()
-	async def lookup(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
+	async def lookup(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]) -> None:
 		"""Show few information about a discord Member"""
 		if not user: 
 			user = interaction.user
@@ -138,5 +138,5 @@ class Info(commands.Cog, name="info"):
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Info(bot))

@@ -6,7 +6,7 @@ from discord.ext import commands
 from views.view import View as Parent
 
 class CustomModal(discord.ui.Modal):
-	def __init__(self, title: str, fields: dict[str, Union[discord.ui.TextInput, discord.ui.Select]], when_submit: functools.partial):
+	def __init__(self, title: str, fields: dict[str, Union[discord.ui.TextInput, discord.ui.Select]], when_submit: functools.partial) -> None:
 		super().__init__(title=title)
 
 		self.values : dict[str, str] = {}
@@ -25,7 +25,7 @@ class CustomModal(discord.ui.Modal):
 		except Exception as e:
 			raise e
 
-	async def on_submit(self, interaction: discord.Interaction):
+	async def on_submit(self, interaction: discord.Interaction) -> None:
 		for key, value in self.__fields.items():
 			self.values[key] = value()
 
@@ -36,12 +36,12 @@ class CustomModal(discord.ui.Modal):
 
 class View(Parent):
 	"""Button to Modal"""
-	def __init__(self, invoke: Union[commands.Context, discord.Interaction] = None):
+	def __init__(self, invoke: Union[commands.Context, discord.Interaction] = None) -> None:
 		super().__init__()
 
 		self.invoker = invoke.author
 
-		async def when_submit(_class: CustomModal, interaction: discord.Interaction):
+		async def when_submit(_class: CustomModal, interaction: discord.Interaction) -> None:
 			formater = ''
 			for key, value in _class.values.items():
 				if isinstance(value, list):
@@ -87,7 +87,7 @@ class View(Parent):
 		)
 
 	@discord.ui.button(label = "Sample modal", style = discord.ButtonStyle.gray, emoji = '📧')
-	async def button(self, interaction: discord.Interaction, button: discord.ui.Button):
+	async def button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
 		if self.invoker != interaction.user:
 			await interaction.response.send_message("You can't open this modal.", ephemeral=True)
 		else:

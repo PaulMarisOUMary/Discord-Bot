@@ -84,7 +84,7 @@ class Invite(commands.Cog, name="invite"):
         except discord.Forbidden or discord.HTTPException:
             pass
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         self.init_invites.start()
 
     @tasks.loop(count=1)
@@ -228,5 +228,6 @@ class Invite(commands.Cog, name="invite"):
             await ctx.send("Wrong formatting.")
 
 
-async def setup(bot: DiscordBot):
+
+async def setup(bot: DiscordBot) -> None:
     await bot.add_cog(Invite(bot))

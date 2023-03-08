@@ -31,7 +31,7 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 	@app_commands.command(name="set", description="Set your own brief description of yourself !")
 	@app_commands.describe(description="Your brief description of yourself.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	async def me(self, interaction: discord.Interaction, description: str):
+	async def me(self, interaction: discord.Interaction, description: str) -> None:
 		"""Allows you to set or show a brief description of yourself."""
 		try:
 			text = description.replace("'", "''")
@@ -47,7 +47,7 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 	@app_commands.command(name="show", description="Show the /me of other users.")
 	@app_commands.describe(user="The user you want to show the /me of.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	async def show_me(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]):
+	async def show_me(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]) -> None:
 		"""Allows you to show the description of other users."""
 		if not user:
 			user = interaction.user
@@ -60,5 +60,5 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Me(bot))

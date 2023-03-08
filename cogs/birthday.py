@@ -1,4 +1,3 @@
-import time
 import random
 import asyncio
 import discord
@@ -34,14 +33,14 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 		description = "Maybe I'll wish you soon a happy birthday !"
 		return emoji, label, description
 
-	async def cog_load(self):
+	async def cog_load(self) -> None:
 		self.daily_birthday.start()
 
-	async def cog_unload(self):
+	async def cog_unload(self) -> None:
 		self.daily_birthday.cancel()
 
 	@tasks.loop(hours=1) # ! TODO: Need refactoring
-	async def daily_birthday(self):
+	async def daily_birthday(self) -> None:
 		if not datetime.now().hour == 9:
 			return
 		
@@ -82,7 +81,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 						await channel.send(embed=embed)
 
 	@daily_birthday.before_loop
-	async def before_daily_birthday(self):
+	async def before_daily_birthday(self) -> None:
 		await self.bot.wait_until_ready()
 		while self.bot.database.pool is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
@@ -90,7 +89,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	@app_commands.describe(month="Your month of birth.", day="Your day of birth.", year="Your year of birth.")
 	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
 	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
-	async def set_birthday(self, interaction: discord.Interaction, month: int, day: app_commands.Range[int, 1, 31], year: app_commands.Range[int, datetime.now().year - 99, datetime.now().year - 15]):
+	async def set_birthday(self, interaction: discord.Interaction, month: int, day: app_commands.Range[int, 1, 31], year: app_commands.Range[int, datetime.now().year - 99, datetime.now().year - 15]) -> None:
 		"""Allows you to set/show your birthday."""
 		if day > 31 or day < 0 or year > datetime.now().year - 15 or year < datetime.now().year - 99:
 			raise ValueError("Please provide a real date of birth.")
@@ -109,7 +108,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	@app_commands.command(name="show", description="Display the birthday of a user.")
 	@app_commands.describe(user="The user to get the birthdate from.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
-	async def show_birthday(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
+	async def show_birthday(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]) -> None:
 		"""Allows you to show the birthday of other users."""
 		if not user: 
 			user = interaction.user
@@ -125,5 +124,5 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Birthday(bot))

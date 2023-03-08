@@ -36,5 +36,5 @@ class Basic(commands.Cog, name="basic"):
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Basic(bot))

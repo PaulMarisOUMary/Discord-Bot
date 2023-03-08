@@ -4,7 +4,7 @@ from views.view import View as Parent
 
 class View(Parent):
 	"""Bool View"""
-	def __init__(self, source, flabel = "Confirm", slabel = "Cancel", femoji = "✅", semoji= "🚫", fdisabled = False, sdisable = False, fstyle = discord.ButtonStyle.green, sstyle = discord.ButtonStyle.grey, emojis = True):
+	def __init__(self, source, flabel = "Confirm", slabel = "Cancel", femoji = "✅", semoji= "🚫", fdisabled = False, sdisable = False, fstyle = discord.ButtonStyle.green, sstyle = discord.ButtonStyle.grey, emojis = True) -> None:
 		super().__init__()
 		self.source = source
 		self.invoker = source.author
@@ -15,7 +15,7 @@ class View(Parent):
 
 		if emojis: self.confirm.emoji, self.cancel.emoji = femoji, semoji
 
-	async def bool_check(self, value, interaction):
+	async def bool_check(self, value, interaction) -> None:
 		if self.invoker == interaction.user:
 			self.value = value
 			await interaction.response.defer()
@@ -26,9 +26,9 @@ class View(Parent):
 			await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
 
 	@discord.ui.button(style = discord.ButtonStyle.blurple)
-	async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button):
+	async def confirm(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
 		await self.bool_check(True, interaction)
 
 	@discord.ui.button(style = discord.ButtonStyle.blurple)
-	async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button):
+	async def cancel(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
 		await self.bool_check(False, interaction)

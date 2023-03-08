@@ -42,7 +42,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 		return emoji, label, description
 
 	@commands.Cog.listener("on_message")
-	async def on_receive_message(self, message: discord.Message):
+	async def on_receive_message(self, message: discord.Message) -> None:
 		if not message.author.bot and self.REGEX.match(message.content):
 			if not self.__is_on_cooldown(message.author):
 				self.cooldown[message.author.id] = datetime.now()
@@ -162,5 +162,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 		else:
 			return rank
 
-async def setup(bot: DiscordBot):
+
+
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Croissants(bot))

@@ -29,7 +29,7 @@ class Dad(commands.Cog, name="dad"):
         return emoji, label, description
 
     @commands.Cog.listener("on_message")
-    async def on_receive_message(self, message : discord.Message):
+    async def on_receive_message(self, message : discord.Message) -> None:
         if message.author.bot: 
             return
 
@@ -52,5 +52,6 @@ class Dad(commands.Cog, name="dad"):
                 break
 
 
-async def setup(bot: DiscordBot):
+
+async def setup(bot: DiscordBot) -> None:
     await bot.add_cog(Dad(bot))

@@ -111,7 +111,7 @@ class Starboard(commands.Cog, name="starboard"):
 		return message, reaction
 
 	@commands.Cog.listener("on_raw_reaction_add")
-	async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent):
+	async def on_raw_reaction_add(self, payload: discord.RawReactionActionEvent) -> None:
 		try:
 			if str(payload.emoji) != self.star_emoji:
 				return
@@ -152,7 +152,7 @@ class Starboard(commands.Cog, name="starboard"):
 			pass
 
 	@commands.Cog.listener("on_raw_reaction_remove")
-	async def on_raw_reaction_remove(self , payload: discord.RawReactionActionEvent):
+	async def on_raw_reaction_remove(self , payload: discord.RawReactionActionEvent) -> None:
 		try:
 			message, reaction = await self.__get_message_from_payload(payload)
 
@@ -180,7 +180,7 @@ class Starboard(commands.Cog, name="starboard"):
 			pass
 
 	@commands.Cog.listener("on_raw_message_delete")
-	async def on_raw_message_delete(self, payload: discord.RawMessageDeleteEvent):
+	async def on_raw_message_delete(self, payload: discord.RawMessageDeleteEvent) -> None:
 		try:
 			jump_url = f"https://discord.com/channels/{payload.guild_id}/{payload.channel_id}/{payload.message_id}"
 
@@ -201,5 +201,5 @@ class Starboard(commands.Cog, name="starboard"):
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Starboard(bot))

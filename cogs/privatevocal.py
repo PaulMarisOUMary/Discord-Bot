@@ -38,9 +38,9 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 
 	def __guild_in(self, member: discord.Member) -> None:
 		if not member.guild.id in self.tracker: 
-				self.tracker[member.guild.id] = dict()
-				self.tracker[member.guild.id]["cooldown"] = dict()
-				self.tracker[member.guild.id]["channels"] = dict()
+			self.tracker[member.guild.id] = dict()
+			self.tracker[member.guild.id]["cooldown"] = dict()
+			self.tracker[member.guild.id]["channels"] = dict()
 
 	def __is_private_vocal(self, channel: discord.VoiceChannel, guild_channels: dict[int, int]) -> bool:
 		return channel.id in guild_channels
@@ -52,7 +52,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 		return (user.id in guild_cooldown) and datetime.now().timestamp() - guild_cooldown[user.id].timestamp() < self.subconfig_data["cooldown"]
 
 	@commands.Cog.listener("on_voice_state_update")
-	async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState):
+	async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState) -> None:
 		self.__guild_in(member)
 		guild_id = self.tracker[member.guild.id]
 		guild_cooldown = guild_id["cooldown"]
@@ -86,7 +86,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 	@app_commands.choices(limit=[Choice(name=str(i), value=i) for i in range(1, 26)])
 	@app_commands.describe(limit="The number of max user(s) in your private channel.")
 	@app_commands.guild_only()
-	async def lock_private_vocal(self, ctx: commands.Context, limit: int = 1):
+	async def lock_private_vocal(self, ctx: commands.Context, limit: int = 1) -> None:
 		"""Limit the number of user(s) in your private channel."""
 		voice = ctx.author.voice  # type: ignore
 		if not voice:
@@ -104,5 +104,5 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(PrivateVocal(bot))
