@@ -2,21 +2,21 @@ import asyncio
 import argparse
 
 class ClientProtocol(asyncio.Protocol):
-    def __init__(self, message, on_con_lost):
+    def __init__(self, message, on_con_lost) -> None:
         self.message = message
         self.on_con_lost = on_con_lost
 
-    def connection_made(self, transport: asyncio.Transport):
+    def connection_made(self, transport: asyncio.Transport) -> None:
         transport.write(self.message.encode())
 
-    def data_received(self, data: bytes):
+    def data_received(self, data: bytes) -> None:
         if not data == bytes(self.message, encoding="utf-8"):
             raise ValueError("Data received seems corruped.")
 
-    def connection_lost(self, exc):
+    def connection_lost(self, exc) -> None:
         self.on_con_lost.set_result(True)
 
-async def main(args):
+async def main(args: argparse.Namespace) -> None:
     loop = asyncio.get_running_loop()
 
     on_con_lost = loop.create_future()

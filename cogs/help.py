@@ -221,7 +221,8 @@ class HelpCommand(commands.HelpCommand):
     async def on_help_command_error(self, _: commands.Context, error):
         handledErrors = [
             commands.CommandOnCooldown, 
-            commands.CommandNotFound
+            commands.CommandNotFound,
+            discord.errors.Forbidden
         ]
 
         if not type(error) in handledErrors:
