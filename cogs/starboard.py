@@ -61,7 +61,8 @@ class Starboard(commands.Cog, name="starboard"):
 			embed.add_field(name="Replying to...", value=f"[{reference.resolved.author}]({reference.resolved.jump_url})", inline=False)
 
 		if message.attachments:
-			images = [attachment.url for attachment in message.attachments if attachment.url.lower().endswith(("png", "jpg", "jpeg", "gif", "webp"))]
+			print(message.attachments)
+			images = [attachment.url for attachment in message.attachments if attachment.url.lower().endswith(("jpg", "jpeg", "png", "webp", "gif"))] # doc: https://discord.com/developers/docs/reference#editing-message-attachments-using-attachments-within-embeds
 			for image_url in images:
 				if not embed.image.url:
 					embed.set_image(url=image_url)
@@ -83,16 +84,16 @@ class Starboard(commands.Cog, name="starboard"):
 			return
 		guild_id, channel_id, display_id = response[0][0].split('/')[-3:]
 
-		display_channel = self.bot.get_guild(int(guild_id)).get_channel(int(channel_id))
+		channel = self.bot.get_guild(int(guild_id))
+		display_channel = channel.get_channel(int(channel_id)) if channel else None
 		if not display_channel:
 			await self.bot.database.delete(self.subconfig_data["table"], f"display_message = {response[0][0]}")
 			return
 
-		try:
-			display_message = await display_channel.fetch_message(int(display_id))
-			return display_message
-		except:
+		if type(display_channel) != discord.TextChannel:
 			return None
+
+		return await display_channel.fetch_message(int(display_id))
 
 	async def __get_message_from_payload(self, payload: discord.RawReactionActionEvent) -> tuple[Optional[discord.Message], Optional[discord.Reaction]]:
 		potential_message = [message for message in self.bot.cached_messages if message.id == payload.message_id]
@@ -101,7 +102,10 @@ class Starboard(commands.Cog, name="starboard"):
 		if cached_message:
 			message = cached_message
 		else:
-			message = await self.bot.get_channel(payload.channel_id).fetch_message(payload.message_id)
+			channel = self.bot.get_channel(payload.channel_id)
+			if not channel or type(channel) != discord.TextChannel:
+				return None, None
+			message = await channel.fetch_message(payload.message_id)
 
 		try:
 			reaction = [reaction for reaction in message.reactions if reaction.emoji == self.star_emoji][0]
@@ -118,7 +122,7 @@ class Starboard(commands.Cog, name="starboard"):
 
 			message, reaction = await self.__get_message_from_payload(payload)
 
-			if not reaction: # not a self.star_emoji
+			if not reaction or not message or not message.guild: # not a self.star_emoji
 				return
 
 			starboard_channel = None
@@ -131,6 +135,9 @@ class Starboard(commands.Cog, name="starboard"):
 				return
 
 			if starboard_channel.id == payload.channel_id:
+				return
+
+			if type(message.channel) != discord.TextChannel:
 				return
 
 			n_star = reaction.count
@@ -157,6 +164,9 @@ class Starboard(commands.Cog, name="starboard"):
 			message, reaction = await self.__get_message_from_payload(payload)
 
 			if not message:
+				return
+
+			if type(message.channel) != discord.TextChannel:
 				return
 
 			if not reaction:

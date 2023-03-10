@@ -41,8 +41,8 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 
 	@tasks.loop(hours=1)
 	async def daily_birthday(self) -> None:
-		#if not datetime.now().hour == 9:
-		#	return
+		if not datetime.now().hour == 9:
+			return
 
 		response: tuple[tuple[int, date]] = await self.bot.database.select(self.subconfig_data["table"], "*", condition="DAY(`user_birth`) = DAY(CURRENT_DATE()) AND MONTH(`user_birth`) = MONTH(CURRENT_DATE())")
 		if not response:
