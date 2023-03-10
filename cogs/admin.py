@@ -113,9 +113,9 @@ class Admin(commands.Cog, name="admin"):
 	async def sync_tree(self, ctx: commands.Context, guild_id: Optional[str] = None) -> None:
 		"""Sync application commands."""
 		if guild_id:
-			if guild_id == "guild" or guild_id == "~":
-				guild_id = ctx.guild.id # type: ignore
-			tree = await self.bot.tree.sync(guild=discord.Object(id=guild_id)) # type: ignore
+			if ctx.guild and (guild_id == "guild" or guild_id == "~"):
+				guild_id = str(ctx.guild.id)
+			tree = await self.bot.tree.sync(guild=discord.Object(id=guild_id))
 		else:
 			tree = await self.bot.tree.sync()
 
@@ -141,14 +141,14 @@ class Admin(commands.Cog, name="admin"):
 	@commands.guild_only()
 	async def change_guild_prefix(self, ctx: commands.Context, new_prefix: str) -> None:
 		"""Change the guild prefix."""
-		if not self.bot.usedatabase:
+		if not self.bot.usedatabase or not ctx.guild:
 			await ctx.send(":warning: Database not used, prefix not changed.")
 			return
 		try:
 			table = self.bot.config["bot"]["prefix_table"]["table"]
-			await self.bot.database.insert_onduplicate(table, {"guild_id": ctx.guild.id, "guild_prefix": new_prefix}) # type: ignore
+			await self.bot.database.insert_onduplicate(table, {"guild_id": ctx.guild.id, "guild_prefix": new_prefix})
 
-			self.bot.prefixes[ctx.guild.id] = new_prefix # type: ignore
+			self.bot.prefixes[ctx.guild.id] = new_prefix
 			await ctx.send(f":warning: Prefix changed to `{new_prefix}`")
 		except Exception as e:
 			await ctx.send(f"Error: {e}")
@@ -166,7 +166,7 @@ class Admin(commands.Cog, name="admin"):
 	@commands.is_owner()
 	async def shutdown_structure(self, ctx: commands.Context) -> None:
 		"""Shutdown the bot."""
-		await ctx.send(f":wave: `{self.bot.user.name}` is shutting down...") # type: ignore
+		await ctx.send(f":wave: `{self.bot.user}` is shutting down...")
 
 		await self.bot.close()
 

@@ -31,6 +31,7 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 	@app_commands.command(name="set", description="Set your own brief description of yourself !")
 	@app_commands.describe(description="Your brief description of yourself.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
+	@app_commands.guild_only()
 	async def me(self, interaction: discord.Interaction, description: str) -> None:
 		"""Allows you to set or show a brief description of yourself."""
 		try:
@@ -47,6 +48,7 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 	@app_commands.command(name="show", description="Show the /me of other users.")
 	@app_commands.describe(user="The user you want to show the /me of.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
+	@app_commands.guild_only()
 	async def show_me(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]) -> None:
 		"""Allows you to show the description of other users."""
 		if not user:
@@ -54,7 +56,10 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 		await self.show_me_message(interaction, user)
 
 	async def show_me_message(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]) -> None:
-		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_me", {"guild_id": str(user.guild.id),"user_id":  str(user.id)}) # type: ignore
+		if not interaction.guild:
+			await interaction.response.send_message(f"This command must me used in a guild.")
+			return
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_me", {"guild_id": str(interaction.guild.id),"user_id":  str(user.id)})
 		message = " ".join(response[0]) if len(response) else "No description provided.."
 		await interaction.response.send_message(f"• **{user.display_name}** {message}")
 

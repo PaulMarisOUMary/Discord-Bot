@@ -39,46 +39,40 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	async def cog_unload(self) -> None:
 		self.daily_birthday.cancel()
 
-	@tasks.loop(hours=1) # ! TODO: Need refactoring
+	@tasks.loop(hours=1)
 	async def daily_birthday(self) -> None:
-		if not datetime.now().hour == 9:
-			return
-		
-		guild = get(self.bot.guilds, id=self.subconfig_data["guild_id"])
-		if not guild:
-			self.bot.log(message = "Birthday guild not found", name = "discord.cogs.birthday.daily_birthday")
-			return
-
-		channel = get(guild.text_channels, id=self.subconfig_data["channel_id"])
-		if not channel:
-			self.bot.log(message = "Birthday channel not found", name = "discord.cogs.birthday.daily_birthday")
-			return
+		#if not datetime.now().hour == 9:
+		#	return
 
 		response: tuple[tuple[int, date]] = await self.bot.database.select(self.subconfig_data["table"], "*", condition="DAY(`user_birth`) = DAY(CURRENT_DATE()) AND MONTH(`user_birth`) = MONTH(CURRENT_DATE())")
-
 		if not response:
 			self.bot.log(message = "No birthday today", name = "discord.cogs.birthday.daily_birthday")
 			return
-		
-		async for guild in self.bot.fetch_guilds():
+
+		for guild in self.bot.guilds:
 			if guild.id != self.subconfig_data["guild_id"]:
 				continue
-			for channel in guild.channels:
+			for channel in guild.text_channels:
+				if channel.type == discord.ChannelType.forum:
+					continue
+				if not channel.permissions_for(guild.me).send_messages or not channel.permissions_for(guild.me).embed_links:
+					continue
 				if "birthday" in channel.name:
-					for data in response:
-						user_id, user_birth = data
-
-						message = f"Remember this date because it's <@{user_id}>'s birthday !\nHe was born {format_dt(datetime.combine(user_birth, datetime.min.time()), 'R')} !"
-						images = [
+					images = [
 							"https://sayingimages.com/wp-content/uploads/funny-birthday-and-believe-me-memes.jpg",
 							"https://i.kym-cdn.com/photos/images/newsfeed/001/988/649/1e8.jpg",
 							"https://winkgo.com/wp-content/uploads/2018/08/101-Best-Happy-Birthday-Memes-01-720x720.jpg",
 							"https://www.the-best-wishes.com/wp-content/uploads/2022/01/success-kid-cute-birthday-meme-for-her.jpg"
-						]
+					]
+					embed = discord.Embed(
+							title = "🎉 Happy birthday !",
+							description = f"Today is the birthday of {', '.join([f'<@{user_id}>' for user_id, _ in response])} !",
+							colour=discord.Colour.dark_gold(),
+					)
+					embed.set_image(url = random.choice(images))
 
-						embed = discord.Embed(title="🎉 Happy birthday !", description=message, colour=discord.Colour.dark_gold())
-						embed.set_image(url=images[random.randint(0, len(images)-1)])
-						await channel.send(embed=embed)
+					await channel.send(embed = embed)
+
 
 	@daily_birthday.before_loop
 	async def before_daily_birthday(self) -> None:
