@@ -81,15 +81,16 @@ class View(Parent):
                 await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
 
         for cog in self.cogs[1:]:
-            emoji, label, description = cog.help_custom() # type: ignore
-            self.options.append(
-                {
-                    "label": label,
-                    "description": description,
-                    "emoji": emoji,
-                    "value": cog.qualified_name, # type: ignore
-                }
-            )
+            if cog:
+                emoji, label, description = cog.help_custom() # need override # type: ignore
+                self.options.append(
+                    {
+                        "label": label,
+                        "description": description,
+                        "emoji": emoji,
+                        "value": cog.qualified_name,
+                    }
+                )
 
         self.add_item(
             CustomDropdown(
@@ -97,7 +98,7 @@ class View(Parent):
                 min_val=1,
                 max_val=1,
                 options=self.options,
-                when_callback=on_select # type: ignore
+                when_callback=on_select
             )
         )
 
@@ -142,7 +143,7 @@ class View(Parent):
                 button.disabled = True
         else:
             cog = self.cogs[self.index]
-            embed = await self.help_class.send_cog_help(cog, view_invoked=True) # type: ignore
+            embed = await self.help_class.send_cog_help(cog, view_invoked=True) # need override # type: ignore
 
         await interaction.response.edit_message(embed=embed, view=self)
 

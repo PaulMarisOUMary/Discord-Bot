@@ -90,7 +90,7 @@ class Starboard(commands.Cog, name="starboard"):
 			await self.bot.database.delete(self.subconfig_data["table"], f"display_message = {response[0][0]}")
 			return
 
-		if type(display_channel) != discord.TextChannel:
+		if not isinstance(display_channel, discord.TextChannel):
 			return None
 
 		return await display_channel.fetch_message(int(display_id))
@@ -103,7 +103,7 @@ class Starboard(commands.Cog, name="starboard"):
 			message = cached_message
 		else:
 			channel = self.bot.get_channel(payload.channel_id)
-			if not channel or type(channel) != discord.TextChannel:
+			if not channel or not isinstance(channel, discord.TextChannel):
 				return None, None
 			message = await channel.fetch_message(payload.message_id)
 
@@ -137,7 +137,7 @@ class Starboard(commands.Cog, name="starboard"):
 			if starboard_channel.id == payload.channel_id:
 				return
 
-			if type(message.channel) != discord.TextChannel:
+			if not isinstance(message.channel, discord.TextChannel):
 				return
 
 			n_star = reaction.count
@@ -166,7 +166,7 @@ class Starboard(commands.Cog, name="starboard"):
 			if not message:
 				return
 
-			if type(message.channel) != discord.TextChannel:
+			if not isinstance(message.channel, discord.TextChannel):
 				return
 
 			if not reaction:

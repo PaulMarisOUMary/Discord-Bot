@@ -88,16 +88,20 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 	@app_commands.guild_only()
 	async def lock_private_vocal(self, ctx: commands.Context, limit: int = 1) -> None:
 		"""Limit the number of user(s) in your private channel."""
-		voice = ctx.author.voice  # type: ignore
-		if not voice:
+		if not isinstance(ctx.author, discord.Member) or not ctx.guild:
+			await ctx.send("You're not in a guild.", ephemeral=True)
+			return
+
+		voice = ctx.author.voice
+		if not voice or not voice.channel:
 			await ctx.send("You're not in a voice channel.", ephemeral=True)
 			return
-		elif not self.__is_private_vocal(voice.channel, self.tracker[ctx.guild.id]["channels"]): # type: ignore
+		elif voice.channel and not isinstance(voice.channel, discord.StageChannel) and self.__is_private_vocal(voice.channel, self.tracker[ctx.guild.id]["channels"]):
 			await ctx.send("You're not in a private vocal channel.", ephemeral=True)
 			return
 		
 		if limit < 1 or limit > 99:
-			limit = len(voice.channel.members) # type: ignore
+			limit = len(voice.channel.members)
 
 		await voice.channel.edit(user_limit=limit) # type: ignore
 		await ctx.send(f"Vocal user-limit set to `{limit}`.", ephemeral=True)
