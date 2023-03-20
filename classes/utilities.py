@@ -12,7 +12,7 @@ from os import listdir
 from os.path import dirname, abspath, join, basename, splitext
 from sys import modules
 from types import ModuleType
-from typing import Generator, Union
+from typing import Generator, NoReturn, Union
 
 from classes.discordbot import DiscordBot
 
@@ -81,6 +81,12 @@ def set_logging(file_level: int = logging.DEBUG, console_level: int = logging.IN
 def clean_close() -> None:
 	if platform.system().lower() == 'windows':
 		asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy()) # type: ignore (Windows only)
+
+async def dummy_awaitable_callable(*args, **kwargs) -> NoReturn:
+	raise NotImplementedError("This function is a dummy function and is not meant to be called.")
+
+def dummy_callable(*args, **kwargs) -> NoReturn:
+	raise NotImplementedError("This function is a dummy function and is not meant to be called.")
 
 def bot_has_permissions(**perms: bool):
 	"""A decorator that add specified permissions to Command.extras and add bot_has_permissions check to Command with specified permissions.
