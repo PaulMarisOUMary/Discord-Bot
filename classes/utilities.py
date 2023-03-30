@@ -115,3 +115,10 @@ def bot_has_permissions(**perms: bool):
 		return command
 
 	return wrapped
+
+class GuildContext(commands.Context):
+    author: discord.Member
+    guild: discord.Guild
+    channel: Union[discord.VoiceChannel, discord.TextChannel, discord.Thread]
+    me: discord.Member
+    prefix: str

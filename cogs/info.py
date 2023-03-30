@@ -100,7 +100,7 @@ class Info(commands.Cog, name="info"):
 		if not user: 
 			user = interaction.user
 
-		realuser: discord.Member = get(user.guild.members, id=user.id) # type: ignore
+		realuser: discord.Member = get(interaction.guild.members, id=user.id) # type: ignore
 
 		user = await self.bot.fetch_user(realuser.id)
 		if user.banner:
@@ -129,7 +129,7 @@ class Info(commands.Cog, name="info"):
 		embed.add_field(name="<a:nitro:948271095566434357> Boost this server?", value=f"{format_dt(realuser.premium_since, 'F')}" if realuser.premium_since else no, inline=True)
 		embed.add_field(name="\u200b", value="\u200b", inline=False)
 		embed.add_field(name="<:plus:948272417304883270> Account created at:", value=f"{format_dt(realuser.created_at, 'F')}", inline=True)
-		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"{format_dt(realuser.joined_at, 'F')}", inline=True) # type: ignore
+		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"{format_dt(realuser.joined_at, 'F')if realuser.joined_at else 'None'}", inline=True)
 		embed.set_thumbnail(url=realuser.display_avatar.url)
 		if user_banner: 
 			embed.set_image(url=user_banner)

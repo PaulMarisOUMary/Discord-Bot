@@ -2,7 +2,7 @@ import discord
 import os
 
 from classes.discordbot import DiscordBot
-from classes.utilities import bot_has_permissions, load_config ,cogs_manager, reload_views, cogs_directory, root_directory
+from classes.utilities import GuildContext, bot_has_permissions, load_config ,cogs_manager, reload_views, cogs_directory, root_directory
 
 from typing import Optional
 from datetime import datetime
@@ -139,7 +139,7 @@ class Admin(commands.Cog, name="admin"):
 	@commands.command(name="changeprefix", aliases=["cp", "prefix"], require_var_positional=True)
 	@commands.has_guild_permissions(administrator=True)
 	@commands.guild_only()
-	async def change_guild_prefix(self, ctx: commands.Context, new_prefix: str) -> None:
+	async def change_guild_prefix(self, ctx: GuildContext, new_prefix: str) -> None:
 		"""Change the guild prefix."""
 		if not self.bot.usedatabase or not ctx.guild:
 			await ctx.send(":warning: Database not used, prefix not changed.")

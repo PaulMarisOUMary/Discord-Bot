@@ -10,7 +10,7 @@ from discord.utils import format_dt
 
 from classes.ansi import Format as fmt, Foreground as fg, Background as bg
 from classes.discordbot import DiscordBot
-from classes.utilities import bot_has_permissions
+from classes.utilities import GuildContext, bot_has_permissions
 
 class Useful(commands.Cog, name="useful"):
 	"""
@@ -132,7 +132,7 @@ class Useful(commands.Cog, name="useful"):
 	@commands.command(name="emojilist", aliases=["ce", "el"])
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	@commands.guild_only()
-	async def getcustomemojis(self, ctx) -> None:
+	async def getcustomemojis(self, ctx: GuildContext) -> None:
 		"""Return a list of each custom emojis from the current server."""
 		embed_list, embed = [], discord.Embed(title=f"Custom Emojis List ({len(ctx.guild.emojis)}) :")
 		for i, emoji in enumerate(ctx.guild.emojis, start=1):

@@ -6,7 +6,7 @@ from datetime import datetime, date
 from discord import app_commands
 from discord.app_commands import Choice
 from discord.ext import commands, tasks
-from discord.utils import get, format_dt
+from discord.utils import format_dt
 from typing import Optional, Union
 
 from classes.discordbot import DiscordBot

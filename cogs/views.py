@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 
 from classes.discordbot import DiscordBot
+from classes.utilities import GuildContext
 
 from views import bool
 from views import dropdown
@@ -22,14 +23,14 @@ class Views(commands.Cog, name="views"):
 
 	@commands.command(name="bool")
 	@commands.guild_only()
-	async def boo(self, ctx: commands.Context) -> None:
+	async def boo(self, ctx: GuildContext) -> None:
 		"""Discover buttons feature with this command."""
 		view = bool.View(flabel="Agree", slabel="Disagree", sstyle=discord.ButtonStyle.red, emojis = True, source=ctx)
 		await ctx.send("Buttons demo right there !", view=view)
 
 	@commands.command(name="dropdown")
 	@commands.guild_only()
-	async def dro(self, ctx: commands.Context) -> None:
+	async def dro(self, ctx: GuildContext) -> None:
 		"""Discover select menu feature with this command."""
 		async def when_callback(_class, interaction: discord.Interaction) -> None:
 			if _class.view.invoke.author == interaction.user:
@@ -73,14 +74,14 @@ class Views(commands.Cog, name="views"):
 
 	@commands.command(name="link")
 	@commands.guild_only()
-	async def lin(self, ctx: commands.Context) -> None:
+	async def lin(self, ctx: GuildContext) -> None:
 		"""Discover button link with this feature."""
 		view = link.View(label="Source code on Github", url="https://github.com/PaulMarisOUMary/Discord-Bot")
 		await ctx.send("Find out what is behind Algobot !", view=view)
 
 	@commands.command(name="modal")
 	@commands.guild_only()
-	async def moda(self, ctx: commands.Context) -> None:
+	async def moda(self, ctx: GuildContext) -> None:
 		"""Discover button link with this feature."""
 		view = modal.View(invoke=ctx)
 		await ctx.send(view=view)
