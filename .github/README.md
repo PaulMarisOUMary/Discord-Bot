@@ -41,17 +41,19 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
 > - Dynamic structure (Does not require a reboot to apply changes in files)
 > - Database support (SQL)
 > - Error handling
-> - Logging
 > - Multiple configs
+> - Socket communication system
+> - Logging
 > - Powerful, dev & debuging commands
 > - Metrics about usage of the bot
 > - Language detector & Translation
+> - ANSI color support
 > - And more..
 
 ### Built with
 
 - [Python](https://python.org/) >= 3.8
-- [discord.py](https://discordpy.readthedocs.io) >= 2.1.0
+- [discord.py](https://discordpy.readthedocs.io) >= 2.2.3
 - SQL
 	- MariaDB (or MySQL)
 
