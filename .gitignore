@@ -149,6 +149,7 @@ cython_debug/
 .vscode/
 
 # Project
+# Untrack tracked config files: git update-index --assume-unchanged ./config/*.json
 config
 
 # MacOS (should be included in your local .gitignore)
