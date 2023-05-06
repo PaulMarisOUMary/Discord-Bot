@@ -22,40 +22,53 @@
 - [Database](#database)
 	- [SQL tables structure](#sql-tables-structure)
 - [Workflows](#workflows)
+
 ## About the project
 
 This discord bot was made for an IT School in 2020. It has a lot of features including all the latest features from discord.py. Made by student(s) for students.
 
-<a name="major-features"/>
+### Major features
 
-> **Note**: Major features
-> - [ContextMenus](https://discordpy.readthedocs.io/en/latest/interactions/api.html#discord.app_commands.ContextMenu) (Right-click commands)
-> - [AppCommands](https://discordpy.readthedocs.io/en/latest/interactions/api.html#discord.app_commands.AppCommand) (Slash-commands)
-> - [HybridCommands](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.HybridCommand) (Slash-commands + Commands)
-> - [Groups](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Group)
-> - [Commands](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Group)
-> - [Custom-Modals](https://discordpy.readthedocs.io/en/latest/interactions/api.html#discord.ui.Modal) (Forms)
-> - [Custom-Views](https://discordpy.readthedocs.io/en/latest/interactions/api.html?#discord.ui.View) (Buttons, Dropdown, ..)
-> - [Cogs](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Cog)/[GroupCogs](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?highlight=cogs#discord.ext.commands.GroupCog)
-> - Custom prefix per guild
-> - Dynamic structure (Does not require a reboot to apply changes in files)
-> - Database support (SQL)
-> - Error handling
-> - Multiple configs
-> - Socket communication system
-> - Logging
-> - Powerful, dev & debuging commands
-> - Metrics about usage of the bot
-> - Language detector & Translation
-> - ANSI color support
-> - And more..
+- Administrative Tools
+    - Custom prefix per guild
+    - Invite tracker
+- Developement
+    - ANSI color support
+    - Dynamic structure (Does not require a reboot to apply changes in code & files)
+    - Database support (SQL)
+    - Error handling
+    - Image processing
+    - Logging
+    - Multiple configs
+    - Metrics about usage of the bot
+    - Powerful, dev & debuging commands
+    - Utility functions
+    - Socket communication system
+- Discord support
+    - [AppCommands](https://discordpy.readthedocs.io/en/latest/interactions/api.html#discord.app_commands.AppCommand) (Slash-commands)
+    - [Cogs](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Cog)/[GroupCogs](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?highlight=cogs#discord.ext.commands.GroupCog)
+    - [Commands](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Group)
+    - [ContextMenus](https://discordpy.readthedocs.io/en/latest/interactions/api.html#discord.app_commands.ContextMenu) (Right-click commands)
+    - [Custom-Modals](https://discordpy.readthedocs.io/en/latest/interactions/api.html#discord.ui.Modal) (Forms)
+    - [Custom-Views](https://discordpy.readthedocs.io/en/latest/interactions/api.html?#discord.ui.View) (Buttons, Dropdown, ..)
+    - [Groups](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Group)
+    - [HybridCommands](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.HybridCommand) (Slash-commands + Commands)
+- User Interaction
+    - Custom Help command
+    - Dynamic Starboard
+    - Language detector & Translation
+    - Private text channel on demand (cog: privatetext)
+    - Private vocal channel on demand (cog: privatevocal)
+- And more..
 
 ### Built with
 
-- [Python](https://python.org/) >= 3.8
-- [discord.py](https://discordpy.readthedocs.io) >= 2.2.3
+- [Python 3](https://python.org/) >= 3.8
+- [discord.py](https://discordpy.readthedocs.io/en/stable/) == stable
 - SQL
 	- MariaDB (or MySQL)
+
+> **Note** More about requirements in the [requirements.txt](https://github.com/PaulMarisOUMary/Discord-Bot/blob/main/requirements.txt) file.
 
 ## Getting started
 
