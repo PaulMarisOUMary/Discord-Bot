@@ -49,8 +49,10 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 			self.bot.log(message = "No birthday today", name = "discord.cogs.birthday.daily_birthday")
 			return
 
+		response_guilds: list[int] = [guild for guild, _, _ in response]
+
 		for guild in self.bot.guilds:
-			if guild.id != self.subconfig_data["guild_id"]:
+			if not guild.id in response_guilds:
 				continue
 			for channel in guild.text_channels:
 				if channel.type == discord.ChannelType.forum:
@@ -66,7 +68,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 					]
 					embed = discord.Embed(
 							title = "🎉 Happy birthday !",
-							description = f"Today is the birthday of {', '.join([f'<@{user_id}>' for user_id, _ in response])} !",
+							description = f"Today is the birthday of {'& '.join([f'<@{user_id}>' for response_guild, user_id, _ in response if guild.id == response_guild])} !",
 							colour=discord.Colour.dark_gold(),
 					)
 					embed.set_image(url = random.choice(images))
@@ -79,13 +81,14 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 		await self.bot.wait_until_ready()
 		while self.bot.database.pool is None: await asyncio.sleep(0.01) #wait_for initBirthday
 
+	@app_commands.guild_only()
 	@app_commands.command(name="set", description="Set your own birthday.")
 	@app_commands.describe(month="Your month of birth.", day="Your day of birth.", year="Your year of birth.")
 	@app_commands.choices(month=[Choice(name=datetime(1, i, 1).strftime("%B"), value=i) for i in range(1, 13)])
 	@app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
 	async def set_birthday(self, interaction: discord.Interaction, month: int, day: app_commands.Range[int, 1, 31], year: app_commands.Range[int, datetime.now().year - 99, datetime.now().year - 15]) -> None:
 		"""Allows you to set/show your birthday."""
-		if day > 31 or day < 0 or year > datetime.now().year - 15 or year < datetime.now().year - 99:
+		if day > 31 or day < 0 or year > datetime.now().year - 15 or year < datetime.now().year - 99 or not interaction.guild:
 			raise ValueError("Please provide a real date of birth.")
 
 		try:
@@ -93,12 +96,13 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 			if dataDate.year > datetime.now().year - 15 or dataDate.year < datetime.now().year - 99: 
 				raise commands.CommandError("Please provide your real year of birth.")
 			
-			await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"user_id": interaction.user.id, "user_birth": dataDate})
+			await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"guild_id": interaction.guild.id, "user_id": interaction.user.id, "user_birth": dataDate})
 
 			await self.show_birthday_message(interaction, interaction.user)
 		except Exception as e:
 			raise commands.CommandError(str(e))
 
+	@app_commands.guild_only()
 	@app_commands.command(name="show", description="Display the birthday of a user.")
 	@app_commands.describe(user="The user to get the birthdate from.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
@@ -109,7 +113,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 		await self.show_birthday_message(interaction, user)
 
 	async def show_birthday_message(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]) -> None:
-		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_birth", {"user_id": str(user.id)})
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_birth", {"guild_id": str(interaction.guild.id), "user_id": str(user.id)}) # type: ignore
 		if response:
 			birthdate : date = datetime.combine(response[0][0], datetime.min.time())
 			await interaction.response.send_message(f":birthday: Birthday the {format_dt(birthdate, 'D')} and was born {format_dt(birthdate, 'R')}.")

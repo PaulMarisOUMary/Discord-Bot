@@ -124,9 +124,10 @@ If you have planned to use a database:
 ```sql
 CREATE TABLE IF NOT EXISTS `table_birthday`
 (
+    `guild_id`          BIGINT unsigned NOT NULL,
     `user_id`           BIGINT unsigned NOT NULL,
     `user_birth`        DATE NOT NULL,
-UNIQUE(`user_id`)
+CONSTRAINT `me_per_guild` UNIQUE (`guild_id`, `user_id`)
 )
 ENGINE = InnoDB,
 CHARACTER SET utf8mb4,
