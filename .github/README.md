@@ -110,11 +110,11 @@ $ pip install -r requirements.txt
 > 1. set the `"use_database"` field to `false` in the `/config/database.json` file.
 > 2. in the folder `/cogs` you should remove the following files (which are using the database): `birthday.py`, `croissants.py`, `invite.py`, `me.py`, `metrics.py`, `starboard.py`.
 
-> **Note** If you have planned to use a database:
-> - you should use a SQL Database.
-> - reconfigure the "server" section from `/config/database.json`.
-> - you can change the structure of each SQL tables if needed.
->     - if so you should reconfigure some keys/values of the `/config/cogs.json`.
+If you have planned to use a database:
+- you should use a SQL Database.
+- reconfigure the "server" section from `/config/database.json`.
+- you can change the structure of each SQL tables if needed.
+    - if so you should reconfigure some keys/values of the `/config/cogs.json`.
 
 ### SQL tables structure
 
