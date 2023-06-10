@@ -7,6 +7,7 @@ from typing import Any, Dict, List, NoReturn, Optional, Union
 
 from classes.ansi import Foreground as fg, Format as fmt
 from classes.discordbot import DiscordBot
+from classes.utilities import bot_has_permissions
 from views.helpmenu import View as HelpView
 
 class HelpCommand(commands.HelpCommand):
@@ -257,6 +258,22 @@ class Help(commands.Cog, name="help"):
         label = "Help"
         description = "Help utilities."
         return emoji, label, description
+
+    @bot_has_permissions(send_messages=True)
+    @app_commands.command(name="help", description="Help command.")
+    @app_commands.checks.cooldown(1, 15.0, key=lambda i: (i.guild_id, i.user.id))
+    async def help(self, interaction: discord.Interaction):
+        async for hijacked_message in interaction.channel.history(limit=1):
+            pass
+        hijacked_message.author = interaction.user
+        await commands.Context(
+            message = hijacked_message,
+            bot = self.bot,
+            view = None,
+            prefix = f"{self.bot.user.mention} ",
+            command_failed = False,
+            interaction = interaction,
+        ).send_help()
 
 
 
