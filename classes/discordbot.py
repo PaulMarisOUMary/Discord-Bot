@@ -32,7 +32,7 @@ class DiscordBot(commands.Bot):
     usedatabase: bool = True
     """Whether the bot should use the database or not."""
 
-    def __init__(self,**kwargs):
+    def __init__(self,**kwargs) -> None:
         """Initialize the bot.
         
         Parameters
@@ -56,7 +56,7 @@ class DiscordBot(commands.Bot):
         
         super().__init__(command_prefix = command_prefix, **kwargs)
 
-    def log(self, message: str, name: str, level: int = LOG_INFO, **kwargs):
+    def log(self, message: str, name: str, level: int = LOG_INFO, **kwargs) -> None:
         """Log a message to the console and the log file.
 
         Parameters
@@ -81,10 +81,10 @@ class DiscordBot(commands.Bot):
             prefix = self.config["bot"]["default_prefix"]
         return commands.when_mentioned_or(prefix)(client, message)
 
-    async def on_ready(self):
+    async def on_ready(self) -> None:
         self.log( message = f"Logged as: {self.user} | discord.py{discord_version} Guilds: {len(self.guilds)} Users: {len(self.users)} Config: {len(self.config)} Database: {self.usedatabase}", name = "discord.on_ready")
 
-    async def setup_hook(self):
+    async def setup_hook(self) -> None:
         # Retrieve the bot's application info
         self.appinfo = await self.application_info()
 
@@ -99,7 +99,7 @@ class DiscordBot(commands.Bot):
             for data in await self.database.select(self.config["bot"]["prefix_table"]["table"], "*"): 
                 self.prefixes[data[0]] = data[1]
 
-    async def close(self):
+    async def close(self) -> None:
         if self.usedatabase:
             await self.database.close()
             self.log(message = "Database connection closed", name = "discord.close")

@@ -16,10 +16,10 @@ class Status(commands.Cog, name="status"):
 		description = "Setup the status of the bot."
 		return emoji, label, description"""
 
-	async def cog_load(self):
+	async def cog_load(self) -> None:
 		self.task_change_status = self.bot.loop.create_task(self.loop_change_status())
 
-	async def cog_unload(self):
+	async def cog_unload(self) -> None:
 		self.task_change_status.cancel()
 
 	async def loop_change_status(self) -> None:
@@ -37,5 +37,5 @@ class Status(commands.Cog, name="status"):
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Status(bot))

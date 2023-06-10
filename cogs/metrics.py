@@ -69,5 +69,5 @@ class Metrics(commands.Cog, name="metrics"):
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Metrics(bot))

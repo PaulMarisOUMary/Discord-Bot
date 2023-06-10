@@ -7,8 +7,8 @@ def _to_color(*colors_code: str) -> str:
     return f"{ESCAPE}[{';'.join(colors_code)}m"
 
 class StackANSI():
-    def __init__(self, num: int):
-        self.series = [num]
+    def __init__(self, num: int) -> None:
+        self.series: list[int] = [num]
 
     def __add__(self, __x: 'SingleANSI') -> 'StackANSI':
         self.series.append(__x.value)

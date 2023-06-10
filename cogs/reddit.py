@@ -1,9 +1,9 @@
-from datetime import datetime
-import discord
-from discord.ext import commands
-
-import asyncpraw
 import asyncio
+import asyncpraw
+import discord
+
+from datetime import datetime
+from discord.ext import commands
 
 from classes.discordbot import DiscordBot
 
@@ -32,7 +32,7 @@ class Reddit(commands.Cog, name="reddit"):
         description = "Reddit goes brrrrrr"
         return emoji, label, description
 
-    async def cog_load(self):
+    async def cog_load(self) -> None:
         self.reddit = self.create_reddit()
         self.tasks = []
         for connection in self.subconfig_data["connections"]:
@@ -43,7 +43,7 @@ class Reddit(commands.Cog, name="reddit"):
             except Exception as e:
                 self.bot.logger.error(e)
 
-    async def cog_unload(self):
+    async def cog_unload(self) -> None:
         for task in self.tasks:
             task.cancel()
         await self.reddit.close()
@@ -89,5 +89,7 @@ class Reddit(commands.Cog, name="reddit"):
         reddit = asyncpraw.Reddit(**self.subconfig_data["client"])
         return reddit
 
-async def setup(bot: DiscordBot):
+
+
+async def setup(bot: DiscordBot) -> None:
     await bot.add_cog(Reddit(bot))

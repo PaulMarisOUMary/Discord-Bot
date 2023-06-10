@@ -7,6 +7,7 @@ from discord.ext import commands
 from discord import app_commands
 from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
+from typing import Union
 
 from classes.database import MixedTypes
 from classes.discordbot import DiscordBot
@@ -42,7 +43,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 		return emoji, label, description
 
 	@commands.Cog.listener("on_message")
-	async def on_receive_message(self, message: discord.Message):
+	async def on_receive_message(self, message: discord.Message) -> None:
 		if not message.author.bot and self.REGEX.match(message.content):
 			if not self.__is_on_cooldown(message.author):
 				self.cooldown[message.author.id] = datetime.now()
@@ -90,7 +91,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 
 		await interaction.response.send_message(embed=embed)
 
-	async def __send_croissants(self, message) -> None:
+	async def __send_croissants(self, message: discord.Message) -> None:
 		answer_message = await message.reply(
 			content=f"{message.author.mention} took out the credit card! {self.EMOJI}",
 			file=self.__get_screenshot(message.author, message.content)
@@ -99,13 +100,13 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 		count = await self.__increment_croissants_counter(message.author.id)
 		await answer_message.edit(content=f"{message.author.mention} took out the credit card ! And this is the `{count}` time, he's so generous! {self.EMOJI}")
 
-	async def __increment_croissants_counter(self, user_id : int) -> int:
+	async def __increment_croissants_counter(self, user_id: int) -> int:
 		await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"user_id": user_id, "user_count": MixedTypes("COALESCE(user_count, 0) + 1")})
 
 		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_count", {"user_id": str(user_id)})
 		return response[0][0]
 
-	def __get_screenshot(self, author : discord.Member, content : str) -> discord.File:
+	def __get_screenshot(self, author: discord.Member, content: str) -> discord.File:
 		name_font = ImageFont.truetype("fonts/Whitney-Medium.ttf", 24)
 		timestamp_font = ImageFont.truetype("fonts/Whitney-Medium.ttf", 18)
 		content_font = ImageFont.truetype("fonts/Whitney-Book.ttf", 24)
@@ -149,18 +150,13 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 			file = discord.File(img_bin, "croissants.gif")
 		return file
 
-	def __is_on_cooldown(self, user) -> bool:
+	def __is_on_cooldown(self, user: Union[discord.User, discord.Member]) -> bool:
 		return user.id in self.cooldown and datetime.now().timestamp() - self.cooldown[user.id].timestamp() < self.subconfig_data["cooldown"]
 
-	def __rank_emoji(self, rank) -> str:
-		if rank == 1:
-			return '🥇'
-		elif rank == 2:
-			return '🥈'
-		elif rank == 3:
-			return '🥉'
-		else:
-			return rank
+	def __rank_emoji(self, rank: int) -> str:
+		return {1:'🥇', 2:'🥈', 3:'🥉'}.get(rank, rank)
 
-async def setup(bot: DiscordBot):
+
+
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Croissants(bot))

@@ -16,7 +16,7 @@ class Button(discord.ui.Button):
         style: discord.ButtonStyle,
         when_callback: functools.partial,
         argument: Optional[Any],
-	):
+	) -> None:
 		disabled = False
 		if argument == -1 or argument == 0:
 			disabled = True
@@ -26,7 +26,7 @@ class Button(discord.ui.Button):
 
 		super().__init__(style=style, label=label, disabled=disabled)
 
-	async def callback(self, interaction: discord.Interaction):
+	async def callback(self, interaction: discord.Interaction) -> None:
 		if self.invoker.id == interaction.user.id:
 			await self.when_callback(interaction, self.argument)
 		else:
@@ -38,7 +38,7 @@ class View(Parent):
         mapping: Dict[Optional[commands.Cog], List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]],
         help_object: commands.HelpCommand,
         home_embed: discord.Embed,
-    ):
+    ) -> None:
         super().__init__(timeout=timeout)
 
         self.context = help_object.context
@@ -67,8 +67,8 @@ class View(Parent):
         self.add_dropdown()
         self.add_buttons()
 
-    def add_dropdown(self):
-        async def on_select(_class, interaction: discord.Interaction):
+    def add_dropdown(self) -> None:
+        async def on_select(_class, interaction: discord.Interaction) -> None:
             if self.context.author.id == interaction.user.id:
                 cog_name = _class.values[0]
                 if cog_name == "home_page":
@@ -81,15 +81,16 @@ class View(Parent):
                 await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
 
         for cog in self.cogs[1:]:
-            emoji, label, description = cog.help_custom() # type: ignore
-            self.options.append(
-                {
-                    "label": label,
-                    "description": description,
-                    "emoji": emoji,
-                    "value": cog.qualified_name, # type: ignore
-                }
-            )
+            if cog:
+                emoji, label, description = cog.help_custom() # need override # type: ignore
+                self.options.append(
+                    {
+                        "label": label,
+                        "description": description,
+                        "emoji": emoji,
+                        "value": cog.qualified_name,
+                    }
+                )
 
         self.add_item(
             CustomDropdown(
@@ -97,11 +98,11 @@ class View(Parent):
                 min_val=1,
                 max_val=1,
                 options=self.options,
-                when_callback=on_select # type: ignore
+                when_callback=on_select
             )
         )
 
-    def add_buttons(self):
+    def add_buttons(self) -> None:
         buttons_property = [
 			("<<", ButtonStyle.grey, self.to_embed, 0),
 			("Back", ButtonStyle.blurple, self.to_embed, -1),
@@ -121,7 +122,7 @@ class View(Parent):
             self.buttons.append(button)
             self.add_item(button)
 
-    async def to_embed(self, interaction: discord.Interaction, index: int):
+    async def to_embed(self, interaction: discord.Interaction, index: int) -> None:
         if index == -1:
             self.index += index
         elif index == -2:
@@ -142,11 +143,11 @@ class View(Parent):
                 button.disabled = True
         else:
             cog = self.cogs[self.index]
-            embed = await self.help_class.send_cog_help(cog, view_invoked=True) # type: ignore
+            embed = await self.help_class.send_cog_help(cog, view_invoked=True) # need override # type: ignore
 
         await interaction.response.edit_message(embed=embed, view=self)
 
-    async def quit(self, interaction: discord.Interaction, *args: Any):
+    async def quit(self, interaction: discord.Interaction, *args: Any) -> None:
         await interaction.response.defer()
         await interaction.delete_original_response()
         self.stop()

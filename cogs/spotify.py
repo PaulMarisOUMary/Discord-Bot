@@ -1,5 +1,5 @@
-import time
 import discord
+import time
 
 from discord.utils import get
 from discord.ext import commands
@@ -31,7 +31,7 @@ class Spotify(commands.Cog, name="spotify"):
 	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="spotify")
 	@app_commands.describe(user="The user to get spotify informations from.")
-	async def spotify_activity(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
+	async def spotify_activity(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]) -> None:
 		"""Show the current Spotify song."""
 		if not user: 
 			user = interaction.user
@@ -53,5 +53,5 @@ class Spotify(commands.Cog, name="spotify"):
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Spotify(bot))

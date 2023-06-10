@@ -12,7 +12,7 @@ from os import listdir
 from os.path import dirname, abspath, join, basename, splitext
 from sys import modules
 from types import ModuleType
-from typing import Union
+from typing import Generator, NoReturn, Union
 
 from classes.discordbot import DiscordBot
 
@@ -47,7 +47,7 @@ async def cogs_manager(bot: DiscordBot, mode: str, cogs: list[str]) -> None:
 		except Exception as e:
 			raise e
 
-def reload_views():
+def reload_views() -> Generator[str, None, None]:
 	mods = [module[1] for module in modules.items() if isinstance(module[1], ModuleType)]
 	for mod in mods:
 		try:
@@ -80,7 +80,13 @@ def set_logging(file_level: int = logging.DEBUG, console_level: int = logging.IN
 
 def clean_close() -> None:
 	if platform.system().lower() == 'windows':
-		asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+		asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy()) # type: ignore (Windows only)
+
+async def dummy_awaitable_callable(*args, **kwargs) -> NoReturn:
+	raise NotImplementedError("This function is a dummy function and is not meant to be called.")
+
+def dummy_callable(*args, **kwargs) -> NoReturn:
+	raise NotImplementedError("This function is a dummy function and is not meant to be called.")
 
 def bot_has_permissions(**perms: bool):
 	"""A decorator that add specified permissions to Command.extras and add bot_has_permissions check to Command with specified permissions.
@@ -109,3 +115,10 @@ def bot_has_permissions(**perms: bool):
 		return command
 
 	return wrapped
+
+class GuildContext(commands.Context):
+    author: discord.Member
+    guild: discord.Guild
+    channel: Union[discord.VoiceChannel, discord.TextChannel, discord.Thread]
+    me: discord.Member
+    prefix: str

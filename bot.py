@@ -7,7 +7,7 @@ from classes.utilities import load_config, clean_close, cogs_manager, set_loggin
 from os import listdir
 
 class Bot(DiscordBot):
-	def __init__(self, **kwargs):
+	def __init__(self, **kwargs) -> None:
 		super().__init__(
 			activity = discord.Game(name = "Booting.."),
 			allowed_mentions=discord.AllowedMentions(everyone=False),
@@ -19,7 +19,7 @@ class Bot(DiscordBot):
 			**kwargs,
 		)
 
-	async def startup(self):
+	async def startup(self) -> None:
 		"""Sync application commands"""
 		await self.wait_until_ready()
 		
@@ -27,7 +27,7 @@ class Bot(DiscordBot):
 		synced = await self.tree.sync()
 		self.log(message = f"Application commands synced ({len(synced)})", name = "discord.startup")
 		
-	async def setup_hook(self):
+	async def setup_hook(self) -> None:
 		"""Initialize the bot, database, prefixes & cogs."""
 		await super().setup_hook()
 
@@ -42,8 +42,21 @@ class Bot(DiscordBot):
 if __name__ == '__main__':
 	clean_close() # Avoid Windows EventLoopPolicy Error
 
-	bot = Bot()
-	bot.logger, streamHandler = set_logging(file_level=logging.INFO, console_level=logging.INFO, filename="discord.log")
+	bot = Bot(
+		intents = discord.Intents(
+			emojis = True,
+			guild_scheduled_events = True,
+			guilds = True,
+			invites = True,
+			members = True,
+			message_content = True,
+			messages = True,
+			presences = True,
+			reactions = True,
+			voice_states = True,
+		),
+	)
+	bot.logger, streamHandler = set_logging(file_level = logging.INFO, console_level = logging.INFO, filename = "discord.log")
 	bot.run(
 		bot.config["bot"]["token"],
 		reconnect = True,

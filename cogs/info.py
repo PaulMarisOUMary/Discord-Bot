@@ -74,7 +74,7 @@ class Info(commands.Cog, name="info"):
 	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="avatar", description="Display the avatar.")
 	@app_commands.describe(user="The user to get the avatar from.")
-	async def avatar(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
+	async def avatar(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]) -> None:
 		if not user:
 			user = interaction.user
 		await interaction.response.send_message(user.display_avatar.url)
@@ -82,7 +82,7 @@ class Info(commands.Cog, name="info"):
 	@bot_has_permissions(embed_links=True)
 	@app_commands.command(name="banner", description="Display the banner.")
 	@app_commands.describe(user="The user to get the banner from.")
-	async def banner(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
+	async def banner(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]) -> None:
 		if not user: 
 			user = interaction.user
 		user = await self.bot.fetch_user(user.id)
@@ -95,12 +95,12 @@ class Info(commands.Cog, name="info"):
 	@app_commands.command(name="lookup", description="Shows additional informations about user.")
 	@app_commands.describe(user="The user to get informations from.")
 	@app_commands.guild_only()
-	async def lookup(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]):
+	async def lookup(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]) -> None:
 		"""Show few information about a discord Member"""
 		if not user: 
 			user = interaction.user
 
-		realuser: discord.Member = get(user.guild.members, id=user.id) # type: ignore
+		realuser: discord.Member = get(interaction.guild.members, id=user.id) # type: ignore
 
 		user = await self.bot.fetch_user(realuser.id)
 		if user.banner:
@@ -129,7 +129,7 @@ class Info(commands.Cog, name="info"):
 		embed.add_field(name="<a:nitro:948271095566434357> Boost this server?", value=f"{format_dt(realuser.premium_since, 'F')}" if realuser.premium_since else no, inline=True)
 		embed.add_field(name="\u200b", value="\u200b", inline=False)
 		embed.add_field(name="<:plus:948272417304883270> Account created at:", value=f"{format_dt(realuser.created_at, 'F')}", inline=True)
-		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"{format_dt(realuser.joined_at, 'F')}", inline=True) # type: ignore
+		embed.add_field(name="<:join:948272122353057792> Joined the server at:", value=f"{format_dt(realuser.joined_at, 'F')if realuser.joined_at else 'None'}", inline=True)
 		embed.set_thumbnail(url=realuser.display_avatar.url)
 		if user_banner: 
 			embed.set_image(url=user_banner)
@@ -138,5 +138,5 @@ class Info(commands.Cog, name="info"):
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Info(bot))

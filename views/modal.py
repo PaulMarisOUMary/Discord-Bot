@@ -1,31 +1,33 @@
 import discord
 import functools
 
-from typing import Union
+from typing import Callable, Union
 from discord.ext import commands
 from views.view import View as Parent
 
 class CustomModal(discord.ui.Modal):
-	def __init__(self, title: str, fields: dict[str, Union[discord.ui.TextInput, discord.ui.Select]], when_submit: functools.partial):
+	children: list[Union[discord.ui.TextInput, discord.ui.Select]]
+
+	def __init__(self, title: str, fields: dict[str, Union[discord.ui.TextInput, discord.ui.Select]], when_submit: Callable) -> None:
 		super().__init__(title=title)
 
 		self.values : dict[str, str] = {}
 		self.when_submit = when_submit
 
-		self.__fields : dict[str, functools.partial] = {}
+		self.__fields : dict[str, Callable] = {}
 		for i, item in enumerate(fields.items()):
 			key, value = item
 			self.__fields[key] = functools.partial(self.__get_value, self.add_item(value).children[i])
 
-	def __get_value(self, children: Union[discord.ui.TextInput, discord.ui.Select]) -> str:
-		try:
+	def __get_value(self, children: Union[discord.ui.TextInput, discord.ui.Select]) -> Union[str, list[str]]:
+		if isinstance(children, discord.ui.TextInput):
 			return children.value
-		except AttributeError:
+		elif isinstance(children, discord.ui.Select):
 			return children.values
-		except Exception as e:
-			raise e
+		else:
+			raise TypeError("Invalid type for children")
 
-	async def on_submit(self, interaction: discord.Interaction):
+	async def on_submit(self, interaction: discord.Interaction) -> None:
 		for key, value in self.__fields.items():
 			self.values[key] = value()
 
@@ -36,12 +38,12 @@ class CustomModal(discord.ui.Modal):
 
 class View(Parent):
 	"""Button to Modal"""
-	def __init__(self, invoke: Union[commands.Context, discord.Interaction] = None):
+	def __init__(self, invoke: commands.Context) -> None:
 		super().__init__()
 
 		self.invoker = invoke.author
 
-		async def when_submit(_class: CustomModal, interaction: discord.Interaction):
+		async def when_submit(_class: CustomModal, interaction: discord.Interaction) -> None:
 			formater = ''
 			for key, value in _class.values.items():
 				if isinstance(value, list):
@@ -87,7 +89,7 @@ class View(Parent):
 		)
 
 	@discord.ui.button(label = "Sample modal", style = discord.ButtonStyle.gray, emoji = '📧')
-	async def button(self, interaction: discord.Interaction, button: discord.ui.Button):
+	async def button(self, interaction: discord.Interaction, button: discord.ui.Button) -> None:
 		if self.invoker != interaction.user:
 			await interaction.response.send_message("You can't open this modal.", ephemeral=True)
 		else:

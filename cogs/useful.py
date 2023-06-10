@@ -1,5 +1,5 @@
-import discord
 import asyncio
+import discord
 
 from datetime import datetime, timedelta
 
@@ -10,7 +10,7 @@ from discord.utils import format_dt
 
 from classes.ansi import Format as fmt, Foreground as fg, Background as bg
 from classes.discordbot import DiscordBot
-from classes.utilities import bot_has_permissions
+from classes.utilities import GuildContext, bot_has_permissions
 
 class Useful(commands.Cog, name="useful"):
 	"""
@@ -97,7 +97,7 @@ class Useful(commands.Cog, name="useful"):
 	@app_commands.command(name="alarm", description="Reminds you of something at a given time.")
 	@app_commands.describe(months="Month.", days="Day.", hours="Hour.", minutes="Minute.", seconds="Second (default = 30).", message="Your alarm message.")
 	@app_commands.autocomplete(months=month_suggest, days=day_suggest, hours=hour_suggest, minutes=minute_suggest)
-	async def alarm(self, interaction: discord.Interaction, message: str, months: int, days: int, hours: int, minutes: int, seconds: app_commands.Range[int, 0, 60] = 30):
+	async def alarm(self, interaction: discord.Interaction, message: str, months: int, days: int, hours: int, minutes: int, seconds: app_commands.Range[int, 0, 60] = 30) -> None:
 		"""Reminds you of something at a given time."""
 		now = datetime.now()
 		if months == -1: 
@@ -123,7 +123,7 @@ class Useful(commands.Cog, name="useful"):
 
 	@app_commands.command(name="strawpoll", description="Create a strawpoll.")
 	@app_commands.describe(question="The question of the strawpoll.")
-	async def avatar(self, interaction: discord.Interaction, question: str):
+	async def avatar(self, interaction: discord.Interaction, question: str) -> None:
 		await interaction.response.send_message(content=f"__*{interaction.user.mention}*__ : {question}", allowed_mentions=discord.AllowedMentions(everyone=False, users=True, roles=False))
 		message = await interaction.original_response()
 		await message.add_reaction("<a:checkmark_a:842800730049871892>")
@@ -132,7 +132,7 @@ class Useful(commands.Cog, name="useful"):
 	@commands.command(name="emojilist", aliases=["ce", "el"])
 	@commands.cooldown(1, 10, commands.BucketType.user)
 	@commands.guild_only()
-	async def getcustomemojis(self, ctx):
+	async def getcustomemojis(self, ctx: GuildContext) -> None:
 		"""Return a list of each custom emojis from the current server."""
 		embed_list, embed = [], discord.Embed(title=f"Custom Emojis List ({len(ctx.guild.emojis)}) :")
 		for i, emoji in enumerate(ctx.guild.emojis, start=1):
@@ -151,7 +151,7 @@ class Useful(commands.Cog, name="useful"):
 
 	@commands.command(name="colors")
 	@commands.cooldown(1, 10, commands.BucketType.user)
-	async def codeblock_colors(self, ctx: commands.Context):
+	async def codeblock_colors(self, ctx: commands.Context) -> None:
 		codeblock = "```ansi\n"
 
 		for item, text in [
@@ -167,7 +167,7 @@ class Useful(commands.Cog, name="useful"):
 
 	@bot_has_permissions(manage_messages=True, read_message_history=True)
 	@commands.command(name="cleanup")
-	async def cleanup(self, ctx: commands.Context, n_message: int):
+	async def cleanup(self, ctx: commands.Context, n_message: int) -> None:
 		if n_message < 1 or n_message > 150:
 			raise ValueError("Invalid number of messages to delete.")
 
@@ -182,5 +182,5 @@ class Useful(commands.Cog, name="useful"):
 
 
 
-async def setup(bot: DiscordBot):
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Useful(bot))

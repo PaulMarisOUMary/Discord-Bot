@@ -3,8 +3,10 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from logging import ERROR as LOG_ERROR, CRITICAL as LOG_CRITICAL
+from typing import Any, NoReturn
 
 from classes.discordbot import DiscordBot
+from classes.utilities import dummy_awaitable_callable
 
 class Errors(commands.Cog, name="errors"):
 	"""Errors handler."""
@@ -20,7 +22,7 @@ class Errors(commands.Cog, name="errors"):
 		description = "A custom errors handler. Nothing to see here."
 		return emoji, label, description"""
 
-	def trace_error(self, level: str, error: Exception):
+	def trace_error(self, level: str, error: Exception) -> NoReturn:
 		self.bot.log(
 			message = type(error).__name__,
 			name = f"discord.{level}",
@@ -41,7 +43,7 @@ class Errors(commands.Cog, name="errors"):
 			return False
 
 	@commands.Cog.listener("on_error")
-	async def get_error(self, event, *args, **kwargs):
+	async def get_error(self, event, *args, **kwargs) -> None:
 		"""Error handler"""
 		self.bot.log(
 			message = f"Unexpected Internal Error: (event) {event}, (args) {args}, (kwargs) {kwargs}.",
@@ -50,16 +52,17 @@ class Errors(commands.Cog, name="errors"):
 		)
 
 	@commands.Cog.listener("on_command_error")
-	async def get_command_error(self, ctx: commands.Context, error: commands.CommandError):
+	async def get_command_error(self, ctx: commands.Context, error: commands.CommandError) -> None:
 		"""Command Error handler
 		doc: https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#exception-hierarchy
 		"""
+		edit = dummy_awaitable_callable
 		try:
 			if ctx.interaction: # HybridCommand Support
 				await self.__respond_to_interaction(ctx.interaction)
 				edit = ctx.interaction.edit_original_response
 				if isinstance(error, commands.HybridCommandError):
-					error = error.original # Access to the original error
+					error = error.original # type: ignore # Access to the original error
 			else:
 				try:
 					discord_message = await ctx.send(self.default_error_message)
@@ -73,7 +76,7 @@ class Errors(commands.Cog, name="errors"):
 			await edit(content=f"🕳️ {d_error}")
 		# UserInputError
 		except commands.MissingRequiredArgument as d_error:
-			await edit(content=f"🕳️ Something is missing. `{ctx.clean_prefix}{ctx.command.name} <{'> <'.join(ctx.command.clean_params)}>`")
+			await edit(content=f"🕳️ Something is missing. `{ctx.clean_prefix}{ctx.command.name} <{'> <'.join(ctx.command.clean_params)}>`") # type: ignore
 		# UserInputError -> BadArgument
 		except commands.MemberNotFound or commands.UserNotFound as d_error:
 			await edit(content=f"🕳️ Member `{str(d_error).split(' ')[1]}` not found ! Don't hesitate to ping the requested member.")
@@ -113,15 +116,16 @@ class Errors(commands.Cog, name="errors"):
 			await edit(content=f"🕳️ Max concurrency reached. Maximum number of concurrent invokers allowed: `{d_error.number}`, per `{d_error.per}`.")
 		# HybridCommandError
 		except commands.HybridCommandError as d_error:
-			await self.get_app_command_error(ctx.interaction, error)
+			await self.get_app_command_error(ctx.interaction, error) # type: ignore
 		except Exception as e:
 			self.trace_error("get_command_error", e)
 
 	@commands.Cog.listener("on_app_command_error")
-	async def get_app_command_error(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError):
+	async def get_app_command_error(self, interaction: discord.Interaction, error: discord.app_commands.AppCommandError) -> None:
 		"""App command Error Handler
 		doc: https://discordpy.readthedocs.io/en/latest/interactions/api.html#exception-hierarchy
 		"""
+		edit = dummy_awaitable_callable
 		try:
 			await self.__respond_to_interaction(interaction)
 			edit = interaction.edit_original_response
@@ -153,7 +157,7 @@ class Errors(commands.Cog, name="errors"):
 			self.trace_error("get_app_command_error", e)
 
 	@commands.Cog.listener("on_view_error")
-	async def get_view_error(self, interaction: discord.Interaction, error: Exception, item: any):
+	async def get_view_error(self, interaction: discord.Interaction, error: Exception, item: Any) -> None:
 		"""View Error Handler"""
 		try:
 			raise error
@@ -163,7 +167,7 @@ class Errors(commands.Cog, name="errors"):
 			self.trace_error("get_view_error", e)
 
 	@commands.Cog.listener("on_modal_error")
-	async def get_modal_error(self, interaction: discord.Interaction, error: Exception):
+	async def get_modal_error(self, interaction: discord.Interaction, error: Exception) -> None:
 		"""Modal Error Handler"""
 		try:
 			raise error
@@ -172,5 +176,7 @@ class Errors(commands.Cog, name="errors"):
 		except Exception as e:
 			self.trace_error("get_modal_error", e)
 
-async def setup(bot: DiscordBot):
+
+
+async def setup(bot: DiscordBot) -> None:
 	await bot.add_cog(Errors(bot))

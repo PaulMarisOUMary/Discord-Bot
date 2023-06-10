@@ -61,11 +61,11 @@
     },
     "status": {
         "status": [
-            "V2.0 Soon !",
+            "V2 is out !",
             "I'm open-source !",
             "Use slash-commands !"
         ],
-        "cooldown": 15
+        "cooldown": 20
     },
     "starboard": {
         "table": "table_starboard"
