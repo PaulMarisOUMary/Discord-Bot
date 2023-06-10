@@ -86,12 +86,8 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 	@app_commands.choices(limit=[Choice(name=str(i), value=i) for i in range(1, 26)])
 	@app_commands.describe(limit="The number of max user(s) in your private channel.")
 	@app_commands.guild_only()
-	async def lock_private_vocal(self, ctx: commands.Context, limit: int = 1) -> None:
+	async def lock_private_vocal(self, ctx: commands.Context, limit: int = -1) -> None:
 		"""Limit the number of user(s) in your private channel."""
-		if not isinstance(ctx.author, discord.Member) or not ctx.guild:
-			await ctx.send("You're not in a guild.", ephemeral=True)
-			return
-
 		voice = ctx.author.voice
 		if not voice or not voice.channel:
 			await ctx.send("You're not in a voice channel.", ephemeral=True)

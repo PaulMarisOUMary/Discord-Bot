@@ -58,7 +58,7 @@ class HelpCommand(commands.HelpCommand):
         if not "bot_permissions" in extras or not extras["bot_permissions"]:
             return "None"
         return self.__list_to_block(extras['bot_permissions'], block='')
-    
+
     async def __add_help_field_to_embed(self, embed: discord.Embed, command: Union[commands.Command, app_commands.Command, commands.HybridCommand], show_permissions: Optional[bool] = True) -> None:
         details = f"```ansi\n{fg.BLUE + fmt.UNDERLINE}Description{fmt.RESET}:\n"
         if isinstance(command, app_commands.Command):
@@ -82,7 +82,6 @@ class HelpCommand(commands.HelpCommand):
         for key, values in mapping.copy().items():
             if not values or len(values) == 0:
                 del mapping[key]
-
         return mapping
 
     def get_bot_mapping(self) -> Dict[Optional[commands.Cog], List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]]:
@@ -135,20 +134,17 @@ class HelpCommand(commands.HelpCommand):
             cog = from_cog(keys[1])
             if cog:
                 return await self.send_cog_help(cog)
-            else:
-                return self.command_not_found(keys[1])
+            return self.command_not_found(keys[1])
         elif fkey == "command" and is_keys:
             cmd = from_command(keys[1])
             if cmd:
                 return await self.send_command_help(cmd)
-            else:
-                return self.command_not_found(keys[1])
+            return self.command_not_found(keys[1])
         elif fkey == "group" and is_keys:
             group = from_group(keys[1])
             if group:
                 return await self.send_group_help(group)
-            else:
-                return self.command_not_found(keys[1])
+            return self.command_not_found(keys[1])
 
         cog = from_cog(command)
         if cog:
@@ -161,7 +157,7 @@ class HelpCommand(commands.HelpCommand):
         group = from_group(command)
         if group:
             return await self.send_group_help(group)
-        
+
         return self.command_not_found(keys[0])
 
     async def send_bot_help(self, mapping: Dict[Optional[commands.Cog], List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]]) -> None:

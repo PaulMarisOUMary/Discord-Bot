@@ -35,8 +35,8 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 		description = "Add and edit textuals channels."
 		return emoji, label, description
 	
-	def __get_owner(self, private_channel: discord.TextChannel) -> Optional[discord.Member]:
-		raise NotImplementedError
+	def __get_owner_id(self, private_role: discord.Role) -> str:
+		return private_role.name.split(':')[1]
 
 	def __is_dash_channel(self, channel: discord.TextChannel) -> bool:
 		return self.dashlock == channel.name[0]
@@ -44,7 +44,7 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 	def __get_private_role(self, channel: discord.TextChannel) -> Optional[discord.Role]:
 		for role, permissions in channel.overwrites.items():
 			if permissions.send_messages:
-				if len(role.name.split(':')) > 1:
+				if role.name[len(self.dashlock):len(self.dashlock)+4] == "team" and len(role.name.split(':')) > 1:
 					return role
 
 	@bot_has_permissions(manage_channels=True, manage_roles=True, view_channel=True)
@@ -135,7 +135,7 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 			await interaction.response.send_message("You can't delete a non private textual channel.\nTry to type this command in your private channel.", ephemeral=True)
 			return
 
-		if (owner := channel_role.name.split(":")[1]) != str(interaction.user.id) and not interaction.user.guild_permissions.administrator: # Avoid user to delete channel: must be owner or admin
+		if (owner := self.__get_owner_id(channel_role)) != str(interaction.user.id) and not interaction.user.guild_permissions.administrator: # Avoid user to delete channel: must be owner or admin
 			await interaction.response.send_message(f"You can't delete a private textual channel that you don't own.\nOwner: <@{owner}>", ephemeral=True)
 			return
 
@@ -174,7 +174,7 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 			await interaction.response.send_message(f"You can't remove a non-member in your private textual private channel.\nType `/private add {user.name}`.", ephemeral=True)
 			return
 
-		if (owner := channel_role.name.split(":")[1]) != str(interaction.user.id): # Avoid member to remove member: must be owner
+		if (owner := self.__get_owner_id(channel_role)) != str(interaction.user.id): # Avoid member to remove member: must be owner
 			await interaction.response.send_message(f"You can't remove a user from the textual channel that you don't own.\nOwner: <@{owner}>.\nFor ownership ||<@{owner}> must type: `/private transferownership {interaction.user}`||", ephemeral=True)
 			return
 
@@ -195,8 +195,7 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 			await interaction.response.send_message("You can't get information about a non private textual channel.\nTry to type this command in your private channel.", ephemeral=True)
 			return
 
-		owner = channel_role.name.split(":")[1]
-		await interaction.response.send_message(f"Owner: <@{owner}>\nCreated: {format_dt(interaction.channel.created_at, 'F')}", ephemeral=True)
+		await interaction.response.send_message(f"Owner: <@{self.__get_owner_id(channel_role)}>\nCreated: {format_dt(interaction.channel.created_at, 'F')}", ephemeral=True)
 
 	@bot_has_permissions(manage_roles=True)
 	@app_commands.command(name="transferownership", description="Transfer ownership of a private textual channel.")
@@ -217,7 +216,7 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 			await interaction.response.send_message(f"You can't transfer ownership to a non-member of your private textual private channel.\nType `/private add {user.name}`.", ephemeral=True)
 			return
 
-		if (owner := channel_role.name.split(":")[1]) != str(interaction.user.id): # Avoid member to transfer ownership: must be owner
+		if (owner := self.__get_owner_id(channel_role)) != str(interaction.user.id): # Avoid member to transfer ownership: must be owner
 			await interaction.response.send_message(f"You can't transfer ownership of a textual channel that you don't own.\nOwner: <@{owner}>.\nFor ownership ||<@{owner}> must type: `/private transferownership {interaction.user}`||", ephemeral=True)
 			return
 
@@ -276,7 +275,7 @@ class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="priva
 			await interaction.response.send_message("You can't leave a non private textual channel.\nTry to type this command in a private channel.", ephemeral=True)
 			return
 
-		if channel_role.name.split(":")[1] == str(interaction.user.id): # Avoid owner to leave: must be member
+		if self.__get_owner_id(channel_role) == str(interaction.user.id): # Avoid owner to leave: must be member
 			await interaction.response.send_message("You can't leave a textual channel that you own.\nType `/private delete` to delete your private textual channel.\nOr transfer the ownership with /private transferownership.", ephemeral=True)
 			return
 		
