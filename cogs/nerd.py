@@ -18,8 +18,10 @@ class Nerd(commands.Cog, name="nerd"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
-        self.target = "219156294974570497"
-        self.EMOJI = '🤓'
+        self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
+
+        self.target = self.subconfig_data["id"]
+        self.EMOJI = self.subconfig_data["react"]
 
     def help_custom(self) -> tuple[str, str, str]:
         emoji = self.EMOJI
