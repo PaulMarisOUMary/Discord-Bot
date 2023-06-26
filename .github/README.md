@@ -59,6 +59,7 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
     - Language detector & Translation
     - Private text channel on demand (cog: privatetext)
     - Private vocal channel on demand (cog: privatevocal)
+    - Reddit posts listner
 - And more..
 
 ### Built with
@@ -110,11 +111,23 @@ $ pip install -r requirements.txt
 > 1. set the `"use_database"` field to `false` in the `/config/database.json` file.
 > 2. in the folder `/cogs` you should remove the following files (which are using the database): `birthday.py`, `croissants.py`, `invite.py`, `me.py`, `metrics.py`, `starboard.py`.
 
-If you have planned to use a database:
-- you should use a SQL Database.
-- reconfigure the "server" section from `/config/database.json`.
-- you can change the structure of each SQL tables if needed.
-    - if so you should reconfigure some keys/values of the `/config/cogs.json`.
+To set up a SQL database such as MariaDB or any other SQL database, and host it on a Raspberry Pi or any other server, you need to follow these steps:
+
+1. Install MariaDB or any other SQL database on the desired server. The installation process may vary depending on the operating system and which SQL database you have selected. You may also want to install a graphical user interface for your database, such as phpMyAdmin, which makes it easier to manage and configure your database.
+
+2. Create a new user with password that the bot is going to use and grant the necessary permissions such as `SELECT`, `INSERT`, `UPDATE`, `DELETE`, and `SHOW DATABASES`.
+
+3. If the database is on the same server, no additional configuration is usually required. However, if the database is hosted on a different server, you may need to configure network settings to allow access to the database server. Specifically, you might need to open port 3306, which is the default port for SQL databases, on the server where the database is hosted.
+
+4. Create a new database. Add the tables listed in the [SQL tables structure](#sql-tables-structure) section. You can change the structure of the tables as you wish, but you will need to reconfigure some keys/values of the `/config/cogs.json`.
+
+5. Fill the database settings for your bot in the `/config/database.json` file as following:
+    - `use_database`: This line configures the bot to either use the database or not. __If set to false__ you won't use any database features and your bot will run.
+    - `host`: Sepcify the IP address/hostname of the database server. It could be a local IP adress if you're running your bot in the same local network than you're database is running (e.g. 192.168.1.31).
+    - `port`: This specifies the port number on which the database server is listening. It's often set to the default SQL port, which is 3306, except if you change it you may not need to change the port number.
+    - `user`: Here, you need to replace "user" with the actual username you will be using to connect to the database server. This should be the username that has appropriate privileges to access the desired database.
+    - `password`: Replace this with the actual password for the specified username. It is the password that allows you to connect to the database server.
+    - `database`: Replace this with the name of the database you want your bot to connect to. Specify the actual name of the database that contains the data your bot needs to access or modify.
 
 ### SQL tables structure
 
