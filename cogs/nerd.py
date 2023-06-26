@@ -31,5 +31,5 @@ class Nerd(commands.Cog, name="nerd"):
 
     @commands.Cog.listener("on_message")
     async def on_receive_message(self, message: discord.Message) -> None:
-        if not message.author.bot and message.author.id == self.target:
+        if message.author.id == self.target:
             await message.add_reaction(self.EMOJI)
