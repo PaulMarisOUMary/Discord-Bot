@@ -23,9 +23,9 @@ class Spotify(commands.Cog, name="spotify"):
 		self.bot = bot
 
 	def help_custom(self) -> tuple[str, str, str]:
-		emoji = "<:spotify:880896591756656641>"
+		emoji = '🎶'
 		label = "Spotify"
-		description = "Spotify status commands."
+		description = "Spotify player status commands."
 		return emoji, label, description
 
 	@bot_has_permissions(embed_links=True)

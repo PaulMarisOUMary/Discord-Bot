@@ -23,7 +23,7 @@ class Reddit(commands.Cog, name="reddit"):
         self.bot: DiscordBot = bot
         self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
 
-        self.reddit: asyncpraw.Reddit = None
+        self.reddit: asyncpraw.Reddit = None # type: ignore
         self.tasks: list[asyncio.Task] = []
 
     def help_custom(self) -> tuple[str, str, str]:
