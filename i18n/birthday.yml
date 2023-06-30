@@ -1,0 +1,53 @@
+groups:
+  birthday:
+    name:
+      en: "birthday"
+      fr: "anniversaire"
+    description:
+      en: "Set your birthday, and when the time comes I will wish you a happy birthday !"
+      fr: "Définissez votre anniversaire, le moment sera venu je vous le souhaiterai !"
+    commands:
+      set:
+        name:
+          en: "set"
+          fr: "date"
+        description:
+          en: "Set your birthdate."
+          fr: "Ajoutez votre date de naissance."
+        parameters:
+          month:
+            name:
+              en: "month"
+              fr: "mois"
+            description:
+              en: "Month of your birthdate."
+              fr: "Mois de votre date de naissance."
+          day:
+            name:
+              en: "day"
+              fr: "jour"
+            description:
+              en: "Month of your birthdate."
+              fr: "Mois de votre date de naissance."
+          year:
+            name:
+              en: "year"
+              fr: "année"
+            description:
+              en: "Year of your birthdate."
+              fr: "Année de votre date de naissance."
+      show:
+        name:
+          en: "show"
+          fr: "afficher"
+        description:
+          en: "Show a birthdate."
+          fr: "Affiche une date de naissance."
+        parameters:
+          user:
+            name:
+              en: "user"
+              fr: "utilisateur"
+            description:
+              en: "User to show the birthdate."
+              fr: "Utilisateur dont on veut afficher la date de naissance."

@@ -1,0 +1,9 @@
+context-menus:
+  translate in english:
+    name:
+      en: "Translate in English"
+      fr: "Traduire en anglais"
+  translate:
+    name:
+      en: "Translate"
+      fr: "Traduire"

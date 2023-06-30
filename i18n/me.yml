@@ -1,0 +1,36 @@
+groups:
+  me:
+    description:
+      en: "Like minecraft set your own /me !"
+      fr: "Comme dans minecraft, définissez votre propre /me !"
+    commands:
+      set:
+        name:
+          en: "set"
+          fr: "texte"
+        description:
+          en: "Set your own brief description of yourself !"
+          fr: "Définissez votre propre description à propos de vous même!"
+        parameters:
+          description:
+            name:
+              en: "description"
+              fr: "description"
+            description:
+              en: "Write something fun about yourself !"
+              fr: "Ecrivez quelque chose de sympa à propos de vous !"  
+      show:
+        name:
+          en: "show"
+          fr: "afficher"
+        description:
+          en: "Show /me of a user !"
+          fr: "Affiche le /me d'un utilisateur !"
+        parameters:
+          user:
+            name:
+              en: "user"
+              fr: "utilisateur"
+            description:
+              en: "The user you want to see the /me of !"
+              fr: "L'utilisateur dont vous voulez voir le /me !"

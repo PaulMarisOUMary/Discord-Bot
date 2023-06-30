@@ -1,0 +1,8 @@
+commands:
+  ping:
+    name:
+      en: "ping"
+      fr: "latence"
+    description:
+      en: "Measure the latency between the bot and the Discord."
+      fr: "Mesure la latence entre le bot et Discord."

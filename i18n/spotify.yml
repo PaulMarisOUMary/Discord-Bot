@@ -1,0 +1,5 @@
+commands:
+  spotify:
+    description:
+      en: "Display information about what you are currently listening to on Spotify."
+      fr: "Affiche les informations de ce que vous écoutez actuellement sur Spotify."
