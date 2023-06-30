@@ -12,7 +12,7 @@ from classes.utilities import bot_has_permissions
 from views.modal import CustomModal
 
 @app_commands.guild_only()
-class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="private", group_description="Private Textual Commands."):
+class PrivateTextual(commands.GroupCog, name="privatetextual", group_name="privatetextual", group_description="Private Textual Commands."):
 	"""
 		Create and manage private textual channels.
 
