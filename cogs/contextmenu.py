@@ -1,7 +1,7 @@
 import discord
 
 from classes.discordbot import DiscordBot
-from classes.translator import Translator
+from classes.translation import Translator
 
 from discord.ext import commands
 from discord import app_commands
