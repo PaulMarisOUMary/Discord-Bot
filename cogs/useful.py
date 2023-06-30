@@ -25,11 +25,11 @@ class Useful(commands.Cog, name="useful"):
 	def __init__(self, bot: DiscordBot) -> None:
 		self.bot = bot
 
-	"""def help_custom(self) -> tuple[str]:
+	def help_custom(self) -> tuple[str, str, str]:
 		emoji = '🚩'
 		label = "Useful"
 		description = "Useful commands."
-		return emoji, label, description"""
+		return emoji, label, description
 
 	@bot_has_permissions(send_messages=True)
 	@app_commands.command(name="reminder", description="Reminds you of something at a relative time.")

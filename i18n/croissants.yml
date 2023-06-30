@@ -1,0 +1,38 @@
+groups:
+  croissants:
+    name:
+      en: "croissants"
+      fr: "croissants"
+    description:
+      en: "Don't leave your computer unlocked !"
+      fr: "Ne laissez pas votre ordinateur déverrouillé !"
+    commands:
+      rank:
+        name:
+          en: "rank"
+          fr: "classement"
+        description:
+          en: "Show the croissants ranking."
+          fr: "Affiche le classement des croissants."
+      show:
+        name:
+          en: "show"
+          fr: "afficher"
+        description:
+          en: "Show how many croissants a user has."
+          fr: "Afficher combien de croissants d'un utilisateur."
+        parameters:
+          user:
+            name:
+              en: "user"
+              fr: "utilisateur"
+            description:
+              en: "User to show the croissants."
+              fr: "Utilisateur dont on veut afficher les croissants."
+      lore:
+        name:
+          en: "lore"
+          fr: "contexte"
+        description:
+          en: "Show the croissants lore."
+          fr: "Affiche le contexte et l'histoire autour des croissants."

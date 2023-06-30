@@ -1,0 +1,49 @@
+choices:
+  january:
+    name:
+      en: "January"
+      fr: "Janvier"
+  february:
+    name:
+      en: "February"
+      fr: "Février"
+  march:
+    name:
+      en: "March"
+      fr: "Mars"
+  april:
+    name:
+      en: "April"
+      fr: "Avril"
+  may:
+    name:
+      en: "May"
+      fr: "Mai"
+  june:
+    name:
+      en: "June"
+      fr: "Juin"
+  july:
+    name:
+      en: "July"
+      fr: "Juillet"
+  august:
+    name:
+      en: "August"
+      fr: "Août"
+  september:
+    name:
+      en: "September"
+      fr: "Septembre"
+  october:
+    name:
+      en: "October"
+      fr: "Octobre"
+  november:
+    name:
+      en: "November"
+      fr: "Novembre"
+  december:
+    name:
+      en: "December"
+      fr: "Décembre"

@@ -1,0 +1,16 @@
+commands:
+  userlimit:
+    name:
+      en: "userlimit"
+      fr: "limitevocal"
+    description:
+      en: "Set the user limit of the server."
+      fr: "Définissez la limite d'utilisateurs du salon vocal dans lequel vous êtes connecté."
+    parameters:
+      limit:
+        name:
+          en: "limit"
+          fr: "limite"
+        description:
+          en: "The new user limit."
+          fr: "La nouvelle limite d'utilisateurs."

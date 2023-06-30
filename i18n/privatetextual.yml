@@ -1,0 +1,89 @@
+groups:
+  privatetextual:
+    name:
+      en: "private"
+      fr: "privé"
+    description:
+      en: "Manage private textual channel."
+      fr: "Gère les salons textuel privés."
+    commands:
+      create:
+        name:
+          en: "create"
+          fr: "créer"
+        description:
+          en: "Create a private textual channel."
+          fr: "Créer un salon textuel privé."
+      delete:
+        name:
+          en: "delete"
+          fr: "supprimer"
+        description:
+          en: "Delete a private textual channel."
+          fr: "Supprimer un salon textuel privé."
+      add:
+        name:
+          en: "add"
+          fr: "ajouter"
+        description:
+          en: "Add a user to the private textual channel."
+          fr: "Ajouter un utilisateur au salon textuel privé."
+        parameters:
+          user:
+            name:
+              en: "user"
+              fr: "utilisateur"
+            description:
+              en: "User to add to the private textual channel."
+              fr: "Utilisateur à ajouter au salon textuel privé."
+      remove:
+        name:
+          en: "remove"
+          fr: "retirer"
+        description:
+          en: "Remove a user from the private textual channel."
+          fr: "Retirer un utilisateur du salon textuel privé."
+        parameters:
+          user:
+            name:
+              en: "user"
+              fr: "utilisateur"
+            description:
+              en: "User to remove from the private textual channel."
+              fr: "Utilisateur à retirer du salon textuel privé."
+      info:
+        name:
+          en: "info"
+          fr: "info"
+        description:
+          en: "Show informations about the private textual channel."
+          fr: "Affiche les informations sur le salon textuel privé."
+      transferownership:
+        name:
+          en: "transferownership"
+          fr: "transferer"
+        description:
+          en: "Transfer the ownership of the private textual channel."
+          fr: "Transférer la propriété du salon textuel privé à un autre utilisateur."
+        parameters:
+          user:
+            name:
+              en: "user"
+              fr: "utilisateur"
+            description:
+              en: "User to transfer the ownership of the private textual channel."
+              fr: "Utilisateur à qui transférer la propriété du salon textuel privé."
+      edit:
+        name:
+          en: "edit"
+          fr: "editer"
+        description:
+          en: "Edit the private textual channel."
+          fr: "Editer le salon textuel privé."
+      leave:
+        name:
+          en: "leave"
+          fr: "quitter"
+        description:
+          en: "Leave the private textual channel."
+          fr: "Quitter le salon textuel privé."

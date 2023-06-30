@@ -1,0 +1,8 @@
+commands:
+  help:
+    name:
+      en: "help"
+      fr: "aide"
+    description:
+      en: "Displays a list of available commands, and detailed information such as permissions and more."
+      fr: "Affiche une liste des commandes disponibles, et des informations détaillées (permissions etc..)"

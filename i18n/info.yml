@@ -1,0 +1,53 @@
+commands:
+  lookup:
+    name:
+      en: "lookup"
+      fr: "info"
+    description:
+      en: "Lookup information about a user."
+      fr: "Affiche des informations sur un utilisateur."
+    parameters:
+      user:
+        name:
+          en: "user" 
+          fr: "utilisateur"
+        description:
+          en: "The user to lookup."
+          fr: "L'utilisateur à afficher."
+  banner:
+    name:
+      en: "banner"
+      fr: "bannière"
+    description:
+      en: "Display the banner."
+      fr: "Affiche la bannière."
+    parameters:
+      user:
+        name:
+          en: "user"
+          fr: "utilisateur"
+        description:
+          en: "The user to display the banner for."
+          fr: "L'utilisateur dont on veut afficher la bannière."
+  avatar:
+    name:
+      en: "avatar"
+      fr: "photo"
+    description:
+      en: "Display the avatar."
+      fr: "Affiche la photo de profil."
+    parameters:
+      user:
+        name:
+          en: "user"
+          fr: "utilisateur"
+        description:
+          en: "The user to display the avatar for."
+          fr: "L'utilisateur dont on veut afficher la photo de profil."
+  statistics:
+    name:
+      en: "statistics"
+      fr: "statistiques"
+    description:
+      en: "Display the current server statistics."
+      fr: "Affiche les statistiques actuelles du serveur."

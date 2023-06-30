@@ -1,0 +1,102 @@
+commands:
+  reminder:
+    name:
+      en: "reminder"
+      fr: "rappel"
+    description:
+      en: "Create a reminder."
+      fr: "Créer un rappel."
+    parameters:
+      hours:
+        name:
+          en: "hours"
+          fr: "heures"
+        description:
+          en: "The number of hours."
+          fr: "Le nombre d'heures."
+      minutes:
+        name:
+          en: "minutes"
+          fr: "minutes"
+        description:
+          en: "The number of minutes."
+          fr: "Le nombre de minutes."
+      seconds:
+        name:
+          en: "seconds"
+          fr: "secondes"
+        description:
+          en: "The number of seconds."
+          fr: "Le nombre de secondes."
+      message:
+        name:
+          en: "message"
+          fr: "message"
+        description:
+          en: "The message to send."
+          fr: "Le message à envoyer."
+  alarm:
+    name:
+      en: "alarm"
+      fr: "alarme"
+    description:
+      en: "Create an alarm."
+      fr: "Créer une alarme."
+    parameters:
+      message:
+        name:
+          en: "message"
+          fr: "message"
+        description:
+          en: "The message to send."
+          fr: "Le message à envoyer."
+      months:
+        name:
+          en: "month"
+          fr: "mois"
+        description:
+          en: "The month."
+          fr: "Le mois."
+      days:
+        name:
+          en: "day"
+          fr: "jour"
+        description:
+          en: "The day." 
+          fr: "Le jour."
+      hours:
+        name:
+          en: "hour"
+          fr: "heure"
+        description:
+          en: "The hour."
+          fr: "L'heure."
+      minutes:
+        name:
+          en: "minutes"
+          fr: "minutes"
+        description:
+          en: "The minute."
+          fr: "Les minutes."
+      seconds:
+        name:
+          en: "seconds"
+          fr: "secondes"
+        description:
+          en: "The second."
+          fr: "Les secondes."
+  strawpoll:
+    name:
+      en: "strawpoll"
+      fr: "sondage"
+    description:
+      en: "Create a strawpoll."
+      fr: "Créer un sondage."
+    parameters:
+      question:
+        name:
+          en: "question"
+          fr: "question"
+        description:
+          en: "Your question."
+          fr: "Votre question."
