@@ -4,7 +4,7 @@ import yaml
 from discord import Locale, app_commands
 from discord.app_commands import locale_str, TranslationContextLocation, TranslationContextTypes
 from discord.ext import commands
-from typing import Optional, Union
+from typing import Literal, Optional, Union
 from os.path import join, exists
 
 from classes.utilities import root_directory
@@ -79,6 +79,7 @@ class CustomTranslator(app_commands.Translator):
     def __get_i18n_simple(self,
                                 i18n_path: str,
                                 command: str,
+                                simple: Literal["choices", "context-menus"],
                                 locale: str
                             ) -> Optional[str]:
         with open(i18n_path, 'r') as file:
@@ -87,9 +88,9 @@ class CustomTranslator(app_commands.Translator):
         if not data:
             return None
 
-        if "context-menus" not in data:
+        if simple not in data:
             return None
-        data = data["context-menus"]
+        data = data[simple]
 
         if command not in data:
             return None
@@ -208,14 +209,14 @@ class CustomTranslator(app_commands.Translator):
             if not exists(file):
                 #print(f"Missing i18n file for i18n.contextmenus")
                 return None
-            return self.__get_i18n_simple(file, reference.name.lower(), locale_code)
+            return self.__get_i18n_simple(file, reference.name.lower(), "context-menus", locale_code)
 
         elif isinstance(reference, app_commands.Choice):
             file = self.__i18n_file("i18n.choices")
             if not exists(file):
                 #print(f"Missing i18n file for i18n.choices")
                 return None
-            return self.__get_i18n_simple(file, reference.name.lower(), locale_code)
+            return self.__get_i18n_simple(file, reference.name.lower(), "choices", locale_code)
 
         else: # Other
             return None
