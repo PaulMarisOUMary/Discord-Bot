@@ -35,6 +35,9 @@ class CustomTranslator(app_commands.Translator):
         with open(i18n_path, 'r') as file:
             data = yaml.safe_load(file)
 
+        if not data:
+            return None
+
         # groups
         for group in groups:
             if "groups" not in data:
@@ -80,6 +83,9 @@ class CustomTranslator(app_commands.Translator):
                             ) -> Optional[str]:
         with open(i18n_path, 'r') as file:
             data = yaml.safe_load(file)
+
+        if not data:
+            return None
 
         if "context-menus" not in data:
             return None
@@ -157,12 +163,9 @@ class CustomTranslator(app_commands.Translator):
         """
         locale_code = str(locale)
 
-        if locale_code not in ["en", "fr"]: # ! REMOVE
-            return None
-
         if locale in self.EN:
             locale_code = "en"
-            return None # Don't translate English as it's supposed to be the default language.
+            #return None # Don't translate English as it's supposed to be the default language.
 
         target = None
         if context.location in self.NAME:
@@ -177,7 +180,7 @@ class CustomTranslator(app_commands.Translator):
             if isinstance(reference.binding, commands.Cog):
                 file = self.__i18n_file(reference.binding.qualified_name.lower())
                 if not exists(file):
-                    print(f"Missing i18n file for {reference.binding.qualified_name.lower()}") # ! REMOVE
+                    #print(f"Missing i18n file for {reference.binding.qualified_name.lower()}")
                     return None
                 return self.__get_i18n(file, self.__get_str_path(obj_path), reference.name.lower(), None, target, locale_code)
 
@@ -196,21 +199,21 @@ class CustomTranslator(app_commands.Translator):
             if isinstance(reference.command.binding, commands.Cog):
                 file = self.__i18n_file(reference.command.binding.qualified_name.lower())
                 if not exists(file):
-                    print(f"Missing i18n file for {reference.command.binding.qualified_name.lower()}")
+                    #print(f"Missing i18n file for {reference.command.binding.qualified_name.lower()}")
                     return None
                 return self.__get_i18n(file, self.__get_str_path(obj_path), reference.command.name.lower(), {"parameters": reference.name.lower()}, target, locale_code)
 
         elif isinstance(reference, app_commands.ContextMenu):
             file = self.__i18n_file("i18n.contextmenus")
             if not exists(file):
-                print(f"Missing i18n file for i18n.contextmenus")
+                #print(f"Missing i18n file for i18n.contextmenus")
                 return None
             return self.__get_i18n_simple(file, reference.name.lower(), locale_code)
 
         elif isinstance(reference, app_commands.Choice):
             file = self.__i18n_file("i18n.choices")
             if not exists(file):
-                print(f"Missing i18n file for i18n.choices")
+                #print(f"Missing i18n file for i18n.choices")
                 return None
             return self.__get_i18n_simple(file, reference.name.lower(), locale_code)
 
