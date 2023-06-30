@@ -3,6 +3,7 @@ import logging
 
 from classes.discordbot import DiscordBot
 from classes.utilities import load_config, clean_close, cogs_manager, set_logging, cogs_directory
+from classes.translator import CustomTranslator
 
 from os import listdir
 
@@ -35,6 +36,9 @@ class Bot(DiscordBot):
 		cogs = [f"cogs.{filename[:-3]}" for filename in listdir(cogs_directory) if filename.endswith(".py")]
 		await cogs_manager(self, "load", cogs)
 		self.log(message = f"Cogs loaded ({len(cogs)}): {', '.join(cogs)}", name = "discord.setup_hook")
+
+		# Set translator
+		await bot.tree.set_translator(CustomTranslator())
 
 		# Sync application commands
 		self.loop.create_task(self.startup())

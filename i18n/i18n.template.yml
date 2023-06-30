@@ -1,0 +1,80 @@
+# This is a template file that you can copy/paste to create your own translation file.
+
+# You can find the list of all languages codes supported by discord here: https://discord.com/developers/docs/reference#locales
+# In this file, all keys are expected to be in lowercase. The translator will convert the names from the code to lowercase.
+
+# Most cases are covered, if you find a missing case, please open an issue/pull-request on GitHub.
+
+# ROOT STRUCTURE
+# commands
+# groups
+# context-menus
+# choices
+
+commands:
+  custom-command1: # name of the command
+    name:
+      en: "Command"
+      ru: "Команда"
+      fr: "Commande"
+      cz: "Příkaz"
+      # another language etc...
+    description:
+      en: "Command description"
+      ru: "Описание команды"
+      fr: "Description de la commande"
+      cz: "Popis příkazu"
+    parameters: # optional
+      custom-parameter1: # name of the parameter
+        name:
+          en: "Parameter name"
+          ru: "Название параметра"
+          fr: "Nom du paramètre"
+          cz: "Název parametru"
+        description:
+          en: "Parameter description"
+          ru: "Описание параметра"
+          fr: "Description du paramètre"
+          cz: "Popis parametru"
+      # another parameter name etc...
+  # another command name etc...
+
+groups:
+  custom-group1: # name of the group
+    name:
+      en: "Group name"
+      ru: "Название группы"
+      fr: "Nom du groupe"
+      cz: "Název skupiny"
+    description:
+      en: "Group description"
+      ru: "Описание группы"
+      fr: "Description du groupe"
+      cz: "Popis skupiny"
+    commands:
+      custom-subcommand1:
+        # same structure as a custom-command
+      # another subcommand etc...
+    groups: # optional
+      custom-subgroup1:
+        # same structure as a custom-group
+      # another subgroup etc...
+  # another group etc...
+
+context-menus:
+  custom-context-menu1: # name of the context menu
+    name:
+      en: "Context menu name"
+      ru: "Название контекстного меню"
+      fr: "Nom du menu contextuel"
+      cz: "Název kontextové nabídky"
+  # another context menu etc...
+
+choices:
+  custom-choice1: # name of the choice
+    name:
+      en: "Choice name"
+      ru: "Название выбора"
+      fr: "Nom du choix"
+      cz: "Název volby"
+  # another choice etc...

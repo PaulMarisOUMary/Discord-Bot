@@ -1,128 +1,218 @@
-from googletrans import Translator as GT # pip install googletrans==4.0.0-rc1
-from typing import Any
+import discord
+import yaml
 
-class Translator:
+from discord import Locale, app_commands
+from discord.app_commands import locale_str, TranslationContextLocation, TranslationContextTypes
+from discord.ext import commands
+from typing import Optional, Union
+from os.path import join, exists
 
-    # doc: https://cloud.google.com/translate/docs/languages
-    CORRECT_CONVERSION: dict[str, str] = {
-        "af": "za",
-        "am": "et",
-        "ar": "ae",
-        "be": "by",
-        "bn": "bd",
-        "bs": "ba",
-        "ca": "es", # invalid flag
-        "ceb": "ph",
-        "co": "fr", # invalid flag
-        "cs": "cz",
-        "cy": "gb",
-        "da": "dk",
-        "el": "gr",
-        "en": "gb",
-        "en-gb": "gb",
-        "en-us": "us",
-        "eo": "pl",
-        "es-es": "es",
-        "et": "ee",
-        "eu": "es",
-        "fa": "ir",
-        "fy": "nl", # invalid flag
-        "ga": "ie",
-        "gd": "en",
-        "gl": "es", # invalid flag
-        "gu": "in", # invalid flag
-        "ha": "ng",
-        "haw": "us", # invalid flag
-        "he": "il",
-        "hi": "in",
-        "hmn": "la",
-        "ht": "us", # invalid flag
-        "hy": "am",
-        "ig": "ng", # invalid flag
-        "iw": "il",
-        "ja": "jp",
-        "jw": "id",
-        "ka": "ge",
-        "kk": "kz",
-        "km": "kh",
-        "kn": "in",
-        "ko": "kr",
-        "ku": "iq",
-        "ky": "kg",
-        "la": "", # ! critical invalid flag
-        "lb": "lu",
-        "lo": "la",
-        "mi": "nz",
-        "ml": "in", # invalid flag
-        "mr": "in",
-        "ms": "in",
-        "my": "mm",
-        "ne": "np",
-        "ny": "mw",
-        "or": "in",
-        "pa": "in", # invalid flag
-        "ps": "af",
-        "pt-br": "br",
-        "sd": "pk",
-        "si": "lk",
-        "sl": "si",
-        "sm": "ws",
-        "sn": "zw",
-        "sq": "al",
-        "sr": "rs",
-        "st": "ls",
-        "su": "sd",
-        "sv": "se",
-        "sv-se": "sv",
-        "sw": "ke",
-        "ta": "in", # invalid flag
-        "te": "in", # invalid flag
-        "tg": "tj",
-        "tl": "hn",
-        "ug": "cn",
-        "ur": "pk",
-        "vi": "vn",
-        "xh": "za",
-        "yi": "il", # invalid flag
-        "yo": "", # ! critical invalid flag
-        "zh-cn": "cn",
-        "zh-tw": "tw",
-        "zu": "za" # invalid flag
-    }
+from classes.utilities import root_directory
 
-    # doc: https://discordpy.readthedocs.io/en/master/api.html?highlight=loca#discord.Locale
-    LOCALE_CONVERSION: dict[str, str] = {
-        "en-us": "en",
-        "en-gb": "en",
-        "es-es": "es",
-        "pt-br": "pt",
-        "sv-se": "sv"
-    }
+class CustomTranslator(app_commands.Translator):
+    async def load(self) -> None:
+        self.EN = { Locale.british_english, Locale.american_english }
 
-    @staticmethod
-    def detect(content: str) -> str:
-        return GT().detect(content).lang
+        self.NAME = [
+            TranslationContextLocation.command_name,
+            TranslationContextLocation.group_name,
+            TranslationContextLocation.parameter_name,
+        ]
+        self.DESCRIPTION = [
+            TranslationContextLocation.command_description,
+            TranslationContextLocation.group_description,
+            TranslationContextLocation.parameter_description,
+        ]
 
-    @staticmethod
-    def translate(content: str, dest: str, src: str = Any) -> str:
-        return GT().translate(content, dest=dest, src=src).text
+    def __get_i18n(self,
+                    i18n_path: str,
+                    groups: list[str],
+                    command: Optional[str],
+                    narrowing: Optional[dict[str, str]],
+                    target: Optional[str],
+                    locale: str
+                ) -> Optional[str]:
+        with open(i18n_path, 'r') as file:
+            data = yaml.safe_load(file)
 
-    @staticmethod
-    def get_flag_abbr(code_lang: str) -> str:
-        return Translator.CORRECT_CONVERSION.get(code_lang.lower(), code_lang.lower())
+        # groups
+        for group in groups:
+            if "groups" not in data:
+                return None
+            data = data["groups"]
+            if group not in data:
+                return None
+            data = data[group]
 
-    @staticmethod
-    def get_trans_abbr(locale: str) -> str:
-        return Translator.LOCALE_CONVERSION.get(locale.lower(), locale.lower())
+        # command
+        if command is not None and "commands" in data:
+            data = data["commands"]
+            if command not in data:
+                return None
+            data = data[command]
 
-    @staticmethod
-    def get_emoji(code_lang: str) -> str:
-        code_lang = Translator.get_flag_abbr(code_lang)
+        # parameters | choices | other
+        if narrowing:
+            for key, value in narrowing.items():
+                if key not in data:
+                    return None
+                data = data[key]
+                if value not in data:
+                    return None
+                data = data[value]
+
+        # name | description
+        if target not in data:
+            return None
+        data = data[target]
+
+        # locale
+        if locale not in data:
+            return None
+        data = data[locale]
+
+        return data
+
+    def __get_i18n_simple(self,
+                                i18n_path: str,
+                                command: str,
+                                locale: str
+                            ) -> Optional[str]:
+        with open(i18n_path, 'r') as file:
+            data = yaml.safe_load(file)
+
+        if "context-menus" not in data:
+            return None
+        data = data["context-menus"]
+
+        if command not in data:
+            return None
+        data = data[command]
+
+        if "name" not in data:
+            return None
+        data = data["name"]
+
+        if locale not in data:
+            return None
+        return data[locale]
+
+    def __to_top(self, command: Union[app_commands.Command, app_commands.Group], entries: Optional[list[Union[app_commands.Command, app_commands.Group]]] = None) -> list[Union[app_commands.Command, app_commands.Group]]:
+        """
+        Parameters
+        ------------
+        command: Union[:class:`app_commands.Command`, :class:`app_commands.Group`]
+            The command or group to get the top level list from.
         
-        RISLA = 0x1f1e6 # Regional Indicator Symbol Letter A
-        LSLA = 0x61 # Latin Small Letter A
+        Returns
+        --------
+        list[Union[:class:`app_commands.Command`, :class:`app_commands.Group`]]
+            The list of commands or groups from the top level to the command or group.
+            Root parent -> ... -> command or group provided.
+        """
+        if not entries:
+            entries = []
+        while command.parent is not None:
+            command = command.parent
+            entries.append(command)
 
-        flag = ''
-        for code in code_lang:
-            flag += chr(RISLA + (ord(code) - LSLA))
-        return flag
+        entries.reverse()
+        return entries
+
+    def __get_str_path(self, obj_path: list[Union[app_commands.Command, app_commands.Group]]):
+        return [obj.name.lower() for obj in obj_path]
+
+    def __i18n_file(self, cog: str) -> str:
+        return join(root_directory, "i18n", f"{cog}.yml")
+
+    async def translate(self,
+                        _: locale_str,
+                        locale: discord.Locale,
+                        context: TranslationContextTypes
+                        ) -> Optional[str]:
+        """
+        Command v
+        Group v
+        Parameter v
+        ContextMenu v
+        Choice v
+        Other x
+        
+        Parameters
+        ------------
+        string: :class:`locale_str`
+            The string being translated.
+        locale: :class:`discord.Locale`
+            The locale the target language to translate to.
+        context: :class:`TranslationContext`
+            The translation context where the string originated from.
+            For better type checking ergonomics, the ``TranslationContextTypes``
+            type can be used instead to aid with type narrowing. It is functionally
+            equivalent to :class:`TranslationContext`.
+        
+        Returns
+        ---------
+        Optional[:class:`str`]
+        If the translation is not found, then ``None`` is returned and no translation is set on discord's side.
+        """
+        locale_code = str(locale)
+
+        if locale_code not in ["en", "fr"]: # ! REMOVE
+            return None
+
+        if locale in self.EN:
+            locale_code = "en"
+            return None # Don't translate English as it's supposed to be the default language.
+
+        target = None
+        if context.location in self.NAME:
+            target = "name"
+        elif context.location in self.DESCRIPTION:
+            target = "description"
+
+        reference = context.data
+
+        if isinstance(reference, app_commands.Command):
+            obj_path = self.__to_top(reference)
+            if isinstance(reference.binding, commands.Cog):
+                file = self.__i18n_file(reference.binding.qualified_name.lower())
+                if not exists(file):
+                    print(f"Missing i18n file for {reference.binding.qualified_name.lower()}") # ! REMOVE
+                    return None
+                return self.__get_i18n(file, self.__get_str_path(obj_path), reference.name.lower(), None, target, locale_code)
+
+        elif isinstance(reference, app_commands.Group):
+            obj_path = self.__to_top(reference, [reference])
+            if obj_path:
+                file = self.__i18n_file(obj_path[0].name.lower())
+            else:
+                file = self.__i18n_file(reference.name.lower())
+            if not exists(file):
+                return None
+            return self.__get_i18n(file, self.__get_str_path(obj_path), None, None, target, locale_code)
+
+        elif isinstance(reference, app_commands.Parameter):
+            obj_path = self.__to_top(reference.command)
+            if isinstance(reference.command.binding, commands.Cog):
+                file = self.__i18n_file(reference.command.binding.qualified_name.lower())
+                if not exists(file):
+                    print(f"Missing i18n file for {reference.command.binding.qualified_name.lower()}")
+                    return None
+                return self.__get_i18n(file, self.__get_str_path(obj_path), reference.command.name.lower(), {"parameters": reference.name.lower()}, target, locale_code)
+
+        elif isinstance(reference, app_commands.ContextMenu):
+            file = self.__i18n_file("i18n.contextmenus")
+            if not exists(file):
+                print(f"Missing i18n file for i18n.contextmenus")
+                return None
+            return self.__get_i18n_simple(file, reference.name.lower(), locale_code)
+
+        elif isinstance(reference, app_commands.Choice):
+            file = self.__i18n_file("i18n.choices")
+            if not exists(file):
+                print(f"Missing i18n file for i18n.choices")
+                return None
+            return self.__get_i18n_simple(file, reference.name.lower(), locale_code)
+
+        else: # Other
+            return None
