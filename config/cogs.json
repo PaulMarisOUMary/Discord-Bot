@@ -43,7 +43,7 @@
     },
     "privatevocal": {
         "main_channel_name": "\u2795",
-        "channel_name": "Vocal: #{user.discriminator}",
+        "channel_name": "Vocal: @{user.name}",
         "cooldown": 30
     },
     "reddit": {
