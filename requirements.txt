@@ -21,7 +21,7 @@ PyNaCl
 # Require this specific version (internal package error, issue #299 of github.com/ssut/py-googletrans)
 googletrans == 4.0.0-rc1
 
-discord.py[speed] == 2.3.1
+discord.py[speed] == 2.3.2
 #git+https://github.com/Rapptz/discord.py@master#egg=discord.py[speed] # latest version
 
 # Reddit API Wrapper
