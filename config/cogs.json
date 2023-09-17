@@ -1,8 +1,6 @@
 {
     "birthday": {
-        "table": "table_birthday",
-
-        "guild_id": 780212419141828619
+        "table": "table_birthday"
     },
     "croissants": {
         "table": "table_croissants",
