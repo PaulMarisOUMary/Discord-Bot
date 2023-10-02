@@ -2,7 +2,7 @@ import aiomysql
 import asyncio
 
 from datetime import datetime, date
-from typing import Any, Optional
+from typing import Any, Optional, Tuple
 
 class MixedTypes():
     def __init__(self, value: Any) -> None:
@@ -27,7 +27,7 @@ class DataSQL():
             autocommit=autocommit
         )
 
-    async def query(self, query: str) -> tuple:
+    async def query(self, query: str) -> Tuple[Any]:
         async with self.pool.acquire() as connection:
             async with connection.cursor() as cursor:
                 try:
