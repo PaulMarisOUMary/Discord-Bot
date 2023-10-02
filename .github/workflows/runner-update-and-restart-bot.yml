@@ -18,28 +18,39 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Check if last commit in push
+        id: last-commit
+        run: |
+          echo "Last commit in push: ${{ github.event.head_commit.id }}"
+
       - name: Dependencies Update
         id: dependencies-update
+        if: steps.last-commit.outputs.last-commit == ${{ github.sha }}
         run: |
           pip3.11 install -r requirements.txt
           echo "Dependencies Update: Success"
+
       - name: Setup Credentials
         id: setup-credentials
+        if: steps.last-commit.outputs.last-commit == ${{ github.sha }}
         run: |
           apt-get install jq -y
           jq '.token = "${{ secrets.DISCORD_TOKEN }}"' config/bot.json > tmp.$$.json && mv tmp.$$.json config/bot.json
           jq '.server.host = "${{ secrets.DATABASE_HOST }}" | .server.user = "${{ secrets.DATABASE_USER }}" | .server.password = "${{ secrets.DATABASE_PASSWORD }}" | .server.database = "${{ secrets.DATABASE_DATABASE }}"' config/database.json > tmp.$$.json && mv tmp.$$.json config/database.json
           jq '.reddit.client.client_id = "${{ secrets.REDDIT_ID }}" | .reddit.client.client_secret = "${{ secrets.REDDIT_SECRET }}"' config/cogs.json > tmp.$$.json && mv tmp.$$.json config/cogs.json
           echo "Setup Credentials: Success"
+
       - name: Restart Bot
         id: restart-bot
-        if: success()
+        if: steps.last-commit.outputs.last-commit == ${{ github.sha }} && success()
         run: |
           systemctl restart discord-bot.service
           systemctl status discord-bot.service
           echo "Restart Bot: Success"
+
       - name: Runner Status
         id: runner-status
+        if: steps.last-commit.outputs.last-commit == ${{ github.sha }}
         run: |
           cd /home/warrior/actions-runner
           ./svc.sh status
