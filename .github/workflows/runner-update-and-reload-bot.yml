@@ -18,7 +18,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Check if last commit in push
         id: last-commit
