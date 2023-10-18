@@ -9,7 +9,7 @@
 
 aiomysql == 0.2.0
 requests == 2.31.0
-pytz == 2023.3
+pytz == 2023.3.post1
 
 tzlocal == 5.1
 
