@@ -11,7 +11,7 @@ aiomysql == 0.2.0
 requests == 2.31.0
 pytz == 2023.3
 
-tzlocal == 5.0.1
+tzlocal == 5.1
 
 matplotlib == 3.8.0
 Pillow == 10.1.0
