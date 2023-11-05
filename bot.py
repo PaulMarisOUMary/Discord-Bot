@@ -8,16 +8,17 @@ from os import listdir
 
 class Bot(DiscordBot):
 	def __init__(self, **kwargs) -> None:
-		super().__init__(
-			activity = discord.Game(name = "Booting.."),
-			allowed_mentions=discord.AllowedMentions(everyone=False),
-			case_insensitive = True,
-			config = kwargs.pop("config", load_config()), # custom kwarg
-			intents = kwargs.pop("intents", discord.Intents.all()),
-			max_messages = 2500,
-			status = discord.Status.idle,
-			**kwargs,
-		)
+		# Set default values
+		kwargs.setdefault("activity", discord.Game(name = "Booting.."))
+		kwargs.setdefault("allowed_mentions", discord.AllowedMentions(everyone=False))
+		kwargs.setdefault("case_insensitive", True)
+		kwargs.setdefault("config", load_config())
+		kwargs.setdefault("intents", discord.Intents.all())
+		kwargs.setdefault("max_messages", 2500)
+		kwargs.setdefault("status", discord.Status.idle)
+
+		# Initialize the bot
+		super().__init__(**kwargs)
 
 	async def startup(self) -> None:
 		"""Sync application commands"""
@@ -29,6 +30,7 @@ class Bot(DiscordBot):
 		
 	async def setup_hook(self) -> None:
 		"""Initialize the bot, database, prefixes & cogs."""
+		# Initialize the DiscordBot setup hook
 		await super().setup_hook()
 
 		# Cogs loader

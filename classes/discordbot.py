@@ -85,9 +85,6 @@ class DiscordBot(commands.Bot):
         self.log( message = f"Logged as: {self.user} | discord.py{discord_version} Guilds: {len(self.guilds)} Users: {len(self.users)} Config: {len(self.config)} Database: {self.usedatabase}", name = "discord.on_ready")
 
     async def setup_hook(self) -> None:
-        # Retrieve the bot's application info
-        self.appinfo = await self.application_info()
-
         if self.usedatabase:
             # Database initialization
             server = self.config["database"]["server"]
@@ -98,6 +95,9 @@ class DiscordBot(commands.Bot):
             # Prefix per guild initialization
             for data in await self.database.select(self.config["bot"]["prefix_table"]["table"], "*"): 
                 self.prefixes[data[0]] = data[1]
+
+        # Retrieve the bot's application info
+        self.appinfo = await self.application_info()
 
     async def close(self) -> None:
         if self.usedatabase:
