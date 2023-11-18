@@ -4,9 +4,11 @@ from discord import AppInfo, Message
 from discord.ext import commands
 from logging import Logger
 from logging import INFO as LOG_INFO
-from typing import List, Self
+from typing import List, TypeVar
 
 from classes.database import DataSQL
+
+Self = TypeVar("Self", bound="DiscordBot")
 
 class DiscordBot(commands.Bot):
     """A Subclass of `commands.Bot`."""
@@ -71,7 +73,7 @@ class DiscordBot(commands.Bot):
         self.logger.name = name
         self.logger.log(level = level, msg = message, **kwargs)
         
-    def __prefix_callable(self, client: Self, message: Message) -> List[str]:
+    def __prefix_callable(self: Self, client: Self, message: Message) -> List[str]:
         if message.guild is None:
             return commands.when_mentioned_or(self.config["bot"]["default_prefix"])(client, message)
 
