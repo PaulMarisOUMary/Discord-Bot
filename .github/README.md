@@ -229,6 +229,19 @@ CHARACTER SET utf8mb4,
 COLLATE utf8mb4_unicode_ci;
 ```
 
+- `table_transfer`
+```sql
+CREATE TABLE IF NOT EXISTS `table_transfer`
+(
+    `guild_id`          BIGINT unsigned NOT NULL,
+    `role_id`           BIGINT unsigned NOT NULL,
+CONSTRAINT `role_per_guild` UNIQUE (`guild_id`, `role_id`)
+)
+ENGINE = InnoDB,
+CHARACTER SET utf8mb4,
+COLLATE utf8mb4_unicode_ci;
+```
+
 ## Workflows
 
 ### Update and restart discord bot

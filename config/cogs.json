@@ -67,5 +67,8 @@
     },
     "starboard": {
         "table": "table_starboard"
+    },
+    "transfer": {
+        "table": "table_transfer"
     }
 }
