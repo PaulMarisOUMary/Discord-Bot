@@ -10,6 +10,9 @@
 
 # Discord-Bot
 
+A Discord bot that you can use as your own.<br>
+Built with a robust structure, seamless error handling, and easy configuration. Configure and edit effortlessly for a personalized experience.
+
 ## Table of content
 
 - [About the project](#about-the-project)
@@ -19,8 +22,10 @@
 	- [Python prerequisites](#python-prerequisites)
 	- [Discord developper configuration](#discord-developper-configuration)
 	- [Configure the bot](#configure-the-bot)
+	- [Run the bot](#run-the-bot)
 - [Database](#database)
 	- [SQL tables structure](#sql-tables-structure)
+- [Development](#development) 
 - [Workflows](#workflows)
 
 ## About the project
@@ -32,7 +37,7 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
 - Administrative Tools
     - Custom prefix per guild
     - Invite tracker
-- Developement
+- Developement & Tools
     - ANSI color support
     - Dynamic structure (Does not require a reboot to apply changes in code & files)
     - Database support (SQL)
@@ -69,7 +74,8 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
 - SQL
 	- MariaDB (or MySQL)
 
-> **Note** More about requirements in the [requirements.txt](https://github.com/PaulMarisOUMary/Discord-Bot/blob/main/requirements.txt) file.
+> [!NOTE]
+> More about requirements in the [requirements.txt](https://github.com/PaulMarisOUMary/Discord-Bot/blob/main/requirements.txt) file.
 
 ## Getting started
 
@@ -90,7 +96,8 @@ $ pip install -r requirements.txt
 
 4. Copy the token bot from [Discord Developpers/applications/{YOUR_APP_ID}/bot #Token](https://discord.com/developers/applications/{YOUR_APP_ID}/bot)
 
-> **Note** In URL replace `{YOUR_APP_ID}` with your own app/bot ID.
+> [!TIP]
+> In URL replace `{YOUR_APP_ID}` with your own app/bot ID.
 
 ### Configure the bot
 
@@ -102,12 +109,30 @@ $ pip install -r requirements.txt
 
 4. Inside your SQL database, create the following tables listed in the [SQL tables structure](#sql-tables-structure) section.
 
-> **Warning** If you are **NOT** using any/or a compatible database, check the [Acknowledgement section](#acknowledgement).
+> [!IMPORTANT]
+> If you are **NOT** using any/or a compatible database, check the [Acknowledgement section](#acknowledgement).
+
+### Run the bot
+
+Now that you've set up the Python environment and configured the Discord application, it's time to run your bot.
+
+Open a terminal and navigate to the project directory. Execute the following command:
+```bash
+python main.py
+```
+
+This will start your Discord bot, and if everything is configured correctly, you should see the bot coming online in your Discord server.
+
+> [!NOTE]
+Keep the terminal open while the bot is running. If you encounter any issues, check the logs for error messages (by default discord.log), and ensure that you've followed all the configuration steps accurately.
+
+Congratulations! Your bot is now up and running, ready to respond to commands and interact with users on your Discord server.
 
 ## Database
 
 ### Acknowledgement
-> **Warning** If you have not planned to use a SQL database:
+> [!IMPORTANT]
+> If you have not planned to use a SQL database:
 > 1. set the `"use_database"` field to `false` in the `/config/database.json` file.
 > 2. in the folder `/cogs` you should remove the following files (which are using the database): `birthday.py`, `croissants.py`, `invite.py`, `me.py`, `metrics.py`, `starboard.py`.
 
@@ -131,7 +156,8 @@ To set up a SQL database such as MariaDB or any other SQL database, and host it 
 
 ### SQL tables structure
 
-> **Note** These tables are required in the database if you have planned to use the bot as if provided
+> [!NOTE]
+> These tables are required in the database if you have planned to use the bot as if provided
 
 - `table_birthday`
 ```sql
@@ -229,6 +255,35 @@ CHARACTER SET utf8mb4,
 COLLATE utf8mb4_unicode_ci;
 ```
 
+## Development
+
+To add a new cog, place the Python file in the /cog folder.<br>
+While the bot is running, you can dynamically register the cog using the `loadcog` command followed by the name of the file without the .py extension. If you make changes to the cog after registering it, simply use `rl` or `rel <cog_name>` to reload the cog without restarting the bot.
+
+The following commands provide flexibility and efficiency during the development phase, allowing you to seamlessly update and test your bot without restarting it.
+
+### Commands Overview:
+| Command                     | Alias | Description                                              | Example                                       |
+|-----------------------------|-------|----------------------------------------------------------|-----------------------------------------------|
+| `?loadcog <cog_name>`       |       | Loads a cog from the /cogs directory.                    | `?loadcog basic`                              |
+|                             |       |                                                          |                                               |
+| `?unloadcog <cog_name>`     |       | Unloads a cog from the /cogs directory.                  | `?unloadcog basic`                            |
+|                             |       |                                                          |                                               |
+| `?reloadallcogs`            | `rell`| Reloads all cogs inside the /cogs directory.             | `?reloadallcogs`                              |
+|                             |       |                                                          |                                               |
+| `?reload <cog1> <cog2> ...` | `rel` | Reloads specified cogs from the /cogs directory.         | `?reload basic birthday`                      |
+|                             |       |                                                          |                                               |
+| `?reloadlatest <n_cogs>`    | `rl`  | Reloads the n latest edited cogs in the /cogs directory. | `?reloadlatest 3`                             |
+|                             |       |                                                          |                                               |
+| `?reloadviews`              | `rv`  | Reloads all registered views in the /views directory.    | `?reloadviews`                                |
+|                             |       |                                                          |                                               |
+| `?reloadconfig`             | `rc`  | Reloads all JSON config files inside the /config folder. | `?reloadconfig`                               |
+|                             |       |                                                          |                                               |
+| `?synctree <guild_id>`      | `st`  | Syncs applications commands with discord.                | `?synctree` or `?synctree 123456789012345678` |
+
+Most of the time you will be using, `rl` for reloading the latest edited cogs and `rv` for reloading all registered views.<br>
+These commands are essential for development, often used to quickly apply and test code changes, making the development process smooth and efficient.
+
 ## Workflows
 
 ### Update and restart discord bot
@@ -261,7 +316,8 @@ ExecStart=python3 /home/{username}/actions-runner/_work/Discord-Bot/Discord-Bot/
 [Install]
 WantedBy=multi-user.target
 ```
-> **Note** Replace `{username}` & `{usernameWithPermissions}` with your username and `Discord-Bot/Discord-Bot` with your project name.
+> [!TIP]
+> Replace `{username}` & `{usernameWithPermissions}` with your username and `Discord-Bot/Discord-Bot` with your project name.
 > - Then enable the service with `systemctl enable your-service-name.service`   
 
 <h5>Contributors :</h5>
