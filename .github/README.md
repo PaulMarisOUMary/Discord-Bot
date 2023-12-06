@@ -118,7 +118,7 @@ Now that you've set up the Python environment and configured the Discord applica
 
 Open a terminal and navigate to the project directory. Execute the following command:
 ```bash
-python main.py
+python bot.py
 ```
 
 This will start your Discord bot, and if everything is configured correctly, you should see the bot coming online in your Discord server.
