@@ -10,6 +10,7 @@ from discord.utils import format_dt
 from typing import Optional, Union
 
 from classes.discordbot import DiscordBot
+from classes.utilities import bot_has_permissions
 
 @app_commands.guild_only()
 class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_description="Commands related to birthday."):
@@ -44,6 +45,9 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 		if not datetime.now().hour == 9:
 			return
 
+		await self.trigger_global_birthday()
+
+	async def trigger_global_birthday(self, specify_guild: Optional[int] = None):
 		response: tuple[tuple[int, date]] = await self.bot.database.select(self.subconfig_data["table"], "*", condition="DAY(`user_birth`) = DAY(CURRENT_DATE()) AND MONTH(`user_birth`) = MONTH(CURRENT_DATE())")
 		if not response:
 			self.bot.log(message = "No birthday today", name = "discord.cogs.birthday.daily_birthday")
@@ -53,6 +57,8 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 
 		for guild in self.bot.guilds:
 			if not guild.id in response_guilds:
+				continue
+			if specify_guild and guild.id != specify_guild:
 				continue
 			for channel in guild.text_channels:
 				if channel.type == discord.ChannelType.forum:
@@ -119,6 +125,21 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 			await interaction.response.send_message(f":birthday: Birthday the {format_dt(birthdate, 'D')} and was born {format_dt(birthdate, 'R')}.")
 		else:
 			await interaction.response.send_message(":birthday: Nothing was found. Set the birthday and retry.")
+
+	@bot_has_permissions(view_channel=True)
+	@commands.command(name="triggerbirthday")
+	@commands.has_permissions(administrator=True)
+	@commands.cooldown(1, 25, commands.BucketType.guild)
+	@commands.guild_only()
+	async def config_invite_logs(self, ctx: commands.Context, guild_id: Optional[int] = None) -> None:
+		"""Trigger manually the birthday."""
+		if guild_id and not guild_id in [guild.id for guild in self.bot.guilds]:
+			await ctx.send(f"Invalid Guild id `{guild_id}`.")
+			return
+
+		await self.trigger_global_birthday(guild_id)
+		await ctx.send(f"Manually trigger birthday for `{guild_id if guild_id else 'all guilds'}`.")
+
 
 
 
