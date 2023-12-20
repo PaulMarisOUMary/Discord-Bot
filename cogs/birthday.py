@@ -128,8 +128,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 
 	@bot_has_permissions(view_channel=True)
 	@commands.command(name="triggerbirthday")
-	@commands.has_permissions(administrator=True)
-	@commands.cooldown(1, 25, commands.BucketType.guild)
+	@commands.is_owner()
 	@commands.guild_only()
 	async def config_invite_logs(self, ctx: commands.Context, guild_id: Optional[int] = None) -> None:
 		"""Trigger manually the birthday."""
