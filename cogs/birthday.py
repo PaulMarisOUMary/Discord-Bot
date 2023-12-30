@@ -130,7 +130,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	@commands.command(name="triggerbirthday")
 	@commands.is_owner()
 	@commands.guild_only()
-	async def config_invite_logs(self, ctx: commands.Context, guild_id: Optional[int] = None) -> None:
+	async def trigger_birthday(self, ctx: commands.Context, guild_id: Optional[int] = None) -> None:
 		"""Trigger manually the birthday."""
 		if guild_id and not guild_id in [guild.id for guild in self.bot.guilds]:
 			await ctx.send(f"Invalid Guild id `{guild_id}`.")
