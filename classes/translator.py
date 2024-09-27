@@ -1,5 +1,4 @@
 from googletrans import Translator as GT # pip install googletrans==4.0.0-rc1
-from typing import Any
 
 class Translator:
 
@@ -104,7 +103,7 @@ class Translator:
         return GT().detect(content).lang
 
     @staticmethod
-    def translate(content: str, dest: str, src: str = Any) -> str:
+    def translate(content: str, dest: str, src: str) -> str:
         return GT().translate(content, dest=dest, src=src).text
 
     @staticmethod
