@@ -106,7 +106,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_count", {"user_id": str(user_id)})
 		return response[0][0]
 
-	def __get_screenshot(self, author: discord.Member, content: str) -> discord.File:
+	def __get_screenshot(self, author: Union[discord.User, discord.Member], content: str) -> discord.File:
 		name_font = ImageFont.truetype("fonts/Whitney-Medium.ttf", 24)
 		timestamp_font = ImageFont.truetype("fonts/Whitney-Medium.ttf", 18)
 		content_font = ImageFont.truetype("fonts/Whitney-Book.ttf", 24)
