@@ -50,7 +50,7 @@ class ServerProtocol(asyncio.Protocol):
         else:
             self.bot.log(f"{self.str_conn} Unknown message received: {message}", name="discord.socket", level=LOG_WARN)
 
-    def connection_made(self, transport: asyncio.Transport) -> None:
+    def connection_made(self, transport: asyncio.Transport) -> None: # type: ignore
         self.host, self.port = transport.get_extra_info("peername")
         self.str_conn = f"({self.host}:{self.port}) :"
 
