@@ -7,7 +7,7 @@ from discord.app_commands import Choice
 from typing import Union
 
 from classes.discordbot import DiscordBot
-from classes.utilities import bot_has_permissions
+from classes.utilities import GuildContext, bot_has_permissions
 
 class PrivateVocal(commands.Cog, name="privatevocal"):
 	"""
@@ -86,7 +86,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 	@app_commands.choices(limit=[Choice(name=str(i), value=i) for i in range(1, 26)])
 	@app_commands.describe(limit="The number of max user(s) in your private channel.")
 	@app_commands.guild_only()
-	async def lock_private_vocal(self, ctx: commands.Context, limit: int = -1) -> None:
+	async def lock_private_vocal(self, ctx: GuildContext, limit: int = -1) -> None:
 		"""Limit the number of user(s) in your private channel."""
 		voice = ctx.author.voice
 		if not voice or not voice.channel:
