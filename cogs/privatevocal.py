@@ -92,7 +92,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 		if not voice or not voice.channel:
 			await ctx.send("You're not in a voice channel.", ephemeral=True)
 			return
-		elif voice.channel and not isinstance(voice.channel, discord.StageChannel) and self.__is_private_vocal(voice.channel, self.tracker[ctx.guild.id]["channels"]):
+		elif voice.channel and not isinstance(voice.channel, discord.StageChannel) and not self.__is_private_vocal(voice.channel, self.tracker[ctx.guild.id]["channels"]):
 			await ctx.send("You're not in a private vocal channel.", ephemeral=True)
 			return
 		
