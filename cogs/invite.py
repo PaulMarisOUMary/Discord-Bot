@@ -41,7 +41,7 @@ class Invite(commands.Cog, name="invite"):
         return guild.id in self.granted_guilds
 
     async def __update_granted_guilds(self) -> None:
-        granted_guilds: tuple[Optional[tuple[int, int, str]]] = await self.bot.database.select(self.subconfig_data["table"], "*")
+        granted_guilds: tuple[tuple[int, int, str]] = await self.bot.database.select(self.subconfig_data["table"], "*")
         for guild, channel, custom_message in granted_guilds:
             guild_object = get(self.bot.guilds, id=guild)
 
