@@ -2,7 +2,7 @@ import asyncio
 import asyncpraw
 import discord
 
-from datetime import datetime
+from datetime import datetime, timezone
 from discord.ext import commands
 
 from classes.discordbot import DiscordBot
@@ -75,7 +75,7 @@ class Reddit(commands.Cog, name="reddit"):
         await submission.author.load() # Load the author icon
         embed.set_author(name=submission.author.name, icon_url=submission.author.icon_img)
         embed.set_image(url=submission.url)
-        embed.timestamp = datetime.utcfromtimestamp(submission.created_utc)
+        embed.timestamp = datetime.fromtimestamp(submission.created_utc, tz=timezone.utc)
         await submission.subreddit.load() # Load the sub name
         embed.set_footer(text="r/"+submission.subreddit.display_name)
 
