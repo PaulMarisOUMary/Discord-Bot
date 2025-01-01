@@ -19,7 +19,7 @@ Pillow == 11.0.0
 PyNaCl
 
 # Require this specific version (internal package error, issue #299 of github.com/ssut/py-googletrans)
-googletrans == 4.0.0-rc1
+googletrans == 4.0.2
 
 discord.py[speed] == 2.4.0
 #git+https://github.com/Rapptz/discord.py@master#egg=discord.py[speed] # latest version
