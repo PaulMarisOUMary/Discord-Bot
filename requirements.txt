@@ -14,7 +14,7 @@ pytz == 2024.2
 tzlocal == 5.2
 
 matplotlib == 3.10.0
-Pillow == 11.0.0
+Pillow == 11.1.0
 
 PyNaCl
 
