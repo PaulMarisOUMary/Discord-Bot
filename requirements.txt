@@ -13,7 +13,7 @@ pytz == 2024.2
 
 tzlocal == 5.2
 
-matplotlib == 3.9.4
+matplotlib == 3.10.0
 Pillow == 11.1.0
 
 PyNaCl
@@ -24,4 +24,4 @@ discord.py[speed] == 2.4.0
 #git+https://github.com/Rapptz/discord.py@master#egg=discord.py[speed] # latest version
 
 # Reddit API Wrapper
-asyncpraw == 7.8.0
+asyncpraw == 7.8.1
