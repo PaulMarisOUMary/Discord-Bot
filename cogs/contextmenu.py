@@ -33,9 +33,9 @@ class ContextMenu(commands.Cog):
     async def translate(self, interaction: discord.Interaction, message: discord.Message, destination: str = "en") -> None:
         content = message.content
 
-        analysis = Translator.detect(content)
+        analysis = await Translator.detect(content)
         flag_emoji = Translator.get_emoji(analysis)
-        translation = Translator.translate(message.content, dest=destination, src="auto")
+        translation = await Translator.translate(message.content, dest=destination, src="auto")
 
         await interaction.response.send_message(f"{flag_emoji} -> {Translator.get_emoji(destination)} **:** {translation}", ephemeral=True)
 

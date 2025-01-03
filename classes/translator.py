@@ -1,4 +1,4 @@
-from googletrans import Translator as GT # pip install googletrans==4.0.0-rc1
+from googletrans import Translator as GT
 
 class Translator:
 
@@ -99,12 +99,18 @@ class Translator:
     }
 
     @staticmethod
-    def detect(content: str) -> str:
-        return GT().detect(content).lang
+    async def detect(content: str) -> str:
+        detect = await GT().detect(content)
+        if detect:
+            return detect.lang
+        raise RuntimeError("Language not detected.")
 
     @staticmethod
-    def translate(content: str, dest: str, src: str) -> str:
-        return GT().translate(content, dest=dest, src=src).text
+    async def translate(content: str, dest: str, src: str) -> str:
+        translation = await GT().translate(content, dest=dest, src=src)
+        if translation:
+            return translation.text
+        raise RuntimeError("Translation failed.")
 
     @staticmethod
     def get_flag_abbr(code_lang: str) -> str:
