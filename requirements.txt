@@ -9,7 +9,6 @@
 
 aiomysql == 0.2.0
 requests == 2.32.3
-httpx[http2] == 0.28.1
 pytz == 2024.2
 
 tzlocal == 5.2
@@ -20,6 +19,7 @@ Pillow == 11.1.0
 PyNaCl
 
 googletrans == 4.0.2
+httpx[http2] == 0.28.1
 
 discord.py[speed] == 2.4.0
 #git+https://github.com/Rapptz/discord.py@master#egg=discord.py[speed] # latest version
