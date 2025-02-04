@@ -6,13 +6,14 @@ import platform
 from discord.ext import commands
 from discord import app_commands
 
+from dotenv import load_dotenv
 from importlib import reload
 from json import load
-from os import listdir
+from os import environ, listdir
 from os.path import dirname, abspath, join, basename, splitext
 from sys import modules
 from types import ModuleType
-from typing import Generator, NoReturn, Union
+from typing import Dict, Generator, NoReturn, Union
 
 from classes.discordbot import DiscordBot
 
@@ -31,6 +32,36 @@ def load_config() -> dict:
 		if ext == ".json":
 			config[filename] = credential(file)
 	return config
+
+def process_keys(dictionary: dict, keys: Dict[str, str]) -> None:
+	out = dict()
+	for key in keys.items():
+		if not key[1] in dictionary:
+			raise ValueError(f"Missing required key: {key}")
+		out[key[0]] = dictionary[key[1]]
+	return out
+
+def load_env() -> dict:
+	structure = {
+		"token": "BOT_TOKEN",
+		"host": "MARIADB_HOST",
+		"user": "MARIADB_USER",
+		"password": "MARIADB_PASSWORD",
+		"database": "MARIADB_DATABASE",
+	}
+	try:
+		return process_keys(
+			environ,
+			structure
+		)
+	except ValueError:
+		try:
+			return process_keys(
+				load_dotenv(join(config_directory, ".env")),
+				structure
+			)
+		except Exception as e:
+			raise e
 
 async def cogs_manager(bot: DiscordBot, mode: str, cogs: list[str]) -> None:
 	for cog in cogs:

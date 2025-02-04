@@ -2,7 +2,7 @@ import discord
 import logging
 
 from classes.discordbot import DiscordBot
-from classes.utilities import load_config, clean_close, cogs_manager, set_logging, cogs_directory
+from classes.utilities import load_config, load_env, clean_close, cogs_manager, set_logging, cogs_directory
 
 from os import listdir
 
@@ -13,6 +13,7 @@ class Bot(DiscordBot):
 		kwargs.setdefault("allowed_mentions", discord.AllowedMentions(everyone=False))
 		kwargs.setdefault("case_insensitive", True)
 		kwargs.setdefault("config", load_config())
+		kwargs.setdefault("env", load_env())
 		kwargs.setdefault("intents", discord.Intents.all())
 		kwargs.setdefault("max_messages", 2500)
 		kwargs.setdefault("status", discord.Status.idle)
@@ -60,7 +61,7 @@ if __name__ == '__main__':
 	)
 	bot.logger, streamHandler = set_logging(file_level = logging.INFO, console_level = logging.INFO, filename = "discord.log")
 	bot.run(
-		bot.config["bot"]["token"],
+		bot.config["env"]["token"],
 		reconnect = True,
 		log_handler = streamHandler,
 		log_level = logging.DEBUG, # Must be set to DEBUG, change the log_level of each handler in set_logging() method

@@ -24,6 +24,12 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
+# Copy the source code into the container.
+COPY . .
+
+# Ensure the user owns /app and has read-write permissions
+RUN chown -R appuser:appuser /app && chmod -R 770 /app
+
 # Download dependencies as a separate step to take advantage of Docker's caching.
 # Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
 # Leverage a bind mount to requirements.txt to avoid having to copy them into
@@ -34,9 +40,6 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 
 # Switch to the non-privileged user to run the application.
 USER appuser
-
-# Copy the source code into the container.
-COPY . .
 
 # Run the application.
 CMD python bot.py

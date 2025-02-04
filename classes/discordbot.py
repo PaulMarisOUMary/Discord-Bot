@@ -47,12 +47,11 @@ class DiscordBot(commands.Bot):
         The `command_prefix` kwarg is unused, this attribute is automatically set according to the database configuration (use_database).
         """
         self.config = kwargs.pop("config", None)
-        
-        if not self.config or not all(item in self.config.keys() for item in ["bot", "database"]): # cogs.json is an optional configuration file
+        self.config["env"] = kwargs.pop("env", None)
+
+        if not self.config or not all(item in self.config.keys() for item in ["bot"]): # cogs.json is an optional configuration file
             raise ValueError("Missing required configuration.")
-        
-        self.usedatabase = self.config["database"]["use_database"]
-        
+
         kwargs.pop("command_prefix", None) # remove kwarg if exists
         command_prefix = self.__prefix_callable if self.usedatabase else self.config["bot"]["default_prefix"]
         
@@ -89,10 +88,10 @@ class DiscordBot(commands.Bot):
     async def setup_hook(self) -> None:
         if self.usedatabase:
             # Database initialization
-            server = self.config["database"]["server"]
-            self.database = DataSQL(server["host"], server["port"], self.loop)
-            await self.database.auth(server["user"], server["password"], server["database"])
-            self.log(message = f"Database connection established ({server['host']}:{server['port']})", name = "discord.setup_hook")
+            server = self.config["env"]
+            self.database = DataSQL(host=server["host"], loop=self.loop)
+            await self.database.auth(user=server["user"], password=server["password"], database=server["database"])
+            self.log(message = f"Database connection established ({server['host']}:{server['port'] if 'port' in server else 3306})", name = "discord.setup_hook")
 
             # Prefix per guild initialization
             for data in await self.database.select(self.config["bot"]["prefix_table"]["table"], "*"): 
