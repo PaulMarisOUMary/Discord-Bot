@@ -6,7 +6,7 @@ updates:
     interval: daily
   ignore:
     - dependency-name: "tzlocal"
-    update-types: ["version-update:semver-minor", "version-update:semver-patch"]
+      versions: ["5.x"]
   open-pull-requests-limit: 10
   commit-message:
     prefix: dep
