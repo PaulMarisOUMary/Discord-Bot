@@ -1,5 +1,5 @@
 <!-- https://shields.io/ -->
-![GitHub is maintained](https://img.shields.io/maintenance/yes/2024?label=Maintained&color=success&logo=github)
+![GitHub is maintained](https://img.shields.io/maintenance/yes/2025?label=Maintained&color=success&logo=github)
 ![Deploy](https://img.shields.io/github/actions/workflow/status/PaulMarisOUMary/Discord-Bot/runner-update-and-restart-bot.yml?branch=main&label=Deploy&logo=github)
 <!-- ![CodeQL](https://img.shields.io/github/actions/workflow/status/PaulMarisOUMary/Discord-Bot/codeql-analysis.yml?branch=main&label=CodeQL&logo=github) -->
 
@@ -70,6 +70,7 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
 ### Built with
 
 - [Python 3](https://python.org/) >= 3.8
+- [pip](https://packaging.python.org/en/latest/tutorials/installing-packages/) == latest
 - [discord.py](https://discordpy.readthedocs.io/en/stable/) == stable
 - SQL
 	- MariaDB (or MySQL)
