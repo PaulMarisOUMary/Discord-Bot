@@ -33,7 +33,7 @@ def load_config() -> dict:
 			config[filename] = credential(file)
 	return config
 
-def process_keys(dictionary: dict, keys: Dict[str, str]) -> None:
+def process_keys(dictionary: dict, keys: Dict[str, str]) -> Dict:
 	out = dict()
 	for key in keys.items():
 		if not key[1] in dictionary:

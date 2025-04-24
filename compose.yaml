@@ -34,6 +34,10 @@ services:
       retries: 3
     ports:
       - 3306:3306
+    ulimits:
+      memlock:
+        soft: 262144
+        hard: -1
     volumes:
       - discordbot_mariadb:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d
