@@ -3,8 +3,9 @@ import discord
 from discord.ext import commands
 from typing import Union
 
-from classes.database import MixedTypes
-from classes.discordbot import DiscordBot
+from utils.database import MixedTypes
+from utils.basebot import DiscordBot
+
 
 class Metrics(commands.Cog, name="metrics"):
 	"""
@@ -66,7 +67,6 @@ class Metrics(commands.Cog, name="metrics"):
 				"command_type": command_type
 			}
 		)
-
 
 
 async def setup(bot: DiscordBot) -> None:

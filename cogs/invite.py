@@ -6,10 +6,10 @@ from discord.ext import commands, tasks
 from discord.utils import get
 from pytz import UTC
 from typing import Optional
-from classes.database import MixedTypes
 
-from classes.discordbot import DiscordBot
-from classes.utilities import bot_has_permissions
+from utils.database import MixedTypes
+from utils.basebot import DiscordBot
+from utils.helper import bot_has_permissions
 
 class Invite(commands.Cog, name="invite"):
     """
@@ -230,7 +230,6 @@ class Invite(commands.Cog, name="invite"):
             await ctx.send(embed=embed, content="Custom message set.")
         except ValueError:
             await ctx.send("Wrong formatting.")
-
 
 
 async def setup(bot: DiscordBot) -> None:

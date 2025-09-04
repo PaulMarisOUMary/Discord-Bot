@@ -9,8 +9,9 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
 from typing import Union
 
-from classes.database import MixedTypes
-from classes.discordbot import DiscordBot
+from utils.database import MixedTypes
+from utils.basebot import DiscordBot
+
 
 @app_commands.guild_only()
 class Croissants(commands.GroupCog, name="croissants", group_name="croissants", group_description="Commands related to croissants."):
@@ -155,7 +156,6 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 
 	def __rank_emoji(self, rank: int) -> str:
 		return {1:'🥇', 2:'🥈', 3:'🥉'}.get(rank, str(rank))
-
 
 
 async def setup(bot: DiscordBot) -> None:

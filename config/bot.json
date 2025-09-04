@@ -5,5 +5,5 @@
 
         "table": "table_prefix"
     },
-    "use_database": false
+    "use_database": true
 }

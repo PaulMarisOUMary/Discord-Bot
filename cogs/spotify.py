@@ -6,8 +6,9 @@ from discord.ext import commands
 from discord import app_commands
 from typing import Optional, Union
 
-from classes.discordbot import DiscordBot
-from classes.utilities import bot_has_permissions
+from utils.basebot import DiscordBot
+from utils.helper import bot_has_permissions
+
 
 class Spotify(commands.Cog, name="spotify"):
 	"""
@@ -50,7 +51,6 @@ class Spotify(commands.Cog, name="spotify"):
 				return
 		
 		await interaction.response.send_message(f"{user.name} is not currently listening to Spotify")
-
 
 
 async def setup(bot: DiscordBot) -> None:

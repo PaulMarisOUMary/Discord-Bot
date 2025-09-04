@@ -4,7 +4,8 @@ import re
 from discord.ext import commands
 from random import random
 
-from classes.discordbot import DiscordBot
+from utils.basebot import DiscordBot
+
 
 class Dad(commands.Cog, name="dad"):
     """
@@ -50,7 +51,6 @@ class Dad(commands.Cog, name="dad"):
 
                 await message.reply(format, mention_author=False)
                 break
-
 
 
 async def setup(bot: DiscordBot) -> None:

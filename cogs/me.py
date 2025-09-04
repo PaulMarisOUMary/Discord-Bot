@@ -4,7 +4,8 @@ from discord.ext import commands
 from discord import app_commands
 from typing import Union
 
-from classes.discordbot import DiscordBot
+from utils.basebot import DiscordBot
+
 
 @app_commands.guild_only()
 class Me(commands.GroupCog, name="me", group_name="me", group_description="Like minecraft set your own /me !"):
@@ -62,7 +63,6 @@ class Me(commands.GroupCog, name="me", group_name="me", group_description="Like 
 		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_me", {"guild_id": str(interaction.guild.id),"user_id":  str(user.id)})
 		message = " ".join(response[0]) if len(response) else "No description provided.."
 		await interaction.response.send_message(f"• **{user.display_name}** {message}")
-
 
 
 async def setup(bot: DiscordBot) -> None:

@@ -9,8 +9,9 @@ from discord.ext import commands, tasks
 from discord.utils import format_dt
 from typing import Optional, Union
 
-from classes.discordbot import DiscordBot
-from classes.utilities import bot_has_permissions
+from utils.basebot import DiscordBot
+from utils.helper import bot_has_permissions
+
 
 @app_commands.guild_only()
 class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_description="Commands related to birthday."):
@@ -121,7 +122,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	async def show_birthday_message(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]) -> None:
 		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_birth", {"guild_id": str(interaction.guild.id), "user_id": str(user.id)}) # type: ignore
 		if response:
-			birthdate : date = datetime.combine(response[0][0], datetime.min.time())
+			birthdate = datetime.combine(response[0][0], datetime.min.time())
 			await interaction.response.send_message(f":birthday: Birthday the {format_dt(birthdate, 'D')} and was born {format_dt(birthdate, 'R')}.")
 		else:
 			await interaction.response.send_message(":birthday: Nothing was found. Set the birthday and retry.")
@@ -138,8 +139,6 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 
 		await self.trigger_global_birthday(guild_id)
 		await ctx.send(f"Manually trigger birthday for `{guild_id if guild_id else 'all guilds'}`.")
-
-
 
 
 async def setup(bot: DiscordBot) -> None:

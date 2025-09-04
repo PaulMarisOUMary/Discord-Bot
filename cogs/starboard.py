@@ -5,7 +5,8 @@ from typing import Optional
 
 from discord.ext import commands
 
-from classes.discordbot import DiscordBot
+from utils.basebot import DiscordBot
+
 
 @commands.guild_only()
 class Starboard(commands.Cog, name="starboard"):
@@ -208,7 +209,6 @@ class Starboard(commands.Cog, name="starboard"):
 			await display_message.delete()
 		except discord.Forbidden or discord.NotFound:
 			pass
-
 
 
 async def setup(bot: DiscordBot) -> None:
