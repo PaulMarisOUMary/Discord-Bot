@@ -39,6 +39,23 @@
     "metrics": {
         "table": "table_metrics"
     },
+    "presence": {
+        "status": [
+            {
+                "status": "dnd",
+                "name": "🎉V3 is out !"
+            },
+            {
+                "status": "dnd",
+                "name": "I'm open source !"
+            },
+            {
+                "status": "dnd",
+                "name": "Use slash-commands !"
+            }
+        ],
+        "cooldown": 20
+    },
     "privatevocal": {
         "main_channel_name": "\u2795",
         "channel_name": "Vocal: @{user.name}",
@@ -56,14 +73,6 @@
                 "channel": "reddit"
             }
         ]
-    },
-    "status": {
-        "status": [
-            "V2 is out !",
-            "I'm open-source !",
-            "Use slash-commands !"
-        ],
-        "cooldown": 20
     },
     "starboard": {
         "table": "table_starboard"
