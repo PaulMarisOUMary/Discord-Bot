@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from enum import IntEnum
 
 ESCAPE = '\u001b'
@@ -10,7 +12,7 @@ class StackANSI():
     def __init__(self, num: int) -> None:
         self.series: list[int] = [num]
 
-    def __add__(self, __x: 'SingleANSI') -> 'StackANSI':
+    def __add__(self, __x: SingleANSI) -> StackANSI:
         self.series.append(__x.value)
         return self
 
@@ -18,7 +20,7 @@ class StackANSI():
         return _to_color(*set([str(x) for x in self.series]))
 
 class SingleANSI(IntEnum):
-    def __add__(self, __x: 'SingleANSI') -> 'StackANSI':
+    def __add__(self, __x: SingleANSI) -> StackANSI: # type: ignore[override]
         return StackANSI(self.value) + __x
 
     def __str__(self) -> str:

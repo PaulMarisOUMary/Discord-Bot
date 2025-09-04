@@ -1,7 +1,9 @@
 {
-    "token": "*************************************.******.**********************",
-    "default_prefix": "?",
-    "prefix_table": {
+    "prefix": {
+        "default": "$",
+        "mentionable": true,
+
         "table": "table_prefix"
-    }
+    },
+    "use_database": false
 }

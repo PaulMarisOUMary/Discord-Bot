@@ -1,28 +1,5 @@
-# -- Usage -- 
-# $ pip install -r requirements.txt
+python-dotenv == 1.1.1
 
-# -- Show each installed package(s) --
-# $ pip freeze
-
-# -- Uninstall all package(s) --
-# $ pip freeze | xargs pip uninstall -y
+discord.py[speed] == 2.6.3
 
 aiomysql == 0.2.0
-requests == 2.32.4
-pytz == 2025.2
-
-tzlocal == 5.2
-
-matplotlib == 3.10.1
-Pillow == 11.3.0
-
-PyNaCl
-
-googletrans == 4.0.2
-httpx[http2] == 0.28.1
-
-discord.py[speed] == 2.5.2
-#git+https://github.com/Rapptz/discord.py@master#egg=discord.py[speed] # latest version
-
-# Reddit API Wrapper
-asyncpraw == 7.8.1

@@ -1,61 +1,85 @@
-import asyncio
-import discord
 import logging
-import platform
+import discord
 
-from discord.ext import commands
 from discord import app_commands
+from discord.ext import commands
+from dotenv import dotenv_values
+from json import load as json_load
+from os import environ, listdir
+from os.path import dirname, abspath, getmtime, join, basename, splitext
+from typing import Any, Awaitable, Callable, Dict, List, Literal, NoReturn, Union
 
-from importlib import reload
-from json import load
-from os import listdir
-from os.path import dirname, abspath, join, basename, splitext
-from sys import modules
-from types import ModuleType
-from typing import Generator, NoReturn, Union
+from utils.basetypes import MISSING
 
-from classes.discordbot import DiscordBot
 
 root_directory = dirname(dirname(abspath(__file__)))
-config_directory = join(root_directory, "config")
-cogs_directory = join(root_directory, "cogs")
 
-def credential(file: str) -> dict:
-	with open(join(config_directory, file), "r") as f:
-		return load(f)
 
-def load_config() -> dict:
-	config = dict()
-	for file in listdir(config_directory):
-		filename, ext = splitext(file)
-		if ext == ".json":
-			config[filename] = credential(file)
-	return config
+def json_to_dict(file_path: str) -> Dict[Any, Any]:
+    with open(file_path, "r", encoding="utf-8") as file:
+        return json_load(file)
 
-async def cogs_manager(bot: DiscordBot, mode: str, cogs: list[str]) -> None:
-	for cog in cogs:
-		try:
-			if mode == "unload":
-				await bot.unload_extension(cog)
-			elif mode == "load":
-				await bot.load_extension(cog)
-			elif mode == "reload":
-				await bot.reload_extension(cog)
-			else:
-				raise ValueError("Invalid mode.")
-			bot.log(f"Cog {cog} {mode}ed.", name="classes.utilities", level=logging.DEBUG)
-		except Exception as e:
-			raise e
 
-def reload_views() -> Generator[str, None, None]:
-	mods = [module[1] for module in modules.items() if isinstance(module[1], ModuleType)]
-	for mod in mods:
-		try:
-			if basename(dirname(str(mod.__file__))) == "views":
-				reload(mod)
-				yield mod.__name__
-		except: 
-			pass
+def load_configs(folder: str = MISSING, files: List[str] = MISSING) -> Dict[Any, Any]:
+    """Paths should be relative to the project root directory."""
+    if (folder is MISSING) and (files is MISSING):
+        raise ValueError("Either 'folder' or 'files' must be provided.")
+
+    config = dict()
+    
+    paths = files
+    if folder is not MISSING:
+        paths = [
+            join(folder, file)
+            for file in listdir(join(root_directory, folder))
+            if file.endswith(".json")
+        ]
+
+    for path in paths:
+        name, _ = splitext(basename(path))
+        config[name] = json_to_dict(join(root_directory, path))
+
+    return config
+
+
+def load_envs(files: List[str]) -> Dict[Any, Any]:
+    """Paths should be relative to the project root directory."""
+    env: Dict[str, Any] = dict(environ)
+
+    for file in files:
+        env.update(dotenv_values(join(root_directory,file)))
+
+    return env
+
+
+def get_cogs(folder: str, sortby: Callable = lambda item: -item[1]) -> List[str]:
+    """Paths should be relative to the project root directory."""
+    cogs: Dict[str, float] = {}
+
+    path = join(root_directory, folder)
+
+    for filename in listdir(path):
+        if filename.endswith(".py") and not filename.startswith("_"):
+            cogs[f"cogs.{filename[:-3]}"] = getmtime(join(path, filename))
+
+    return [key for key, _ in sorted(cogs.items(), key=sortby)]
+
+
+async def cogs_manager(bot: commands.Bot, action: Literal["load", "unload", "reload"], cogs: List[str]) -> None:
+    actions: dict[str, Callable[[str], Awaitable[None]]] = {
+        "load": bot.load_extension,
+        "unload": bot.unload_extension,
+        "reload": bot.reload_extension,
+    }
+
+    action_func = actions[action]
+
+    for cog in cogs:
+        try:
+            await action_func(cog)
+        except Exception as e:
+            raise e
+
 
 def set_logging(file_level: int = logging.DEBUG, console_level: int = logging.INFO, filename: str = "discord.log") -> tuple[logging.Logger, logging.StreamHandler]:
 	"""Sets up logging for the bot."""
@@ -78,15 +102,13 @@ def set_logging(file_level: int = logging.DEBUG, console_level: int = logging.IN
 
 	return logger, console_handler
 
-def clean_close() -> None:
-	if platform.system().lower() == 'windows':
-		asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy()) # type: ignore (Windows only)
 
 async def dummy_awaitable_callable(*args, **kwargs) -> NoReturn:
 	raise NotImplementedError("This function is a dummy function and is not meant to be called.")
 
 def dummy_callable(*args, **kwargs) -> NoReturn:
 	raise NotImplementedError("This function is a dummy function and is not meant to be called.")
+
 
 def bot_has_permissions(**perms: bool):
 	"""A decorator that add specified permissions to Command.extras and add bot_has_permissions check to Command with specified permissions.
@@ -115,10 +137,3 @@ def bot_has_permissions(**perms: bool):
 		return command
 
 	return wrapped
-
-class GuildContext(commands.Context):
-    author: discord.Member
-    guild: discord.Guild
-    channel: Union[discord.VoiceChannel, discord.TextChannel, discord.Thread]
-    me: discord.Member
-    prefix: str
