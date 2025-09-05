@@ -5,9 +5,9 @@ from discord import app_commands
 from discord.ext import commands
 from dotenv import dotenv_values
 from json import load as json_load
-from os import environ, listdir
+from os import environ, listdir, sep
 from os.path import dirname, abspath, getmtime, join, basename, splitext
-from typing import Any, Awaitable, Callable, Dict, List, Literal, NoReturn, Union
+from typing import Any, Awaitable, Callable, Dict, List, Literal, NoReturn, Optional, Tuple, Union
 
 from utils.basetypes import MISSING
 
@@ -52,20 +52,38 @@ def load_envs(files: List[str]) -> Dict[Any, Any]:
     return env
 
 
-def get_cogs(folder: str, sortby: Callable = lambda item: -item[1]) -> List[str]:
+def get_cogs(folder: str) -> List[str]:
     """Paths should be relative to the project root directory."""
-    cogs: Dict[str, float] = {}
+    cogs: List[str] = []
 
     path = join(root_directory, folder)
 
     for filename in listdir(path):
         if filename.endswith(".py") and not filename.startswith("_"):
-            cogs[f"cogs.{filename[:-3]}"] = getmtime(join(path, filename))
+            cogs.append(f"cogs.{filename[:-3]}")
 
-    return [key for key, _ in sorted(cogs.items(), key=sortby)]
+    return cogs
+
+
+def _cog_to_path(cog: str, folder: str) -> str:
+    """Map 'cogs.foo' -> '<root>/<folder>/foo.py'."""
+    return join(root_directory, folder, f"{cog.replace('.', sep)}.py")
+
+
+def sort_cogs(cogs: List[str], folder: str, sortby: Optional[Callable[[str], Any]] = None, reverse: bool = False) -> List[str]:
+    """Sort a list of cog names and return the sorted list of names."""
+    def default_sortby(cog: str) -> Tuple[float, str]:
+        try:
+            mtime = getmtime(_cog_to_path(cog, folder))
+        except OSError:
+            mtime = 0.0
+        return (-mtime, cog)
+
+    return sorted(cogs, key=sortby or default_sortby, reverse=reverse)
 
 
 async def cogs_manager(bot: commands.Bot, action: Literal["load", "unload", "reload"], cogs: List[str]) -> None:
+    """Cogs names must be dot separated like regular Python imports if accessing a sub-module. e.g. `foo.test` if you want to import `foo/test.py`."""
     actions: dict[str, Callable[[str], Awaitable[None]]] = {
         "load": bot.load_extension,
         "unload": bot.unload_extension,

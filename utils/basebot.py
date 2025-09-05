@@ -30,15 +30,13 @@ class DiscordBot(commands.Bot):
 
         self.use_database = self.config["bot"]["use_database"]
 
-        self.__prefix_default = self.config["bot"]["prefix"]["default"] or "$"
+        self.__prefix_default = self.config["bot"]["prefix"]["default"]
 
         kwargs.pop("command_prefix", None)
-        command_prefix = self.__prefix_callable if self.use_database else self.__prefix_default
-
-        super().__init__(command_prefix=command_prefix, **kwargs)
+        super().__init__(command_prefix=self.__prefix_callable, **kwargs)
 
     def __prefix_callable(self: DiscordBot, client: DiscordBot, message: Message) -> List[str]:
-        if message.guild is None:
+        if message.guild is None or not self.use_database:
             return commands.when_mentioned_or(self.__prefix_default)(client, message)
 
         if (guild_id := message.guild.id) in client.prefixes: 
