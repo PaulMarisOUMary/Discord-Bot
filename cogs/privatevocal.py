@@ -6,8 +6,9 @@ from discord import app_commands
 from discord.app_commands import Choice
 from typing import Union
 
-from classes.discordbot import DiscordBot
-from classes.utilities import GuildContext, bot_has_permissions
+from utils.basebot import DiscordBot
+from utils.basetypes import GuildContext
+from utils.helper import bot_has_permissions
 
 class PrivateVocal(commands.Cog, name="privatevocal"):
 	"""
@@ -99,7 +100,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 		if limit < 1 or limit > 99:
 			limit = len(voice.channel.members)
 
-		await voice.channel.edit(user_limit=limit) # type: ignore
+		await voice.channel.edit(user_limit=limit)
 		await ctx.send(f"Vocal user-limit set to `{limit}`.", ephemeral=True)
 
 

@@ -62,7 +62,6 @@ class Starboard(commands.Cog, name="starboard"):
 			embed.add_field(name="Replying to...", value=f"[{reference.resolved.author}]({reference.resolved.jump_url})", inline=False)
 
 		if message.attachments:
-			print(message.attachments)
 			images = [attachment.url for attachment in message.attachments if attachment.url.lower().endswith(("jpg", "jpeg", "png", "webp", "gif"))] # doc: https://discord.com/developers/docs/reference#editing-message-attachments-using-attachments-within-embeds
 			for image_url in images:
 				if not embed.image.url:

@@ -1,4 +1,7 @@
+from importlib import reload
 import logging
+from sys import modules
+from types import ModuleType
 import discord
 
 from discord import app_commands
@@ -7,7 +10,7 @@ from dotenv import dotenv_values
 from json import load as json_load
 from os import environ, listdir, sep
 from os.path import dirname, abspath, getmtime, join, basename, splitext
-from typing import Any, Awaitable, Callable, Dict, List, Literal, NoReturn, Optional, Tuple, Union
+from typing import Any, Awaitable, Callable, Dict, Generator, List, Literal, NoReturn, Optional, Tuple, Union
 
 from utils.basetypes import MISSING
 
@@ -99,59 +102,72 @@ async def cogs_manager(bot: commands.Bot, action: Literal["load", "unload", "rel
             raise e
 
 
+def reload_views() -> Generator[str, None, None]:
+    for mod in modules.values():
+        if not isinstance(mod, ModuleType):
+            continue
+        
+        try:
+            if basename(dirname(str(mod.__file__))) == "views":
+                reload(mod)
+                yield mod.__name__
+        except (AttributeError, ImportError):
+            pass
+
+
 def set_logging(file_level: int = logging.DEBUG, console_level: int = logging.INFO, filename: str = "discord.log") -> tuple[logging.Logger, logging.StreamHandler]:
-	"""Sets up logging for the bot."""
-	
-	logger = logging.getLogger("discord") # discord.py logger
-	logger.setLevel(logging.DEBUG)
-	log_formatter = logging.Formatter(fmt="[{asctime}] [{levelname:<8}] {name}: {message}", datefmt="%Y-%m-%d %H:%M:%S", style="{")
+    """Sets up logging for the bot."""
+    
+    logger = logging.getLogger("discord") # discord.py logger
+    logger.setLevel(logging.DEBUG)
+    log_formatter = logging.Formatter(fmt="[{asctime}] [{levelname:<8}] {name}: {message}", datefmt="%Y-%m-%d %H:%M:%S", style="{")
 
-	# File-logs
-	file_handler = logging.FileHandler(filename=join(root_directory, filename), encoding="utf-8", mode='w')
-	file_handler.setFormatter(log_formatter)
-	file_handler.setLevel(file_level)
-	logger.addHandler(file_handler)
+    # File-logs
+    file_handler = logging.FileHandler(filename=join(root_directory, filename), encoding="utf-8", mode='w')
+    file_handler.setFormatter(log_formatter)
+    file_handler.setLevel(file_level)
+    logger.addHandler(file_handler)
 
-	# Console-logs
-	console_handler = logging.StreamHandler()
-	console_handler.setFormatter(log_formatter)
-	console_handler.setLevel(console_level)
-	logger.addHandler(console_handler)
+    # Console-logs
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(log_formatter)
+    console_handler.setLevel(console_level)
+    logger.addHandler(console_handler)
 
-	return logger, console_handler
+    return logger, console_handler
 
 
 async def dummy_awaitable_callable(*args, **kwargs) -> NoReturn:
-	raise NotImplementedError("This function is a dummy function and is not meant to be called.")
+    raise NotImplementedError("This function is a dummy function and is not meant to be called.")
 
 def dummy_callable(*args, **kwargs) -> NoReturn:
-	raise NotImplementedError("This function is a dummy function and is not meant to be called.")
+    raise NotImplementedError("This function is a dummy function and is not meant to be called.")
 
 
 def bot_has_permissions(**perms: bool):
-	"""A decorator that add specified permissions to Command.extras and add bot_has_permissions check to Command with specified permissions.
-	
-	Warning:
-	- This decorator must be on the top of the decorator stack
-	- This decorator is not compatible with commands.check()
-	"""
-	def wrapped(command: Union[app_commands.Command, commands.HybridCommand, commands.Command]) -> Union[app_commands.Command, commands.HybridCommand, commands.Command]:
-		if not isinstance(command, (app_commands.Command, commands.hybrid.HybridCommand, commands.Command)):
-			raise TypeError(f"Cannot decorate a class that is not a subclass of Command, get: {type(command)} must be Command")
+    """A decorator that add specified permissions to Command.extras and add bot_has_permissions check to Command with specified permissions.
+    
+    Warning:
+    - This decorator must be on the top of the decorator stack
+    - This decorator is not compatible with commands.check()
+    """
+    def wrapped(command: Union[app_commands.Command, commands.HybridCommand, commands.Command]) -> Union[app_commands.Command, commands.HybridCommand, commands.Command]:
+        if not isinstance(command, (app_commands.Command, commands.hybrid.HybridCommand, commands.Command)):
+            raise TypeError(f"Cannot decorate a class that is not a subclass of Command, get: {type(command)} must be Command")
 
-		valid_required_permissions = [
-			perm for perm, value in perms.items() if getattr(discord.Permissions.none(), perm) != value
-		]
-		command.extras.update({"bot_permissions": valid_required_permissions})
+        valid_required_permissions = [
+            perm for perm, value in perms.items() if getattr(discord.Permissions.none(), perm) != value
+        ]
+        command.extras.update({"bot_permissions": valid_required_permissions})
 
-		if isinstance(command, commands.HybridCommand) and command.app_command:
-			command.app_command.extras.update({"bot_permissions": valid_required_permissions})
+        if isinstance(command, commands.HybridCommand) and command.app_command:
+            command.app_command.extras.update({"bot_permissions": valid_required_permissions})
 
-		if isinstance(command, (app_commands.Command, commands.HybridCommand)):
-			app_commands.checks.bot_has_permissions(**perms)(command)
-		if isinstance(command, (commands.Command, commands.HybridCommand)):
-			commands.bot_has_permissions(**perms)(command)
+        if isinstance(command, (app_commands.Command, commands.HybridCommand)):
+            app_commands.checks.bot_has_permissions(**perms)(command)
+        if isinstance(command, (commands.Command, commands.HybridCommand)):
+            commands.bot_has_permissions(**perms)(command)
 
-		return command
+        return command
 
-	return wrapped
+    return wrapped
