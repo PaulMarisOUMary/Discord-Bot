@@ -68,16 +68,16 @@ def get_cogs(folder: str) -> List[str]:
     return cogs
 
 
-def _cog_to_path(cog: str, folder: str) -> str:
+def _cog_to_path(cog: str) -> str:
     """Map 'cogs.foo' -> '<root>/<folder>/foo.py'."""
-    return join(root_directory, folder, f"{cog.replace('.', sep)}.py")
+    return join(root_directory, f"{cog.replace('.', sep)}.py")
 
 
-def sort_cogs(cogs: List[str], folder: str, sortby: Optional[Callable[[str], Any]] = None, reverse: bool = False) -> List[str]:
-    """Sort a list of cog names and return the sorted list of names."""
+def sort_cogs(cogs: List[str], sortby: Optional[Callable[[str], Any]] = None, reverse: bool = False) -> List[str]:
+    """Cogs names must be dot separated like regular Python imports if accessing a sub-module. e.g. `foo.test` if you want to import `foo/test.py`."""
     def default_sortby(cog: str) -> Tuple[float, str]:
         try:
-            mtime = getmtime(_cog_to_path(cog, folder))
+            mtime = getmtime(_cog_to_path(cog))
         except OSError:
             mtime = 0.0
         return (-mtime, cog)
@@ -135,13 +135,6 @@ def set_logging(file_level: int = logging.DEBUG, console_level: int = logging.IN
     logger.addHandler(console_handler)
 
     return logger, console_handler
-
-
-async def dummy_awaitable_callable(*args, **kwargs) -> NoReturn:
-    raise NotImplementedError("This function is a dummy function and is not meant to be called.")
-
-def dummy_callable(*args, **kwargs) -> NoReturn:
-    raise NotImplementedError("This function is a dummy function and is not meant to be called.")
 
 
 def bot_has_permissions(**perms: bool):

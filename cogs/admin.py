@@ -37,7 +37,7 @@ class Admin(commands.Cog, name="admin"):
     async def load_cog(self, ctx: commands.Context, cog: str) -> None:
         """Load a cog."""
         await cogs_manager(self.bot, "load", [f"cogs.{cog}"])
-        await ctx.send(f":point_right: Cog {cog} loaded!")
+        await ctx.send(f":point_right: Cog `{cog}` loaded!")
 
     @bot_has_permissions(send_messages=True)
     @commands.command(name="unloadcog", aliases=["unload"])
@@ -45,7 +45,7 @@ class Admin(commands.Cog, name="admin"):
     async def unload_cog(self, ctx: commands.Context, cog: str) -> None:
         """Unload a cog."""
         await cogs_manager(self.bot, "unload", [f"cogs.{cog}"])
-        await ctx.send(f":point_left: Cog {cog} unloaded!")
+        await ctx.send(f":point_left: Cog `{cog}` unloaded!")
 
     @bot_has_permissions(send_messages=True)
     @commands.command(name="reloadcogs", aliases=["reload", "rel"], require_var_positional=True)
@@ -62,7 +62,7 @@ class Admin(commands.Cog, name="admin"):
     @commands.is_owner()
     async def reload_cogs_latest(self, ctx: commands.Context, n_cogs: int = 1) -> None:
         """Reload the latest edited n cogs."""
-        cogs = sort_cogs(list(self.bot.extensions.keys()), folder="./cogs")[:n_cogs]
+        cogs = sort_cogs(list(self.bot.extensions.keys()))[:n_cogs]
         await cogs_manager(self.bot, "reload", cogs)
 
         await ctx.send(f":point_down: `{'` `'.join(cogs)}` reloaded!")
@@ -88,8 +88,6 @@ class Admin(commands.Cog, name="admin"):
 
             self.bot.config.update(config)
             self.bot.config["env"].update(env)
-
-            await ctx.send(f":handshake: `{len(self.bot.config)}` config file(s) reloaded!")
         else:
             for file in config_files:
                 if file == ".env":
@@ -99,8 +97,8 @@ class Admin(commands.Cog, name="admin"):
                     partial_config = load_configs(files=[f"./config/{file}"])
                     if partial_config:
                         self.bot.config.update(partial_config)
-            
-            await ctx.send(f":handshake: `{len(config_files)}` config file(s) reloaded!")
+
+        await ctx.send(f":handshake: `{len(config_files) if config_files else len(self.bot.config)}` config file(s) reloaded!")
 
     @bot_has_permissions(send_messages=True)
     @commands.command(name="reloadviews", aliases=["rv"])
