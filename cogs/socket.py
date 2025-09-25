@@ -5,7 +5,6 @@ from utils.helper import cogs_manager, get_cogs, load_configs, load_envs, reload
 
 from discord.ext import commands
 from logging import DEBUG as LOG_DEBUG, INFO as LOG_INFO, WARN as LOG_WARN
-from os import listdir
 
 
 class ServerProtocol(asyncio.Protocol):
