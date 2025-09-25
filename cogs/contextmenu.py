@@ -1,7 +1,7 @@
 import discord
 
-from classes.discordbot import DiscordBot
-from classes.translator import Translator
+from utils.basebot import DiscordBot
+from utils.translator import Translator
 
 from discord.ext import commands
 from discord import app_commands
@@ -30,21 +30,24 @@ class ContextMenu(commands.Cog):
         for command in self.context_commands:
             self.bot.tree.remove_command(str(command), type=command.type)
 
-    async def translate(self, interaction: discord.Interaction, message: discord.Message, destination: str = "en") -> None:
-        content = message.content
+    async def translate(self, interaction: discord.Interaction, message: discord.Message, locale: discord.Locale) -> None:
+        content = message.content.strip()
+
+        if not content:
+            await interaction.response.send_message("The message is empty.", ephemeral=True)
+            return
 
         analysis = await Translator.detect(content)
-        flag_emoji = Translator.get_emoji(analysis)
-        translation = await Translator.translate(message.content, dest=destination, src="auto")
+        flag_emoji = Translator.code_to_flag(analysis)
+        translation = await Translator.translate_to_locale(message.content, locale)
 
-        await interaction.response.send_message(f"{flag_emoji} -> {Translator.get_emoji(destination)} **:** {translation}", ephemeral=True)
+        await interaction.response.send_message(f"{flag_emoji} -> {Translator.locale_to_flag(locale)} **:** {translation}", ephemeral=True)
 
     async def translate_to_english(self, interaction: discord.Interaction, message: discord.Message) -> None:
-        await self.translate(interaction, message, "en")
+        await self.translate(interaction, message, discord.Locale.british_english)
 
     async def translate_to_your_language(self, interaction: discord.Interaction, message: discord.Message) -> None:
-        dest = Translator.get_trans_abbr(str(interaction.locale))
-        await self.translate(interaction, message, dest)
+        await self.translate(interaction, message, interaction.locale)
 
 
 
