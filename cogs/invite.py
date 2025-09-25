@@ -181,7 +181,7 @@ class Invite(commands.Cog, name="invite"):
             return
         if not message:
             await self.bot.database.update(self.subconfig_data["table"], {"custom_message": MixedTypes("NULL")}, f"guild_id = {ctx.guild.id}") # type: ignore (@guild_only)
-            await ctx.send(f"Logs message set to default.")
+            await ctx.send("Logs message set to default.")
             return
         elif lenght_message := len(str(message)) >= 4096:
             await ctx.send(f"Logs message is too long. (Should be less than 4096 characters and is {lenght_message})")

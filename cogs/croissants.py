@@ -49,7 +49,8 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 			if not self.__is_on_cooldown(message.author):
 				self.cooldown[message.author.id] = datetime.now()
 				await self.__send_croissants(message)
-			else: await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
+			else:
+				await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
 
 	@app_commands.command(name="lore", description="Explain the lore of the croissants.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
@@ -123,7 +124,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 		for frame in ImageSequence.Iterator(pfp_content):
 			try: 
 				duration_array.append(frame.info["duration"])
-			except: 
+			except Exception: 
 				duration_array.append(0)
 
 			img = Image.new("RGBA", size=(500, 100), color=bg_color)

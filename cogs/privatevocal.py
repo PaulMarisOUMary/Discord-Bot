@@ -38,7 +38,7 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
 		return emoji, label, description
 
 	def __guild_in(self, member: discord.Member) -> None:
-		if not member.guild.id in self.tracker: 
+		if member.guild.id not in self.tracker: 
 			self.tracker[member.guild.id] = dict()
 			self.tracker[member.guild.id]["cooldown"] = dict()
 			self.tracker[member.guild.id]["channels"] = dict()

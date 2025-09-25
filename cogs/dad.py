@@ -46,7 +46,7 @@ class Dad(commands.Cog, name="dad"):
             if match and random() <= probability:
                 try:
                     format = response.format(content = content, bot = self.bot, match = match, value = match.group("value"))
-                except:
+                except Exception:
                     format = response.format(content = content, bot = self.bot, match = match)
 
                 await message.reply(format, mention_author=False)

@@ -57,7 +57,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 		response_guilds: list[int] = [guild for guild, _, _ in response]
 
 		for guild in self.bot.guilds:
-			if not guild.id in response_guilds:
+			if guild.id not in response_guilds:
 				continue
 			if specify_guild and guild.id != specify_guild:
 				continue
@@ -86,7 +86,8 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	@daily_birthday.before_loop
 	async def before_daily_birthday(self) -> None:
 		await self.bot.wait_until_ready()
-		while self.bot.database.pool is None: await asyncio.sleep(0.01) #wait_for initBirthday
+		while self.bot.database.pool is None:
+			await asyncio.sleep(0.01)
 
 	@app_commands.guild_only()
 	@app_commands.command(name="set", description="Set your own birthday.")
@@ -133,7 +134,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 	@commands.guild_only()
 	async def trigger_birthday(self, ctx: commands.Context, guild_id: Optional[int] = None) -> None:
 		"""Trigger manually the birthday."""
-		if guild_id and not guild_id in [guild.id for guild in self.bot.guilds]:
+		if guild_id and guild_id not in [guild.id for guild in self.bot.guilds]:
 			await ctx.send(f"Invalid Guild id `{guild_id}`.")
 			return
 
