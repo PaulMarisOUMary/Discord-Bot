@@ -13,24 +13,9 @@
 A Discord bot that you can use as your own.<br>
 Built with a robust structure, seamless error handling, and easy configuration. Configure and edit effortlessly for a personalized experience.
 
-## Table of content
-
-- [About the project](#about-the-project)
-	- [Major features](#major-features)
-	- [Built with](#built-with)
-- [Getting started](#getting-started)
-	- [Python prerequisites](#python-prerequisites)
-	- [Discord developper configuration](#discord-developper-configuration)
-	- [Configure the bot](#configure-the-bot)
-	- [Run the bot](#run-the-bot)
-- [Database](#database)
-	- [SQL tables structure](#sql-tables-structure)
-- [Development](#development) 
-- [Workflows](#workflows)
-
 ## About the project
 
-This discord bot was made for an IT School in 2020. It has a lot of features including all the latest features from discord.py. Made by student(s) for students.
+This discord bot was made for an IT School in 2020. It has a lot of features including all the latest features from discord.py.
 
 ### Major features
 
@@ -39,9 +24,10 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
     - Invite tracker
 - Developement & Tools
     - ANSI color support
+    - Custom error handling
     - Dynamic structure (Does not require a reboot to apply changes in code & files)
     - Database support (SQL)
-    - Error handling
+    - Docker support
     - Image processing
     - Logging
     - Multiple configs
@@ -49,6 +35,7 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
     - Powerful, dev & debuging commands
     - Utility functions
     - Socket communication system
+    - Views system
 - Discord support
     - [AppCommands](https://discordpy.readthedocs.io/en/latest/interactions/api.html#discord.app_commands.AppCommand) (Slash-commands)
     - [Cogs](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html#discord.ext.commands.Cog)/[GroupCogs](https://discordpy.readthedocs.io/en/latest/ext/commands/api.html?highlight=cogs#discord.ext.commands.GroupCog)
@@ -62,9 +49,8 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
     - Custom Help command
     - Dynamic Starboard
     - Language detector & Translation
-    - Private text channel on demand (cog: privatetext)
     - Private vocal channel on demand (cog: privatevocal)
-    - Reddit posts listner
+    - Reddit posts listener
 - And more..
 
 ### Built with
@@ -80,15 +66,8 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
 
 ## Getting started
 
-### Python Prerequisites
+### Discord developer configuration
 
-Install python packages with:
-- pip
-```bash
-$ pip install -r requirements.txt
-```
-
-### Discord developper configuration
 1. Create an application on [Discord Developpers](https://discord.com/developers/applications)
 
 2. Enable the bot status in [Discord Developpers/applications/{YOUR_APP_ID}/bot](https://discord.com/developers/applications/{YOUR_APP_ID}/bot)
@@ -100,41 +79,64 @@ $ pip install -r requirements.txt
 > [!TIP]
 > In URL replace `{YOUR_APP_ID}` with your own app/bot ID.
 
-### Configure the bot
+### Bot configuration
 
-1. Paste your discord bot token in the `"token"` field inside `/config/bot.json`.
+1. Paste your discord bot token after the `BOT_TOKEN=` inside `/config/.env`.
 
-2. Configure the prefix in the `/config/bot.json`.
+2. Configure the default prefix in the `/config/bot.json`.
 
-3. If you are using a database, fill your database credentials in the `/config/database.json` file.
+## Run the bot
 
-4. Inside your SQL database, create the following tables listed in the [SQL tables structure](#sql-tables-structure) section.
+You can run the bot in **two ways**:
+
+1. With Docker (recommended for production)
+2. Manual setup (recommended for development)
+
+### Docker
+
+1. Make sure you have [Docker](https://docs.docker.com/get-docker/) installed on your machine.
+
+2. Run the following command in the root of the project:
+```bash
+docker-compose --env-file ./config/.env up --build
+```
+
+3. Your bot is now running !
+
+### Manual setup
+
+A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is recommended.
+
+Install python packages with:
+```bash
+pip install -r requirements.txt
+```
+
+#### Configure the bot
+
+1. If you are using a database, fill your database credentials in the `/config/.env` file.
+
+2. Inside your SQL database, create the required tables, more about in the [SQL tables structure](#sql-tables-structure) section.
 
 > [!IMPORTANT]
 > If you are **NOT** using any/or a compatible database, check the [Acknowledgement section](#acknowledgement).
 
-### Run the bot
+#### Run the bot
 
-Now that you've set up the Python environment and configured the Discord application, it's time to run your bot.
-
-Open a terminal and navigate to the project directory. Execute the following command:
+Run the following command in the root of the project:
 ```bash
 python bot.py
 ```
 
-This will start your Discord bot, and if everything is configured correctly, you should see the bot coming online in your Discord server.
-
-> [!NOTE]
-Keep the terminal open while the bot is running. If you encounter any issues, check the logs for error messages (by default discord.log), and ensure that you've followed all the configuration steps accurately.
-
-Congratulations! Your bot is now up and running, ready to respond to commands and interact with users on your Discord server.
+If everything is configured correctly, you should see the bot coming online in your Discord server.
 
 ## Database
 
 ### Acknowledgement
+
 > [!IMPORTANT]
 > If you have not planned to use a SQL database:
-> 1. set the `"use_database"` field to `false` in the `/config/database.json` file.
+> 1. set the `"use_database"` field to `false` in the `/config/bot.json` file.
 > 2. in the folder `/cogs` you should remove the following files (which are using the database): `birthday.py`, `croissants.py`, `invite.py`, `me.py`, `metrics.py`, `starboard.py`.
 
 To set up a SQL database such as MariaDB or any other SQL database, and host it on a Raspberry Pi or any other server, you need to follow these steps:
@@ -147,114 +149,14 @@ To set up a SQL database such as MariaDB or any other SQL database, and host it 
 
 4. Create a new database. Add the tables listed in the [SQL tables structure](#sql-tables-structure) section. You can change the structure of the tables as you wish, but you will need to reconfigure some keys/values of the `/config/cogs.json`.
 
-5. Fill the database settings for your bot in the `/config/database.json` file as following:
-    - `use_database`: This line configures the bot to either use the database or not. __If set to false__ you won't use any database features and your bot will run.
-    - `host`: Sepcify the IP address/hostname of the database server. It could be a local IP adress if you're running your bot in the same local network than you're database is running (e.g. 192.168.1.31).
-    - `port`: This specifies the port number on which the database server is listening. It's often set to the default SQL port, which is 3306, except if you change it you may not need to change the port number.
-    - `user`: Here, you need to replace "user" with the actual username you will be using to connect to the database server. This should be the username that has appropriate privileges to access the desired database.
-    - `password`: Replace this with the actual password for the specified username. It is the password that allows you to connect to the database server.
-    - `database`: Replace this with the name of the database you want your bot to connect to. Specify the actual name of the database that contains the data your bot needs to access or modify.
+5. Fill the database settings for your bot in the `/config/.env`.
 
 ### SQL tables structure
 
+You can find the SQL structure of the tables in `/database/structure.sql`.
+
 > [!NOTE]
 > These tables are required in the database if you have planned to use the bot as if provided
-
-- `table_birthday`
-```sql
-CREATE TABLE IF NOT EXISTS `table_birthday`
-(
-    `guild_id`          BIGINT unsigned NOT NULL,
-    `user_id`           BIGINT unsigned NOT NULL,
-    `user_birth`        DATE NOT NULL,
-CONSTRAINT `me_per_guild` UNIQUE (`guild_id`, `user_id`)
-)
-ENGINE = InnoDB,
-CHARACTER SET utf8mb4,
-COLLATE utf8mb4_unicode_ci;
-```
-
-- `table_croissants`
-```sql
-CREATE TABLE IF NOT EXISTS `table_croissants`
-(
-    `user_id`           BIGINT unsigned NOT NULL,
-    `user_count`        SMALLINT unsigned,
-UNIQUE(`user_id`)
-)
-ENGINE = InnoDB,
-CHARACTER SET utf8mb4,
-COLLATE utf8mb4_unicode_ci;
-```
-
-- `table_invite`
-```sql
-CREATE TABLE IF NOT EXISTS `table_invite`
-(
-    `guild_id`           BIGINT unsigned NOT NULL,
-    `channel_id`         BIGINT unsigned NOT NULL,
-    `custom_message`     varchar(4096),
-UNIQUE(`guild_id`)
-)
-ENGINE = InnoDB,
-CHARACTER SET utf8mb4,
-COLLATE utf8mb4_unicode_ci;
-```
-
-- `table_me`
-```sql
-CREATE TABLE IF NOT EXISTS `table_me`
-(
-    `guild_id`          BIGINT unsigned NOT NULL,
-    `user_id`           BIGINT unsigned NOT NULL,
-    `user_me`           varchar(1024),
-CONSTRAINT `me_per_guild` UNIQUE (`guild_id`, `user_id`)
-)
-ENGINE = InnoDB,
-CHARACTER SET utf8mb4,
-COLLATE utf8mb4_unicode_ci;
-```
-
-- `table_metrics`
-```sql
-CREATE TABLE IF NOT EXISTS `table_metrics`
-(
-    `command_name`      varchar(32) NOT NULL,
-    `command_count`     MEDIUMINT unsigned NOT NULL,
-    `command_type`      varchar(64) NOT NULL,
-UNIQUE(`command_name`)
-)
-ENGINE = InnoDB,
-CHARACTER SET utf8mb4,
-COLLATE utf8mb4_unicode_ci;
-```
-
-- `table_prefix`
-```sql
-CREATE TABLE IF NOT EXISTS `table_prefix`
-(
-    `guild_id`           BIGINT unsigned NOT NULL,
-    `guild_prefix`       varchar(256),
-UNIQUE(`guild_id`)
-)
-ENGINE = InnoDB,
-CHARACTER SET utf8mb4,
-COLLATE utf8mb4_unicode_ci;
-```
-
-- `table_starboard`
-```sql
-CREATE TABLE IF NOT EXISTS `table_starboard`
-(
-    `reference_message`   VARCHAR(100) NOT NULL,
-    `display_message`     VARCHAR(100) NOT NULL,
-    `star_count`          SMALLINT unsigned NOT NULL,
-UNIQUE(`reference_message`)
-)
-ENGINE = InnoDB,
-CHARACTER SET utf8mb4,
-COLLATE utf8mb4_unicode_ci;
-```
 
 ## Development
 
@@ -324,7 +226,5 @@ WantedBy=multi-user.target
 <h5>Contributors :</h5>
 
 <a  href="https://github.com/PaulMarisOUMary/Discord-Bot/graphs/contributors">
-
-<img  height="25px"  src="https://contrib.rocks/image?repo=PaulMarisOUMary/Discord-Bot" />
-
+    <img  height="25px"  src="https://contrib.rocks/image?repo=PaulMarisOUMary/Discord-Bot" />
 </a>
