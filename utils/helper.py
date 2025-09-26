@@ -145,7 +145,7 @@ def bot_has_permissions(**perms: bool):
     - This decorator is not compatible with commands.check()
     """
     def wrapped(command: CommandLike) -> CommandLike:
-        if not isinstance(command, CommandLike):
+        if not isinstance(command, (commands.Command, commands.HybridCommand, app_commands.Command)):
             raise TypeError(f"Cannot decorate a class that is not a subclass of Command, get: {type(command)} must be Command")
 
         valid_required_permissions = [
