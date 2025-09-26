@@ -46,7 +46,7 @@ class DiscordBot(commands.Bot):
         return commands.when_mentioned_or(prefix)(client, message)
     
     def log(self, message: str, name: str, level: int = INFO, **kwargs) -> None:
-        self.logger.name = name = name
+        self.logger.name = name
         self.logger.log(level, message, **kwargs)
 
     async def on_ready(self) -> None:
