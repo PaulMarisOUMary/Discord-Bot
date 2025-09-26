@@ -7,7 +7,7 @@ from googletrans.constants import LANGUAGES
 translator = GGTranslator()
 
 class Translator:
-    """Supported languages are correleated to supported discord.Locale."""
+    """Supported languages are correlated to supported discord.Locale."""
 
     # Locale (key) -> GGLang code (value) 
     LOCALE_TO_LANGCODE = {
