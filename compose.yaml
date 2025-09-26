@@ -6,8 +6,6 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-    env_file:
-      - path: ./config/.env
     environment:
       - BOT_TOKEN=${BOT_TOKEN}
       - MARIADB_HOST=${MARIADB_HOST}
@@ -19,8 +17,6 @@ services:
     image: mariadb:11.6
     hostname: ${MARIADB_HOST}
     restart: always
-    env_file:
-      - path: ./config/.env
     environment:
       - MARIADB_RANDOM_ROOT_PASSWORD=1
       - MARIADB_DATABASE=${MARIADB_DATABASE}
@@ -41,6 +37,18 @@ services:
     volumes:
       - discordbot_mariadb:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    restart: always
+    depends_on:
+      - mariadb
+    environment:
+      - PMA_HOST=${MARIADB_HOST}
+      - PMA_USER=${MARIADB_USER}
+      - PMA_PASSWORD=${MARIADB_PASSWORD}
+    ports:
+      - 8080:80
 
 volumes:
   discordbot_mariadb:

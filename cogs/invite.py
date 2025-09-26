@@ -6,10 +6,10 @@ from discord.ext import commands, tasks
 from discord.utils import get
 from pytz import UTC
 from typing import Optional
-from classes.database import MixedTypes
 
-from classes.discordbot import DiscordBot
-from classes.utilities import bot_has_permissions
+from utils.database import MixedTypes
+from utils.basebot import DiscordBot
+from utils.helper import bot_has_permissions
 
 class Invite(commands.Cog, name="invite"):
     """
@@ -58,7 +58,7 @@ class Invite(commands.Cog, name="invite"):
     async def __seek_invite(self, before: dict[str, discord.Invite], after: dict[str, discord.Invite]) -> Optional[discord.Invite]:
         # Seek increment uses in invites
         for id, invite in after.items():
-            if invite.uses > before[id].uses: # type: ignore
+            if invite.uses > before[id].uses: 
                 return invite
 
         # Seek missing invite (only expirable)
@@ -100,10 +100,10 @@ class Invite(commands.Cog, name="invite"):
     @commands.Cog.listener("on_invite_create")
     async def on_invite_create(self, invite: discord.Invite) -> None:
         """Trigger when an invite is created."""
-        if not self.__is_guild_granted(invite.guild): # type: ignore (invite from guild)
+        if not self.__is_guild_granted(invite.guild):
             return
 
-        await self.__update_invites(invite.guild) # type: ignore (invite from guild)
+        await self.__update_invites(invite.guild)
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member: discord.Member) -> None:
@@ -127,7 +127,7 @@ class Invite(commands.Cog, name="invite"):
             log_message = format_log_message.format(
                 invite = invite, 
                 member = member, 
-                created_at_timestamp = round(invite.created_at.timestamp()), # type: ignore
+                created_at_timestamp = round(invite.created_at.timestamp()), 
                 expires_at_timestamp = round(invite.expires_at.timestamp()) if invite.expires_at else 33197904000,
                 max_uses = '♾️' if invite.max_uses == 0 else invite.max_uses
             )
@@ -141,7 +141,7 @@ class Invite(commands.Cog, name="invite"):
                 if not channel:
                     return
 
-            await channel.send(embed=embed) # type: ignore
+            await channel.send(embed=embed) 
         except KeyError: # Guild not in invites -> Missing manage_guild permission
             pass
         except discord.Forbidden or discord.HTTPException: # Missing manage_channels permission
@@ -156,7 +156,7 @@ class Invite(commands.Cog, name="invite"):
     @commands.guild_only()
     async def config_invite_logs(self, ctx: commands.Context, channel: discord.TextChannel) -> None:
         """Set the invite tracker channel."""
-        await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"guild_id": ctx.guild.id, "channel_id": channel.id}) # type: ignore (@guild_only)
+        await self.bot.database.insert_onduplicate(self.subconfig_data["table"], {"guild_id": ctx.guild.id, "channel_id": channel.id})
 
         await ctx.send(f"Logs channel set to {channel.mention}.")
 
@@ -177,11 +177,11 @@ class Invite(commands.Cog, name="invite"):
         {created_at_timestamp} - The timestamp of the invite creation (int).
         {expires_at_timestamp} - The timestamp of the invite expiration (int).
         {max_uses} - The max uses of the invite."""
-        if not self.__is_guild_granted(ctx.guild): # type: ignore (@guild_only)
+        if not self.__is_guild_granted(ctx.guild):
             return
         if not message:
-            await self.bot.database.update(self.subconfig_data["table"], {"custom_message": MixedTypes("NULL")}, f"guild_id = {ctx.guild.id}") # type: ignore (@guild_only)
-            await ctx.send(f"Logs message set to default.")
+            await self.bot.database.update(self.subconfig_data["table"], {"custom_message": MixedTypes("NULL")}, f"guild_id = {ctx.guild.id}")
+            await ctx.send("Logs message set to default.")
             return
         elif lenght_message := len(str(message)) >= 4096:
             await ctx.send(f"Logs message is too long. (Should be less than 4096 characters and is {lenght_message})")
@@ -223,14 +223,13 @@ class Invite(commands.Cog, name="invite"):
             embed = discord.Embed(title=f"{self.help_custom()[0]} Invite Tracker", color=0xDC143C, description=log_message)
             embed.timestamp = datetime.now()
 
-            await self.bot.database.update(self.subconfig_data["table"], {"custom_message": message}, f"guild_id = {ctx.guild.id}") # type: ignore (@guild_only)
+            await self.bot.database.update(self.subconfig_data["table"], {"custom_message": message}, f"guild_id = {ctx.guild.id}")
 
-            self.granted_guilds[ctx.guild.id] = (self.granted_guilds[ctx.guild.id][0], message) # type: ignore (@guild_only)
+            self.granted_guilds[ctx.guild.id] = (self.granted_guilds[ctx.guild.id][0], message)
 
             await ctx.send(embed=embed, content="Custom message set.")
         except ValueError:
             await ctx.send("Wrong formatting.")
-
 
 
 async def setup(bot: DiscordBot) -> None:

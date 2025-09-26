@@ -1,11 +1,10 @@
 import asyncio
 
-from classes.discordbot import DiscordBot
-from classes.utilities import cogs_directory, cogs_manager, load_config, reload_views
+from utils.basebot import DiscordBot
+from utils.helper import cogs_manager, get_cogs, load_configs, load_envs, reload_views
 
 from discord.ext import commands
 from logging import DEBUG as LOG_DEBUG, INFO as LOG_INFO, WARN as LOG_WARN
-from os import listdir
 
 
 class ServerProtocol(asyncio.Protocol):
@@ -20,7 +19,8 @@ class ServerProtocol(asyncio.Protocol):
 
         elif message == "reload":
             # reload config
-            self.bot.config = load_config()
+            self.bot.config = load_configs(folder="./config")
+            self.bot.config["env"] = load_envs(files=["./config/.env"])
             # reload all views
             reload_views()
             # unload all cogs
@@ -37,12 +37,7 @@ class ServerProtocol(asyncio.Protocol):
             await cogs_manager(
                 self.bot,
                 "load",
-                [
-                    f"cogs.{filename[:-3]}" for
-                    filename in 
-                    listdir(cogs_directory) if 
-                    filename.endswith(".py")
-                ]
+                get_cogs("./cogs")
             )
             # sync commands
             await self.bot.tree.sync()
@@ -50,7 +45,7 @@ class ServerProtocol(asyncio.Protocol):
         else:
             self.bot.log(f"{self.str_conn} Unknown message received: {message}", name="discord.socket", level=LOG_WARN)
 
-    def connection_made(self, transport: asyncio.Transport) -> None: # type: ignore
+    def connection_made(self, transport: asyncio.Transport) -> None:
         self.host, self.port = transport.get_extra_info("peername")
         self.str_conn = f"({self.host}:{self.port}) :"
 

@@ -5,7 +5,8 @@ from typing import Optional
 
 from discord.ext import commands
 
-from classes.discordbot import DiscordBot
+from utils.basebot import DiscordBot
+
 
 @commands.guild_only()
 class Starboard(commands.Cog, name="starboard"):
@@ -61,7 +62,6 @@ class Starboard(commands.Cog, name="starboard"):
 			embed.add_field(name="Replying to...", value=f"[{reference.resolved.author}]({reference.resolved.jump_url})", inline=False)
 
 		if message.attachments:
-			print(message.attachments)
 			images = [attachment.url for attachment in message.attachments if attachment.url.lower().endswith(("jpg", "jpeg", "png", "webp", "gif"))] # doc: https://discord.com/developers/docs/reference#editing-message-attachments-using-attachments-within-embeds
 			for image_url in images:
 				if not embed.image.url:
@@ -208,7 +208,6 @@ class Starboard(commands.Cog, name="starboard"):
 			await display_message.delete()
 		except discord.Forbidden or discord.NotFound:
 			pass
-
 
 
 async def setup(bot: DiscordBot) -> None:

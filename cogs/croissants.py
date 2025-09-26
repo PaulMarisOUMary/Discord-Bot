@@ -9,8 +9,9 @@ from io import BytesIO
 from PIL import Image, ImageDraw, ImageFont, ImageSequence
 from typing import Union
 
-from classes.database import MixedTypes
-from classes.discordbot import DiscordBot
+from utils.database import MixedTypes
+from utils.basebot import DiscordBot
+
 
 @app_commands.guild_only()
 class Croissants(commands.GroupCog, name="croissants", group_name="croissants", group_description="Commands related to croissants."):
@@ -48,7 +49,8 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 			if not self.__is_on_cooldown(message.author):
 				self.cooldown[message.author.id] = datetime.now()
 				await self.__send_croissants(message)
-			else: await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
+			else:
+				await message.channel.send(f"{self.EMOJI} Respect the croissants don't despise them! ||No spam||")
 
 	@app_commands.command(name="lore", description="Explain the lore of the croissants.")
 	@app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
@@ -122,7 +124,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 		for frame in ImageSequence.Iterator(pfp_content):
 			try: 
 				duration_array.append(frame.info["duration"])
-			except: 
+			except Exception: 
 				duration_array.append(0)
 
 			img = Image.new("RGBA", size=(500, 100), color=bg_color)
@@ -135,7 +137,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 			img.paste(pfp, (16, 16), pfp)
 
 			draw = ImageDraw.Draw(img)
-			draw.text(xy=(100, 15), text=author.display_name, fill=name_color, font=name_font) # type: ignore
+			draw.text(xy=(100, 15), text=author.display_name, fill=name_color, font=name_font)
 			offset = draw.textlength(text=author.display_name, font=name_font) + 110
 			draw.text((offset, 20), datetime.now().strftime("Today at %I:%M %p").replace(" 0", " "), timestamp_color, timestamp_font)
 			draw.text((99, 48), content, content_color, content_font)
@@ -155,7 +157,6 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 
 	def __rank_emoji(self, rank: int) -> str:
 		return {1:'🥇', 2:'🥈', 3:'🥉'}.get(rank, str(rank))
-
 
 
 async def setup(bot: DiscordBot) -> None:

@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
-ARG PYTHON_VERSION=3.11.6
-FROM python:${PYTHON_VERSION}-slim as base
+ARG PYTHON_VERSION=3.13
+FROM python:${PYTHON_VERSION}-slim AS base
 
 # Prevents Python from writing pyc files.
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -42,4 +42,4 @@ RUN --mount=type=cache,target=/root/.cache/pip \
 USER appuser
 
 # Run the application.
-CMD python bot.py
+CMD ["python", "bot.py"]

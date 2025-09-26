@@ -1,68 +1,37 @@
 import discord
-import logging
 
-from classes.discordbot import DiscordBot
-from classes.utilities import load_config, load_env, clean_close, cogs_manager, set_logging, cogs_directory
+from logging import DEBUG, INFO
 
-from os import listdir
+from utils.basebot import DiscordBot
+from utils.helper import load_configs, load_envs, set_logging
 
-class Bot(DiscordBot):
-	def __init__(self, **kwargs) -> None:
-		# Set default values
-		kwargs.setdefault("activity", discord.Game(name = "Booting.."))
-		kwargs.setdefault("allowed_mentions", discord.AllowedMentions(everyone=False))
-		kwargs.setdefault("case_insensitive", True)
-		kwargs.setdefault("config", load_config())
-		kwargs.setdefault("env", load_env())
-		kwargs.setdefault("intents", discord.Intents.all())
-		kwargs.setdefault("max_messages", 2500)
-		kwargs.setdefault("status", discord.Status.idle)
+if __name__ == "__main__":
+    bot = DiscordBot(
+        activity = discord.CustomActivity(name="Booting...", emoji='⚙️'),
+        allowed_mentions = discord.AllowedMentions(everyone=False),
+        case_insensitive = True,
+        config = load_configs(folder="./config"),
+        env = load_envs(files=["./config/.env"]),
+        intents = discord.Intents(
+            emojis=True,
+            guilds=True,
+            invites=True,
+            members=True,
+            message_content=True,
+            messages=True,
+            presences=True,
+            reactions=True,
+            voice_states=True,
+        ),
+        max_messages = 2500,
+        status = discord.Status.idle,
+    )
 
-		# Initialize the bot
-		super().__init__(**kwargs)
+    bot.logger, stream_handler = set_logging(file_level=INFO, console_level=INFO, filename="discord.log")
 
-	async def startup(self) -> None:
-		"""Sync application commands"""
-		await self.wait_until_ready()
-		
-		# Sync application commands
-		synced = await self.tree.sync()
-		self.log(message = f"Application commands synced ({len(synced)})", name = "discord.startup")
-		
-	async def setup_hook(self) -> None:
-		"""Initialize the bot, database, prefixes & cogs."""
-		# Initialize the DiscordBot setup hook
-		await super().setup_hook()
-
-		# Cogs loader
-		cogs = [f"cogs.{filename[:-3]}" for filename in listdir(cogs_directory) if filename.endswith(".py")]
-		await cogs_manager(self, "load", cogs)
-		self.log(message = f"Cogs loaded ({len(cogs)}): {', '.join(cogs)}", name = "discord.setup_hook")
-
-		# Sync application commands
-		self.loop.create_task(self.startup())
-
-if __name__ == '__main__':
-	clean_close() # Avoid Windows EventLoopPolicy Error
-
-	bot = Bot(
-		intents = discord.Intents(
-			emojis = True,
-			guild_scheduled_events = True,
-			guilds = True,
-			invites = True,
-			members = True,
-			message_content = True,
-			messages = True,
-			presences = True,
-			reactions = True,
-			voice_states = True,
-		),
-	)
-	bot.logger, streamHandler = set_logging(file_level = logging.INFO, console_level = logging.INFO, filename = "discord.log")
-	bot.run(
-		bot.config["env"]["token"],
-		reconnect = True,
-		log_handler = streamHandler,
-		log_level = logging.DEBUG, # Must be set to DEBUG, change the log_level of each handler in set_logging() method
-	)
+    bot.run(
+        bot.config["env"]["BOT_TOKEN"],
+        reconnect = True,
+        log_handler = stream_handler,
+        log_level = DEBUG,
+    )
