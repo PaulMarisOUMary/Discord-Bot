@@ -6,7 +6,7 @@ class ClientProtocol(asyncio.Protocol):
         self.message = message
         self.on_con_lost = on_con_lost
 
-    def connection_made(self, transport: asyncio.Transport) -> None: # type: ignore
+    def connection_made(self, transport: asyncio.Transport) -> None:
         transport.write(self.message.encode())
 
     def data_received(self, data: bytes) -> None:

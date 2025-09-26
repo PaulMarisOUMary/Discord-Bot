@@ -121,7 +121,7 @@ class Birthday(commands.GroupCog, name="birthday", group_name="birthday", group_
 		await self.show_birthday_message(interaction, user)
 
 	async def show_birthday_message(self, interaction: discord.Interaction, user: Union[discord.Member, discord.User]) -> None:
-		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_birth", {"guild_id": str(interaction.guild.id), "user_id": str(user.id)}) # type: ignore
+		response = await self.bot.database.lookup(self.subconfig_data["table"], "user_birth", {"guild_id": str(interaction.guild.id), "user_id": str(user.id)})
 		if response:
 			birthdate = datetime.combine(response[0][0], datetime.min.time())
 			await interaction.response.send_message(f":birthday: Birthday the {format_dt(birthdate, 'D')} and was born {format_dt(birthdate, 'R')}.")

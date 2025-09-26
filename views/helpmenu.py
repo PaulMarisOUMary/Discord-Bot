@@ -2,9 +2,11 @@ import discord
 import functools
 import operator
 
-from discord import app_commands, ButtonStyle
+from discord import ButtonStyle
 from discord.ext import commands
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
+
+from utils.basetypes import CommandLike
 
 from views.dropdown import CustomDropdown
 from views.view import View as Parent
@@ -35,7 +37,7 @@ class Button(discord.ui.Button):
 class View(Parent):
     def __init__(self, *,
         timeout: Optional[float] = 300,
-        mapping: Dict[Optional[commands.Cog], List[Union[commands.Command[Any, ..., Any], app_commands.Command[Any, ..., Any], commands.HybridCommand[Any, ..., Any]]]],
+        mapping: Dict[Optional[commands.Cog], List[CommandLike]],
         help_object: commands.HelpCommand,
         home_embed: discord.Embed,
     ) -> None:
@@ -82,7 +84,7 @@ class View(Parent):
 
         for cog in self.cogs[1:]:
             if cog:
-                emoji, label, description = cog.help_custom() # need override # type: ignore
+                emoji, label, description = cog.help_custom() # need override 
                 self.options.append(
                     {
                         "label": label,
@@ -143,7 +145,7 @@ class View(Parent):
                 button.disabled = True
         else:
             cog = self.cogs[self.index]
-            embed = await self.help_class.send_cog_help(cog, view_invoked=True) # need override # type: ignore
+            embed = await self.help_class.send_cog_help(cog, view_invoked=True) # need override 
 
         await interaction.response.edit_message(embed=embed, view=self)
 

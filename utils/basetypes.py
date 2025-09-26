@@ -1,5 +1,6 @@
 import discord
 
+from discord import app_commands
 from discord.ext import commands
 from typing import Any, Dict, Literal, Union
 
@@ -31,8 +32,11 @@ MISSING: Any = _MissingSentinel()
 
 
 class GuildContext(commands.Context):
-    author: discord.Member # type: ignore
-    guild: discord.Guild   # type: ignore
-    channel: Union[discord.TextChannel, discord.StageChannel, discord.VoiceChannel, discord.Thread] # type: ignore
-    me: discord.Member     # type: ignore
-    prefix: str            # type: ignore
+    author: discord.Member
+    guild: discord.Guild
+    channel: Union[discord.TextChannel, discord.StageChannel, discord.VoiceChannel, discord.Thread]
+    me: discord.Member
+    prefix: str
+
+CommandLike = Union[commands.Command, app_commands.Command, commands.HybridCommand]
+GroupLike = Union[commands.Group, app_commands.Group, commands.HybridGroup]

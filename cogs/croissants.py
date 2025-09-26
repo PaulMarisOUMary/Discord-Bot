@@ -137,7 +137,7 @@ class Croissants(commands.GroupCog, name="croissants", group_name="croissants", 
 			img.paste(pfp, (16, 16), pfp)
 
 			draw = ImageDraw.Draw(img)
-			draw.text(xy=(100, 15), text=author.display_name, fill=name_color, font=name_font) # type: ignore
+			draw.text(xy=(100, 15), text=author.display_name, fill=name_color, font=name_font)
 			offset = draw.textlength(text=author.display_name, font=name_font) + 110
 			draw.text((offset, 20), datetime.now().strftime("Today at %I:%M %p").replace(" 0", " "), timestamp_color, timestamp_font)
 			draw.text((99, 48), content, content_color, content_font)
