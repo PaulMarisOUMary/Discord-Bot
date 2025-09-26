@@ -2,8 +2,9 @@ import time
 
 from discord.ext import commands
 
-from classes.discordbot import DiscordBot
-from classes.utilities import bot_has_permissions
+from utils.basebot import DiscordBot
+from utils.helper import bot_has_permissions
+
 
 class Basic(commands.Cog, name="basic"):
 	"""
@@ -33,7 +34,6 @@ class Basic(commands.Cog, name="basic"):
 		message = await ctx.send(":ping_pong: Pong !")
 		ping = (time.monotonic() - before) * 1000
 		await message.edit(content=f":ping_pong: Pong ! in `{float(round(ping/1000.0,3))}s` ||{int(ping)}ms||")
-
 
 
 async def setup(bot: DiscordBot) -> None:

@@ -146,5 +146,6 @@ class DataSQL():
         return response[0][0] > 0
 
     async def close(self) -> None:
-        self.pool.close()
-        await self.pool.wait_closed()
+        if hasattr(self, "pool") and self.pool is not None:
+            self.pool.close()
+            await self.pool.wait_closed()

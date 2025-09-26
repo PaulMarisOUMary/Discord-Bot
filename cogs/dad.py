@@ -4,7 +4,8 @@ import re
 from discord.ext import commands
 from random import random
 
-from classes.discordbot import DiscordBot
+from utils.basebot import DiscordBot
+
 
 class Dad(commands.Cog, name="dad"):
     """
@@ -45,12 +46,11 @@ class Dad(commands.Cog, name="dad"):
             if match and random() <= probability:
                 try:
                     format = response.format(content = content, bot = self.bot, match = match, value = match.group("value"))
-                except:
+                except Exception:
                     format = response.format(content = content, bot = self.bot, match = match)
 
                 await message.reply(format, mention_author=False)
                 break
-
 
 
 async def setup(bot: DiscordBot) -> None:

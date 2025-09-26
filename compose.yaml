@@ -1,0 +1,54 @@
+services:
+  bot:
+    build:
+      context: .
+    restart: always
+    depends_on:
+      mariadb:
+        condition: service_healthy
+    environment:
+      - BOT_TOKEN=${BOT_TOKEN}
+      - MARIADB_HOST=${MARIADB_HOST}
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+
+  mariadb:
+    image: mariadb:11.6
+    hostname: ${MARIADB_HOST}
+    restart: always
+    environment:
+      - MARIADB_RANDOM_ROOT_PASSWORD=1
+      - MARIADB_DATABASE=${MARIADB_DATABASE}
+      - MARIADB_USER=${MARIADB_USER}
+      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      start_period: 10s
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    ports:
+      - 3306:3306
+    ulimits:
+      memlock:
+        soft: 262144
+        hard: -1
+    volumes:
+      - discordbot_mariadb:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+
+  phpmyadmin:
+    image: phpmyadmin:5.2
+    restart: always
+    depends_on:
+      - mariadb
+    environment:
+      - PMA_HOST=${MARIADB_HOST}
+      - PMA_USER=${MARIADB_USER}
+      - PMA_PASSWORD=${MARIADB_PASSWORD}
+    ports:
+      - 8080:80
+
+volumes:
+  discordbot_mariadb:
