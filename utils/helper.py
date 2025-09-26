@@ -10,9 +10,9 @@ from dotenv import dotenv_values
 from json import load as json_load
 from os import environ, listdir, sep
 from os.path import dirname, abspath, getmtime, join, basename, splitext
-from typing import Any, Awaitable, Callable, Dict, Generator, List, Literal, NoReturn, Optional, Tuple, Union
+from typing import Any, Awaitable, Callable, Dict, Generator, List, Literal, Optional, Tuple
 
-from utils.basetypes import MISSING
+from utils.basetypes import MISSING, CommandLike
 
 
 root_directory = dirname(dirname(abspath(__file__)))
@@ -144,8 +144,8 @@ def bot_has_permissions(**perms: bool):
     - This decorator must be on the top of the decorator stack
     - This decorator is not compatible with commands.check()
     """
-    def wrapped(command: Union[app_commands.Command, commands.HybridCommand, commands.Command]) -> Union[app_commands.Command, commands.HybridCommand, commands.Command]:
-        if not isinstance(command, (app_commands.Command, commands.hybrid.HybridCommand, commands.Command)):
+    def wrapped(command: CommandLike) -> CommandLike:
+        if not isinstance(command, CommandLike):
             raise TypeError(f"Cannot decorate a class that is not a subclass of Command, get: {type(command)} must be Command")
 
         valid_required_permissions = [

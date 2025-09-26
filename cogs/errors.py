@@ -11,6 +11,7 @@ from utils.errors import ErrorDispatcher
 dispatcher = ErrorDispatcher()
 
 
+@dispatcher.report_bug()
 @dispatcher.register(app_commands.CommandInvokeError, commands.CommandInvokeError)
 async def handle_command_invoke_error(error: app_commands.CommandInvokeError, responder) -> None:
     await responder(content=f"🕳️ Error: {error.original}")
@@ -18,8 +19,10 @@ async def handle_command_invoke_error(error: app_commands.CommandInvokeError, re
 # @dispatcher.register(app_commands.TransformerError)
 # async def handle_transformer_error(error: app_commands.TransformerError, responder) -> None: ...
 
-# @dispatcher.register(app_commands.TranslationError)
-# async def handle_translation_error(error: app_commands.TranslationError, responder) -> None: ...
+@dispatcher.report_bug()
+@dispatcher.register(app_commands.TranslationError)
+async def handle_translation_error(error: app_commands.TranslationError, responder) -> None:
+    await responder(content=f"🕳️ Translation error: {error}")
 
 @dispatcher.register(app_commands.NoPrivateMessage, commands.NoPrivateMessage)
 async def handle_no_private_message(error: app_commands.NoPrivateMessage, responder) -> None:
