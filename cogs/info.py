@@ -36,7 +36,7 @@ class Info(commands.Cog, name="info"):
 			user = interaction.user
 
 		if isinstance(user, discord.Member):
-			avatar = user.guild_avatar
+			avatar = user.guild_avatar or user.avatar
 		else:
 			avatar = user.avatar
 
@@ -50,7 +50,7 @@ class Info(commands.Cog, name="info"):
 			user = interaction.user
 
 		if isinstance(user, discord.Member):
-			banner = user.guild_banner
+			banner = user.guild_banner or user.banner
 		else:
 			banner = user.banner
 
