@@ -56,6 +56,7 @@ class Info(commands.Cog, name="info"):
 
 		if not banner:
 			await interaction.response.send_message("This user doesn't have a banner.")
+			return
 
 		await interaction.response.send_message(banner.url)
 
