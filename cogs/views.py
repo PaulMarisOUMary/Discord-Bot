@@ -6,6 +6,7 @@ from utils.basebot import DiscordBot
 from utils.basetypes import GuildContext
 
 from views import dropdown
+from views import modal
 
 class Views(commands.Cog, name="views"):
 	"""Experimental cog, new features such buttons, dropdown or whispering."""
@@ -17,6 +18,13 @@ class Views(commands.Cog, name="views"):
 		label = "Views"
 		description = "Demo : New discord features."
 		return emoji, label, description
+	
+	@commands.command(name="modal")
+	@commands.guild_only()
+	async def moda(self, ctx: GuildContext) -> None:
+		"""Discover button link with this feature."""
+		view = modal.View(invoke=ctx)
+		await ctx.send(view=view)
 
 	@commands.command(name="dropdown")
 	@commands.guild_only()

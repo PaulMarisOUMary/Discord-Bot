@@ -103,7 +103,7 @@ async def cogs_manager(bot: commands.Bot, action: Literal["load", "unload", "rel
 
 
 def reload_views() -> Generator[str, None, None]:
-    for mod in modules.values():
+    for mod in list(modules.values()):
         if not isinstance(mod, ModuleType):
             continue
         

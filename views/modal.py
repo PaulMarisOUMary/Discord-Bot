@@ -3,12 +3,15 @@ import functools
 
 from typing import Callable, Union
 from discord.ext import commands
+
 from views.view import View as Parent
 
-class CustomModal(discord.ui.Modal):
-	children: list[Union[discord.ui.TextInput, discord.ui.Select]]
+Children = Union[discord.ui.TextInput, discord.ui.Select]
 
-	def __init__(self, title: str, fields: dict[str, Union[discord.ui.TextInput, discord.ui.Select]], when_submit: Callable) -> None:
+class CustomModal(discord.ui.Modal):
+	children: list[Children]
+
+	def __init__(self, title: str, fields: dict[str, Children], when_submit: Callable) -> None:
 		super().__init__(title=title)
 
 		self.values : dict[str, str] = {}
@@ -19,13 +22,15 @@ class CustomModal(discord.ui.Modal):
 			key, value = item
 			self.__fields[key] = functools.partial(self.__get_value, self.add_item(value).children[i])
 
-	def __get_value(self, children: Union[discord.ui.TextInput, discord.ui.Select]) -> Union[str, list[str]]:
+	def __get_value(self, children: Children) -> Union[str, list[str]]:
 		if isinstance(children, discord.ui.TextInput):
 			return children.value
 		elif isinstance(children, discord.ui.Select):
 			return children.values
+		elif isinstance(children, discord.ui.Label):
+			return self.__get_value(children.component)
 		else:
-			raise TypeError("Invalid type for children")
+			raise TypeError(f"Invalid type for children: {type(children)}")
 
 	async def on_submit(self, interaction: discord.Interaction) -> None:
 		for key, value in self.__fields.items():
@@ -71,19 +76,23 @@ class View(Parent):
 					min_length = 5,
 					max_length = 300
 				),
-				# "mood": discord.ui.Select(
-				# 	placeholder="Mood (required)",
-				# 	min_values=1,
-				# 	max_values=5,
-				# 	options=[
-				# 		discord.SelectOption(label="Happy", value='😁', emoji='😁'),
-				# 		discord.SelectOption(label="Good", value='😊', emoji='😊'),
-				# 		discord.SelectOption(label="Neutral", value='😐', emoji='😐'),
-				# 		discord.SelectOption(label="Sad", value='😢', emoji='😢'),
-				# 		discord.SelectOption(label="Angry", value='😡', emoji='😡'),
-				# 	],
-				# 	disabled=False # Must be False, else the user will not be able to send the modal
-				# ),
+				"mood": discord.ui.Label(
+					text="Your current mood",
+					description="test",
+					component=discord.ui.Select(
+						placeholder="Mood (required)",
+						min_values=1,
+						max_values=3,
+						required=True,
+						options=[
+							discord.SelectOption(label="Happy", value='😁', emoji='😁'),
+							discord.SelectOption(label="Good", value='😊', emoji='😊'),
+							discord.SelectOption(label="Neutral", value='😐', emoji='😐'),
+							discord.SelectOption(label="Sad", value='😢', emoji='😢'),
+							discord.SelectOption(label="Angry", value='😡', emoji='😡'),
+						],
+					),
+				),
 			},
 			when_submit = when_submit
 		)

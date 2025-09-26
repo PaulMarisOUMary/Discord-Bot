@@ -105,9 +105,9 @@ class Admin(commands.Cog, name="admin"):
     @commands.is_owner()
     async def reload_views(self, ctx: commands.Context) -> None:
         """Reload each registered views."""
-        infants = reload_views()
+        infants = list(reload_views())
         succes_text = f"👌 All views reloaded ! | 🔄 __`{sum(1 for _ in infants)} view(s) reloaded`__ : "
-        for infant in infants: 
+        for infant in infants:
             succes_text += f"`{infant.replace('views.', '')}` "
         await ctx.send(succes_text)
 
