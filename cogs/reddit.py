@@ -5,7 +5,7 @@ import discord
 from datetime import datetime, timezone
 from discord.ext import commands
 
-from classes.discordbot import DiscordBot
+from utils.basebot import DiscordBot
 
 class Reddit(commands.Cog, name="reddit"):
     """
