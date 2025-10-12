@@ -22,7 +22,7 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
 - Administrative Tools
     - Custom prefix per guild
     - Invite tracker
-- Developement & Tools
+- Development & Tools
     - ANSI color support
     - Custom error handling
     - Dynamic structure (Does not require a reboot to apply changes in code & files)
@@ -32,7 +32,7 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
     - Logging
     - Multiple configs
     - Metrics about usage of the bot
-    - Powerful, dev & debuging commands
+    - Powerful, dev & debugging commands
     - Utility functions
     - Socket communication system
     - Views system
@@ -66,20 +66,20 @@ This discord bot was made for an IT School in 2020. It has a lot of features inc
 
 ## Getting started
 
-### Discord developer configuration
+### Discord Developer Configuration
 
-1. Create an application on [Discord Developpers](https://discord.com/developers/applications)
+1. Create an application on [Discord Developers](https://discord.com/developers/applications)
 
-2. Enable the bot status in [Discord Developpers/applications/{YOUR_APP_ID}/bot](https://discord.com/developers/applications/{YOUR_APP_ID}/bot)
+2. Enable the bot status in [Discord Developers/applications/{YOUR_APP_ID}/bot](https://discord.com/developers/applications/{YOUR_APP_ID}/bot)
 
-3. Please make sure you have enabled each needed `Privileged Gateway Intents` in [Discord Developpers/applications/{YOUR_APP_ID}/bot #Privileged Gateway Intents](https://discord.com/developers/applications{YOUR_APP_ID}/bot) for your application.
+3. Please make sure you have enabled each needed `Privileged Gateway Intents` in [Discord Developers/applications/{YOUR_APP_ID}/bot #Privileged Gateway Intents](https://discord.com/developers/applications/{YOUR_APP_ID}/bot) for your application.
 
 4. Copy the token bot from [Discord Developpers/applications/{YOUR_APP_ID}/bot #Token](https://discord.com/developers/applications/{YOUR_APP_ID}/bot)
 
 > [!TIP]
 > In URL replace `{YOUR_APP_ID}` with your own app/bot ID.
 
-### Bot configuration
+### Bot Configuration
 
 1. Paste your discord bot token after the `BOT_TOKEN=` inside `/config/.env`.
 
@@ -98,14 +98,14 @@ You can run the bot in **two ways**:
 
 2. Run the following command in the root of the project:
 ```bash
-docker-compose --env-file ./config/.env up --build
+docker compose --env-file ./config/.env up --build
 ```
 
 3. Your bot is now running !
 
 ### Manual setup
 
-A `Virtual Environment <https://docs.python.org/3/library/venv.html>`_ is recommended.
+A [Virtual Environment](https://docs.python.org/3/library/venv.html) is recommended.
 
 Install python packages with:
 ```bash
@@ -199,7 +199,9 @@ Github setup:
 
 Server setup:
 - If you want to start the self-runner on boot, you can follow [this guide](https://docs.github.com/en/actions/hosting-your-own-runners/configuring-the-self-hosted-runner-application-as-a-service).
-:warning: The self-hosted runner should have the following permissions, `install apps` and `start/restart services`. (install the service as --user usernameWithPermissions)
+
+> [!WARNING]
+> The self-hosted runner should have the following permissions, `install apps` and `start/restart services`. (install the service as --user usernameWithPermissions)
 
 Discord bot service:
 This step is made for linux only.
@@ -227,4 +229,5 @@ WantedBy=multi-user.target
 
 <a  href="https://github.com/PaulMarisOUMary/Discord-Bot/graphs/contributors">
     <img  height="25px"  src="https://contrib.rocks/image?repo=PaulMarisOUMary/Discord-Bot" />
+
 </a>
