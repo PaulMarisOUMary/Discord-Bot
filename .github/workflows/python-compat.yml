@@ -1,0 +1,32 @@
+name: Compatibility Check
+
+on:
+  push:
+    paths:
+      - '**.py'
+    branches: [ main ]
+  pull_request:
+    paths:
+      - '**.py'
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  compatibility:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.x"
+
+      - name: Install dependencies
+        run: |
+          pip install vermin
+
+      - name: Static compatibility check (Python 3.8 target)
+        run: |
+          vermin --target=3.8 --violations --backports asyncio --backports enum --backports importlib --backports typing --no-parse-comments --no-tips .
