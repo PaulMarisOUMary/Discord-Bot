@@ -1,6 +1,6 @@
 python-dotenv>=1.2,<2.0
 pytz>=2025.2,<2026.0
-requests>=2.34.0,<2.35.0
+requests>=2.34.1,<2.35.0
 
 discord.py[speed]==2.7.1
 
