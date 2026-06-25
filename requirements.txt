@@ -1,12 +1,12 @@
 python-dotenv>=1.2.2,<2.0
-pytz>=2025.2,<2026.0
-requests>=2.34.0,<2.35.0
+pytz>=2026.2,<2027.0
+requests>=2.34.2,<2.35.0
 
 discord.py[speed]==2.7.1
 
 aiomysql>=0.2.0,<0.4.0
 
-pillow>=11.0,<13.0
+pillow>=12.2.0,<13.0
 
 googletrans==4.0.2
 

@@ -6,12 +6,8 @@ services:
     depends_on:
       mariadb:
         condition: service_healthy
-    environment:
-      - BOT_TOKEN=${BOT_TOKEN}
-      - MARIADB_HOST=${MARIADB_HOST}
-      - MARIADB_DATABASE=${MARIADB_DATABASE}
-      - MARIADB_USER=${MARIADB_USER}
-      - MARIADB_PASSWORD=${MARIADB_PASSWORD}
+    env_file:
+      - config/.env
 
   mariadb:
     image: mariadb:11.6
