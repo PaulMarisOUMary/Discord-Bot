@@ -1,4 +1,4 @@
-python-dotenv>=1.2,<2.0
+python-dotenv>=1.2.2,<2.0
 pytz>=2026.2,<2027.0
 requests>=2.34.2,<2.35.0
 
