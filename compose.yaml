@@ -1,16 +1,24 @@
+# https://docs.docker.com/compose/how-tos/environment-variables/variable-interpolation/
+
+x-common:
+  depends_on: &depends-mariadb
+    mariadb:
+      condition: service_healthy
+
 services:
   bot:
     build:
       context: .
+      dockerfile: docker/bot.Dockerfile
+    image: discord-bot:local
+    container_name: bot
     restart: always
-    depends_on:
-      mariadb:
-        condition: service_healthy
     env_file:
       - config/.env
+    depends_on: *depends-mariadb
 
   mariadb:
-    image: mariadb:11.6
+    image: mariadb:12
     hostname: ${MARIADB_HOST}
     restart: always
     environment:
@@ -37,8 +45,7 @@ services:
   phpmyadmin:
     image: phpmyadmin:5.2
     restart: always
-    depends_on:
-      - mariadb
+    depends_on: *depends-mariadb
     environment:
       - PMA_HOST=${MARIADB_HOST}
       - PMA_USER=${MARIADB_USER}

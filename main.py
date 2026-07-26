@@ -1,6 +1,6 @@
-import discord
-
 from logging import DEBUG, INFO
+
+import discord
 
 from utils.basebot import DiscordBot
 from utils.helper import load_configs, load_envs, set_logging
