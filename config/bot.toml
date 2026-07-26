@@ -1,0 +1,6 @@
+use_database = true
+
+[prefix]
+default = "$"
+mentionable = true
+table = "table_prefix"
