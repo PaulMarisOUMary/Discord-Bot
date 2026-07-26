@@ -1,0 +1,72 @@
+disabled = [
+    "nou",
+]
+
+[cogs.birthday]
+table = "table_birthday"
+
+[cogs.croissants]
+cooldown = 300
+table = "table_croissants"
+
+[[cogs.dad.jokes]]
+regex = """^(.*?[\\s])?(im|i\\ am|i\\'m)[\\s](?P<value>.+)"""
+message = "Hi {value}, I'm {bot.user.mention}"
+probability = 0.1
+
+[[cogs.dad.jokes]]
+regex = '(.*)quoi[^a-zA-Z]*?$'
+message = "Feur."
+probability = 0.25
+
+[cogs.fridaycake]
+seed = 2
+table = "table_fridaycake"
+
+[cogs.invite]
+default_message = """
+{invite.inviter.mention} invited {member.mention} to <#{invite.channel.id}>
+
+Created: <t:{created_at_timestamp}:R>
+Uses: **{invite.uses}** out of **{max_uses}**
+Code: *{invite.id}*"""
+table = "table_invite"
+
+[cogs.me]
+max_length = 255
+table = "table_me"
+
+[cogs.metrics]
+table = "table_metrics"
+
+[cogs.presence]
+cooldown = 20
+
+[[cogs.presence.status]]
+status = "dnd"
+name = "🎉V3 is out !"
+
+[[cogs.presence.status]]
+status = "dnd"
+name = "I'm open source !"
+
+[[cogs.presence.status]]
+status = "dnd"
+name = "Use slash-commands !"
+
+[cogs.privatevocal]
+main_channel_name = "➕"
+channel_name = "Vocal: @{user.name}"
+cooldown = 30
+
+[cogs.reddit.client]
+client_id = "**********************"
+client_secret = "******************************"
+user_agent = "git/PaulMarisOUMary/Discord-Bot"
+
+[[cogs.reddit.connections]]
+subreddit = "ProgrammerHumor"
+channel = "reddit"
+
+[cogs.starboard]
+table = "table_starboard"

@@ -5,7 +5,8 @@ from pathlib import Path
 from time import monotonic
 from typing import Any
 
-from discord import __version__ as d_version, AppInfo, Message
+from discord import AppInfo, Message
+from discord import __version__ as d_version
 from discord.ext import commands
 
 from models.config import Config
