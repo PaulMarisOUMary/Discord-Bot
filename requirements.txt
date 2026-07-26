@@ -2,5 +2,8 @@ discord.py[speed]==2.7.1
 
 python-dotenv>=1.2,<2.0
 
-tomli>=2.4,<3.0; python_version < "3.11"
 msgspec[toml]>=0.21.1,<1.0
+
+sqlmodel>=0.0.39,<0.1.0
+sqlalchemy[asyncio]>=2.0,<3.0
+asyncmy>=0.2,<0.3,

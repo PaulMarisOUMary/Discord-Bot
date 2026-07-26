@@ -3,6 +3,20 @@ from typing import Literal
 
 from discord.ext import commands
 
+from utils.paths import root_dir
+
+
+def cog_to_path(cog: str) -> Path:
+    return root_dir / f"{cog.replace('.', '/')}.py"
+
+def sort_cogs(cogs: list[str], reverse: bool = False) -> list[str]:
+    def sortlatest(cog: str) -> tuple[float, str]:
+        try:
+            return (cog_to_path(cog).stat().st_mtime, cog)
+        except OSError:
+            return (0.0, cog)
+
+    return sorted(cogs, key=sortlatest, reverse=reverse)
 
 def get_cogs(cogs_dir: Path, disabled: list[str]) -> list[str]:
     cogs = []
