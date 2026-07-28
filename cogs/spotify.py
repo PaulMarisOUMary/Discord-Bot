@@ -1,57 +1,70 @@
-import discord
-import time
-
-from discord.utils import get
+from discord import Embed, Interaction, Member, User, app_commands
+from discord import Spotify as dSpotify
 from discord.ext import commands
-from discord import app_commands
-from typing import Optional, Union
+from discord.utils import utcnow
 
-from utils.basebot import DiscordBot
-from utils.helper import bot_has_permissions
+from utils.bot import DiscordBot
 
 
 class Spotify(commands.Cog, name="spotify"):
-	"""
-		Show Spotify presence on discord.
-	
-		Require intents:
-			- presences
-		
-		Require bot permission:
-			- use_external_emojis
-	"""
-	def __init__(self, bot: DiscordBot) -> None:
-		self.bot = bot
+    """
+    Show Spotify presence on discord.
 
-	def help_custom(self) -> tuple[str, str, str]:
-		emoji = '🎶'
-		label = "Spotify"
-		description = "Spotify player status commands."
-		return emoji, label, description
+    Require intents:
+            - presences
 
-	@bot_has_permissions(embed_links=True)
-	@app_commands.command(name="spotify")
-	@app_commands.describe(user="The user to get spotify informations from.")
-	async def spotify_activity(self, interaction: discord.Interaction, user: Optional[Union[discord.Member, discord.User]]) -> None:
-		"""Show the current Spotify song."""
-		if not user: 
-			user = interaction.user
-		realuser = get(self.bot.get_all_members(), id=user.id)
-		if not realuser:
-			await interaction.response.send_message("User not found.", ephemeral=True)
-			return
-		for activity in realuser.activities:
-			if isinstance(activity, discord.activity.Spotify):
-				embed = discord.Embed(colour=activity.colour)
-				embed.set_author(name="Spotify", url=f"https://open.spotify.com/track/{activity.track_id}", icon_url="https://toppng.com/uploads/thumbnail//spotify-logo-icon-transparent-icon-spotify-11553501653zkfre5mcur.png")
-				embed.add_field(name=activity.title, value=activity.artist, inline=False)
-				embed.set_thumbnail(url=activity.album_cover_url)
-				embed.set_footer(text=f"{str(activity.duration)[2:-7]} | Requested by : {interaction.user.name} at {time.strftime('%H:%M:%S')}", icon_url=interaction.user.display_avatar.url)
-				await interaction.response.send_message(embed=embed)
-				return
-		
-		await interaction.response.send_message(f"{user.name} is not currently listening to Spotify")
+    Require bot permission:
+            - use_external_emojis
+    """
+
+    def __init__(self, bot: DiscordBot) -> None:
+        self.bot = bot
+
+    @app_commands.command(name="spotify")
+    @app_commands.describe(user="The user to get spotify informations from.")
+    @app_commands.guild_only()
+    async def spotify_activity(
+        self, interaction: Interaction, user: Member | User | None
+    ) -> None:
+        target = user or interaction.user
+
+        member = interaction.guild.get_member(target.id)  # type: ignore
+
+        if not member:
+            await interaction.response.send_message(
+                "Could not fetch this user.", ephemeral=True
+            )
+            return
+
+        spotify = next(
+            (act for act in member.activities if isinstance(act, dSpotify)), None
+        )
+
+        if not spotify:
+            await interaction.response.send_message(
+                f"{member.display_name} does not listen to Spotify."
+            )
+            return
+
+        minutes, seconds = divmod(int(spotify.duration.total_seconds()), 60)
+        duration_fmt = f"{minutes}:{seconds:02d}"
+
+        embed = Embed(
+            title=spotify.title,
+            url=spotify.track_url,
+            colour=spotify.color,
+            timestamp=utcnow(),
+        )
+        embed.set_thumbnail(url=spotify.album_cover_url)
+        embed.add_field(name="Artist", value=", ".join(spotify.artists), inline=True)
+        embed.add_field(name="Album", value=spotify.album, inline=True)
+        embed.set_footer(
+            text=f"Duration: {duration_fmt} | Requested by {interaction.user.display_name}",
+            icon_url=interaction.user.display_avatar.url,
+        )
+
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot: DiscordBot) -> None:
-	await bot.add_cog(Spotify(bot))
+    await bot.add_cog(Spotify(bot))
