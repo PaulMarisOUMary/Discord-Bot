@@ -2,20 +2,26 @@ disabled = [
     "nou",
 ]
 
-[cogs.birthday]
-table = "table_birthday"
-
 [cogs.croissants]
 cooldown = 300
-table = "table_croissants"
 
 [[cogs.dad.jokes]]
-regex = """^(.*?[\\s])?(im|i\\ am|i\\'m)[\\s](?P<value>.+)"""
+regex = '''(?i)\bcan\s+i\s+(?P<value>[^.!?]+)'''
+message = "I don't know, *can* you {value}?"
+probability = 0.15
+
+[[cogs.dad.jokes]]
+regex = '''(?i)\b(?:im|i\ am|i'm)\s+(?P<value>[^.!?]+)'''
 message = "Hi {value}, I'm {bot.user.mention}"
 probability = 0.1
 
 [[cogs.dad.jokes]]
-regex = '(.*)quoi[^a-zA-Z]*?$'
+regex = '''(?i)\b(?:je\s+suis|j'ai)\s+(?P<value>[^.!?]+)'''
+message = "Enchanté {value}, moi c'est {bot.user.mention} !"
+probability = 0.1
+
+[[cogs.dad.jokes]]
+regex = '''(?i)\bquoi\s*[^a-zA-Z0-9_]*$'''
 message = "Feur."
 probability = 0.25
 

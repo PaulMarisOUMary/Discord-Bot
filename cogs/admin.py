@@ -65,7 +65,7 @@ class Admin(commands.Cog, name="admin"):
     @commands.command("reloadconfig", aliases=["rc"])
     @commands.is_owner()
     async def reload_configs(self, ctx: commands.Context) -> None:
-        self.config = load_config(config_dir, env_path)
+        self.bot.config = load_config(config_dir, env_path)
         await ctx.send(":handshake: Config files reloaded!")
 
     @commands.command(name="synctree", aliases=["st"])

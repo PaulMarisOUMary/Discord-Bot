@@ -44,7 +44,7 @@ async def cogs_manager(bot: commands.Bot, action: Literal["load", "unload", "rel
 
     action_func = actions[action]
 
-    _log.info(f"Reloading {', '.join(cogs)}")
+    _log.info(f"{action.capitalize()} {', '.join(cogs)}")
 
     for cog in cogs:
         await action_func(cog)
