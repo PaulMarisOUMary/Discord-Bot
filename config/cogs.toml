@@ -1,5 +1,4 @@
 disabled = [
-    "nou",
 ]
 
 [cogs.croissants]
@@ -27,7 +26,6 @@ probability = 0.25
 
 [cogs.fridaycake]
 seed = 2
-table = "table_fridaycake"
 
 [cogs.invite]
 default_message = """
@@ -36,17 +34,20 @@ default_message = """
 Created: <t:{created_at_timestamp}:R>
 Uses: **{invite.uses}** out of **{max_uses}**
 Code: *{invite.id}*"""
-table = "table_invite"
 
 [cogs.me]
 max_length = 255
-table = "table_me"
-
-[cogs.metrics]
-table = "table_metrics"
 
 [cogs.presence]
-cooldown = 20
+cooldown = 25
+
+[[cogs.presence.status]]
+status = "dnd"
+name = "Use slash-commands !"
+
+[[cogs.presence.status]]
+status = "dnd"
+name = "/help"
 
 [[cogs.presence.status]]
 status = "dnd"
@@ -55,10 +56,6 @@ name = "🎉V3 is out !"
 [[cogs.presence.status]]
 status = "dnd"
 name = "I'm open source !"
-
-[[cogs.presence.status]]
-status = "dnd"
-name = "Use slash-commands !"
 
 [cogs.privatevocal]
 main_channel_name = "➕"
@@ -73,6 +70,3 @@ user_agent = "git/PaulMarisOUMary/Discord-Bot"
 [[cogs.reddit.connections]]
 subreddit = "ProgrammerHumor"
 channel = "reddit"
-
-[cogs.starboard]
-table = "table_starboard"
