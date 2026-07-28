@@ -19,7 +19,7 @@ _log = getLogger(__name__)
 class DiscordBot(commands.Bot):
     appinfo: AppInfo
     config: Config
-    database: Database | None
+    database: Database
     logger: Logger
     prefixes_cache: dict[int, str]
 
@@ -58,8 +58,6 @@ class DiscordBot(commands.Bot):
         _log.info(f"Application commands synced ({len(synced)}).")
 
     async def setup_hook(self) -> None:
-        self.database = None
-
         if self.config.bot.use_database:
             from models.sql import Prefix
 

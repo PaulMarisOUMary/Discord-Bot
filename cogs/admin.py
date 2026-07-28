@@ -4,8 +4,12 @@ from logging import getLogger
 from discord import Object
 from discord.ext import commands
 from discord.utils import format_dt
+from sqlmodel import col, update
 
+from models.sql import Prefix
+from utils.basetypes import GuildContext
 from utils.bot import DiscordBot
+from utils.checks import require_database
 from utils.cogs import cogs_manager, sort_cogs
 from utils.config import load_config
 from utils.paths import config_dir, env_path
@@ -94,6 +98,25 @@ class Admin(commands.Cog, name="admin"):
     async def uptime(self, ctx: commands.Context) -> None:
         start_time = datetime.now(timezone.utc) - timedelta(seconds=self.bot.uptime)
         await ctx.send(f":clock1: {format_dt(start_time, 'R')} ||`{start_time}`||")
+
+    @require_database(True)
+    @commands.command("changeprefix", aliases=["prefix"])
+    @commands.has_guild_permissions(administrator=True)
+    @commands.guild_only()
+    async def change_guild_prefix(self, ctx: GuildContext, prefix: str) -> None:
+        guild_id = ctx.guild.id
+
+        async with self.bot.database.session() as session:
+            statement = (
+                update(Prefix)
+                .where(col(Prefix.guild_id) == guild_id)
+                .values(guild_prefix=prefix)
+            )
+            await session.exec(statement)
+            await session.commit()
+
+        self.bot.prefixes_cache[guild_id] = prefix
+        await ctx.send(f":warning: Prefix changed to `{prefix}`")
 
 
 async def setup(bot: DiscordBot) -> None:
