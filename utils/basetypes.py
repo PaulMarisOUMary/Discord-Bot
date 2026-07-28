@@ -1,12 +1,19 @@
-from discord import Guild, Member, Thread, app_commands
-from discord.abc import GuildChannel
+from discord import (
+    Guild,
+    Member,
+    StageChannel,
+    TextChannel,
+    Thread,
+    VoiceChannel,
+    app_commands,
+)
 from discord.ext import commands
 
 
 class GuildContext(commands.Context):
     author: Member
     guild: Guild
-    channel: GuildChannel | Thread
+    channel: Thread | TextChannel | VoiceChannel | StageChannel
     me: Member
 
 CommandLike = commands.Command | app_commands.Command | commands.HybridCommand
