@@ -4,6 +4,7 @@ from discord.ext import commands
 from discord.utils import utcnow
 
 from utils.bot import DiscordBot
+from utils.checks import bot_has_permissions
 
 
 class Spotify(commands.Cog, name="spotify"):
@@ -20,6 +21,7 @@ class Spotify(commands.Cog, name="spotify"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
+    @bot_has_permissions(send_messages=True)
     @app_commands.command(name="spotify")
     @app_commands.describe(user="The user to get spotify informations from.")
     @app_commands.guild_only()

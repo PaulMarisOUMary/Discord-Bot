@@ -9,7 +9,7 @@ from sqlmodel import col, update
 from models.sql import Prefix
 from utils.basetypes import GuildContext
 from utils.bot import DiscordBot
-from utils.checks import require_database
+from utils.checks import bot_has_permissions, require_database
 from utils.cogs import cogs_manager, sort_cogs
 from utils.config import load_config
 from utils.paths import config_dir, env_path
@@ -33,18 +33,21 @@ class Admin(commands.Cog, name="admin"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
+    @bot_has_permissions(send_messages=True)
     @commands.command("load")
     @commands.is_owner()
     async def load_cog(self, ctx: commands.Context, cog: str) -> None:
         await cogs_manager(self.bot, "load", cog)
         await ctx.send(f":point_right: Cog `{cog}` loaded!")
 
+    @bot_has_permissions(send_messages=True)
     @commands.command("unload")
     @commands.is_owner()
     async def unload_cog(self, ctx: commands.Context, cog: str) -> None:
         await cogs_manager(self.bot, "unload", cog)
         await ctx.send(f":point_left: Cog `{cog}` unloaded!")
 
+    @bot_has_permissions(send_messages=True)
     @commands.command("reload")
     @commands.is_owner()
     async def reload_cogs(self, ctx: commands.Context, *cogs: str) -> None:
@@ -52,6 +55,7 @@ class Admin(commands.Cog, name="admin"):
         await cogs_manager(self.bot, "reload", *reload_cogs)
         await ctx.send(f":thumbsup: `{'` `'.join(cogs)}` reloaded!")
 
+    @bot_has_permissions(send_messages=True)
     @commands.command("reloadlatest", aliases=["rl"])
     @commands.is_owner()
     async def reload_latest_cogs(self, ctx: commands.Context, n_cogs: int = 1) -> None:
@@ -59,6 +63,7 @@ class Admin(commands.Cog, name="admin"):
         await cogs_manager(self.bot, "reload", *reload_cogs)
         await ctx.send(f":point_down: `{'` `'.join(reload_cogs)}` reloaded!")
 
+    @bot_has_permissions(send_messages=True)
     @commands.command("reloadall", aliases=["rll"])
     @commands.is_owner()
     async def reload_all_cogs(self, ctx: commands.Context) -> None:
@@ -66,12 +71,14 @@ class Admin(commands.Cog, name="admin"):
         await cogs_manager(self.bot, "reload", *reload_cogs)
         await ctx.send(f":muscle: All cogs reloaded: `{len(reload_cogs)}`!")
 
+    @bot_has_permissions(send_messages=True)
     @commands.command("reloadconfig", aliases=["rc"])
     @commands.is_owner()
     async def reload_configs(self, ctx: commands.Context) -> None:
         self.bot.config = load_config(config_dir, env_path)
         await ctx.send(":handshake: Config files reloaded!")
 
+    @bot_has_permissions(send_messages=True)
     @commands.command(name="synctree", aliases=["st"])
     @commands.is_owner()
     async def sync_tree(
@@ -88,18 +95,21 @@ class Admin(commands.Cog, name="admin"):
 
         await ctx.send(f":pinched_fingers: `{len(tree)}` synced!")
 
+    @bot_has_permissions(send_messages=True)
     @commands.command(name="shutdown")
     @commands.is_owner()
     async def shutdown_bot(self, ctx: commands.Context) -> None:
         await ctx.send(f":wave: `{self.bot.user}` is shutting down...")
         await self.bot.close()
 
+    @bot_has_permissions(send_messages=True)
     @commands.command("uptime")
     async def uptime(self, ctx: commands.Context) -> None:
         start_time = datetime.now(timezone.utc) - timedelta(seconds=self.bot.uptime)
         await ctx.send(f":clock1: {format_dt(start_time, 'R')} ||`{start_time}`||")
 
     @require_database(True)
+    @bot_has_permissions(send_messages=True)
     @commands.command("changeprefix", aliases=["prefix"])
     @commands.has_guild_permissions(administrator=True)
     @commands.guild_only()

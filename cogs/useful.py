@@ -6,6 +6,7 @@ from utils.ansi import Foreground as fg
 from utils.ansi import Format as fmt
 from utils.basetypes import GuildContext
 from utils.bot import DiscordBot
+from utils.checks import bot_has_permissions
 
 
 class Useful(commands.Cog, name="useful"):
@@ -22,6 +23,7 @@ class Useful(commands.Cog, name="useful"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
+    @bot_has_permissions(send_messages=True)
     @commands.command(name="emojilist", aliases=["ce", "el"])
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.guild_only()
@@ -51,6 +53,7 @@ class Useful(commands.Cog, name="useful"):
 
             await ctx.send(embed=embed)
 
+    @bot_has_permissions(send_messages=True)
     @commands.command(name="colors")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def codeblock_colors(self, ctx: commands.Context) -> None:
@@ -67,6 +70,7 @@ class Useful(commands.Cog, name="useful"):
 
         await ctx.send(f"{codeblock}```")
 
+    @bot_has_permissions(send_messages=True)
     @commands.command(name="cleanup")
     @commands.guild_only()
     async def cleanup(self, ctx: GuildContext, n_message: int) -> None:

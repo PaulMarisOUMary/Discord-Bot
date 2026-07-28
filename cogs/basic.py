@@ -4,6 +4,7 @@ from discord import Color, Embed
 from discord.ext import commands
 
 from utils.bot import DiscordBot
+from utils.checks import bot_has_permissions
 
 
 class Basic(commands.Cog, name="basic"):
@@ -20,6 +21,7 @@ class Basic(commands.Cog, name="basic"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
+    @bot_has_permissions(send_messages=True)
     @commands.hybrid_command(name="ping", description="Ping the bot.")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def ping(self, ctx: commands.Context) -> None:

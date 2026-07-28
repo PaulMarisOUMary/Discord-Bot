@@ -4,6 +4,7 @@ from discord import Interaction, Member, User, app_commands
 from discord.ext import commands
 
 from utils.bot import DiscordBot
+from utils.checks import bot_has_permissions
 
 _log = getLogger(__name__)
 
@@ -23,6 +24,7 @@ class Profile(commands.Cog, name="profile"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
+    @bot_has_permissions(send_messages=True)
     @app_commands.command(name="avatar", description="Display the avatar.")
     @app_commands.describe(
         user="The user to get the avatar from.", main="If true, shows the main avatar."
@@ -38,6 +40,7 @@ class Profile(commands.Cog, name="profile"):
 
         await interaction.response.send_message(avatar.url)
 
+    @bot_has_permissions(send_messages=True)
     @app_commands.command(name="banner", description="Display the avatar.")
     @app_commands.describe(
         user="The user to get the banner from.", main="If true, shows the main banner."
