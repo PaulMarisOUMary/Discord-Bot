@@ -1,30 +1,38 @@
 from __future__ import annotations
 
-from enum import IntEnum
+from enum import Enum
 
 ESCAPE = '\u001b'
 
-def _to_color(*colors_code: str) -> str:
-    """Color code to ANSI escape sequence."""
-    return f"{ESCAPE}[{';'.join(colors_code)}m"
+class BaseANSI:
+    @property
+    def codes(self) -> tuple[int, ...]:
+        raise NotImplementedError
 
-class StackANSI():
-    def __init__(self, num: int) -> None:
-        self.series: list[int] = [num]
-
-    def __add__(self, __x: SingleANSI) -> StackANSI:
-        self.series.append(__x.value)
-        return self
+    def __add__(self, other: BaseANSI) -> StackANSI:
+        if isinstance(other, BaseANSI):
+            return StackANSI(*self.codes, *other.codes)
+        raise NotImplementedError
 
     def __str__(self) -> str:
-        return _to_color(*set([str(x) for x in self.series]))
+        unique_codes = dict.fromkeys(str(c) for c in self.codes)
+        return f"{ESCAPE}[{';'.join(unique_codes)}m"
 
-class SingleANSI(IntEnum):
-    def __add__(self, __x: SingleANSI) -> StackANSI: # type: ignore[override]
-        return StackANSI(self.value) + __x
+class StackANSI(BaseANSI):
+    def __init__(self, *codes: int) -> None:
+        self._codes = codes
 
-    def __str__(self) -> str:
-        return _to_color(str(self.value))
+    @property
+    def codes(self) -> tuple[int, ...]:
+        return self._codes
+
+class SingleANSI(BaseANSI, Enum):
+    value: int
+
+    @property
+    def codes(self) -> tuple[int, ...]:
+        return (self.value,)
+
 
 class Format(SingleANSI):
     """Formating codes."""
