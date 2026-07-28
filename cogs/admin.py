@@ -51,7 +51,7 @@ class Admin(commands.Cog, name="admin"):
     @commands.command("reloadlatest", aliases=["rl"])
     @commands.is_owner()
     async def reload_latest_cogs(self, ctx: commands.Context, n_cogs: int = 1) -> None:
-        reload_cogs = sort_cogs(list(self.bot.extensions.keys()))[:n_cogs]
+        reload_cogs = sort_cogs(list(self.bot.extensions.keys()), True)[:n_cogs]
         await cogs_manager(self.bot, "reload", *reload_cogs)
         await ctx.send(f":point_down: `{'` `'.join(reload_cogs)}` reloaded!")
 

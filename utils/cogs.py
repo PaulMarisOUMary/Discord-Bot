@@ -1,9 +1,12 @@
+from logging import getLogger
 from pathlib import Path
 from typing import Literal
 
 from discord.ext import commands
 
 from utils.paths import root_dir
+
+_log = getLogger(__name__)
 
 
 def cog_to_path(cog: str) -> Path:
@@ -40,6 +43,8 @@ async def cogs_manager(bot: commands.Bot, action: Literal["load", "unload", "rel
     }
 
     action_func = actions[action]
+
+    _log.info(f"Reloading {', '.join(cogs)}")
 
     for cog in cogs:
         await action_func(cog)
