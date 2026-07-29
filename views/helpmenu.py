@@ -1,44 +1,57 @@
-import discord
-import functools
-import operator
+from __future__ import annotations
 
+import operator
+from collections.abc import Callable, Coroutine
+from typing import Any, Protocol
+
+import discord
 from discord import ButtonStyle
 from discord.ext import commands
-from typing import Any, Dict, List, Optional
 
-from utils.basetypes import CommandLike
-
+from utils.basetypes import CommandLike, HasHelpCustom
 from views.dropdown import CustomDropdown
 from views.view import View as Parent
 
+
+class HelpObjectProtocol(Protocol):
+    context: commands.Context
+
+    async def build_cog_embed(self, cog: commands.Cog) -> discord.Embed: ...
+
+
 class Button(discord.ui.Button):
-	def __init__(self,
+    def __init__(
+        self,
         context: commands.Context,
         label: str,
         style: discord.ButtonStyle,
-        when_callback: functools.partial,
-        argument: Optional[Any],
-	) -> None:
-		disabled = False
-		if argument == -1 or argument == 0:
-			disabled = True
-		self.when_callback = when_callback
-		self.invoker = context.author
-		self.argument = argument
+        when_callback: Callable[..., Coroutine[Any, Any, None]],
+        argument: Any | None,
+    ) -> None:
+        disabled = argument in (-1, 0)
 
-		super().__init__(style=style, label=label, disabled=disabled)
+        self.when_callback = when_callback
+        self.invoker = context.author
+        self.argument = argument
 
-	async def callback(self, interaction: discord.Interaction) -> None:
-		if self.invoker.id == interaction.user.id:
-			await self.when_callback(interaction, self.argument)
-		else:
-			await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
+        super().__init__(style=style, label=label, disabled=disabled)
+
+    async def callback(self, interaction: discord.Interaction) -> None:
+        if self.invoker.id == interaction.user.id:
+            await self.when_callback(interaction, self.argument)
+        else:
+            await interaction.response.send_message(
+                ":x: Hey it's not your session !", ephemeral=True
+            )
+
 
 class View(Parent):
-    def __init__(self, *,
-        timeout: Optional[float] = 300,
-        mapping: Dict[Optional[commands.Cog], List[CommandLike]],
-        help_object: commands.HelpCommand,
+    def __init__(
+        self,
+        *,
+        timeout: float | None = 300,
+        mapping: dict[commands.Cog | None, list[CommandLike]],
+        help_object: HelpObjectProtocol,
         home_embed: discord.Embed,
     ) -> None:
         super().__init__(timeout=timeout)
@@ -47,21 +60,20 @@ class View(Parent):
         self.bot = self.context.bot
         self.home_embed = home_embed
         self.help_class = help_object
-        self.cogs: List[Optional[commands.Cog]] = [None]
+        self.cogs: list[commands.Cog | None] = [None]
         self.index = 0
-        self.buttons: List[discord.ui.Button] = []
-        self.options: List[Dict[str, str]] = [
+        self.buttons: list[discord.ui.Button] = []
+        self.options: list[dict[str, str]] = [
             {
                 "label": "Home",
                 "description": "Show the home page.",
                 "emoji": '👋',
-                "value": "home_page"
+                "value": "home_page",
             }
         ]
+
         for cog in mapping:
-            if not cog:
-                continue
-            if hasattr(cog, "help_custom"):
+            if isinstance(cog, HasHelpCustom):
                 self.cogs.append(cog)
 
         self.cogs[1:] = sorted(self.cogs[1:], key=operator.attrgetter("qualified_name"))
@@ -70,29 +82,37 @@ class View(Parent):
         self.add_buttons()
 
     def add_dropdown(self) -> None:
-        async def on_select(_class, interaction: discord.Interaction) -> None:
-            if self.context.author.id == interaction.user.id:
-                cog_name = _class.values[0]
-                if cog_name == "home_page":
-                    await interaction.response.edit_message(embed=self.home_embed, view=self)
-                else:
-                    cog = self.bot.get_cog(cog_name)
-                    index = self.cogs.index(cog, 1)
-                    await self.to_embed(interaction, index)
-            else:
-                await interaction.response.send_message("❌ Hey it's not your session !", ephemeral=True)
+        async def on_select(
+            dropdown: CustomDropdown, interaction: discord.Interaction
+        ) -> None:
+            if self.context.author.id != interaction.user.id:
+                await interaction.response.send_message(
+                    ":x: Hey it's not your session !", ephemeral=True
+                )
+                return
+
+            cog_name = dropdown.values[0]
+            if cog_name == "home_page":
+                await self.to_embed(interaction, 0)
+                return
+
+            cog = self.bot.get_cog(cog_name)
+            index = self.cogs.index(cog, 1)
+            await self.to_embed(interaction, index)
 
         for cog in self.cogs[1:]:
-            if cog:
-                emoji, label, description = cog.help_custom() # need override 
-                self.options.append(
-                    {
-                        "label": label,
-                        "description": description,
-                        "emoji": emoji,
-                        "value": cog.qualified_name,
-                    }
-                )
+            if not isinstance(cog, HasHelpCustom):
+                continue
+
+            emoji, label, description = cog.help_custom()
+            self.options.append(
+                {
+                    "label": label,
+                    "description": description,
+                    "emoji": emoji,
+                    "value": cog.qualified_name,
+                }
+            )
 
         self.add_item(
             CustomDropdown(
@@ -100,18 +120,18 @@ class View(Parent):
                 min_val=1,
                 max_val=1,
                 options=self.options,
-                when_callback=on_select
+                when_callback=on_select,
             )
         )
 
     def add_buttons(self) -> None:
         buttons_property = [
-			("<<", ButtonStyle.grey, self.to_embed, 0),
-			("Back", ButtonStyle.blurple, self.to_embed, -1),
-			("Next", ButtonStyle.blurple, self.to_embed, -2),
-			(">>", ButtonStyle.grey, self.to_embed, len(self.options)-1),
-			("Quit", ButtonStyle.red, self.quit, None)
-		]
+            ("<<", ButtonStyle.grey, self.to_embed, 0),
+            ("Back", ButtonStyle.blurple, self.to_embed, -1),
+            ("Next", ButtonStyle.blurple, self.to_embed, -2),
+            (">>", ButtonStyle.grey, self.to_embed, len(self.options) - 1),
+            ("Quit", ButtonStyle.red, self.quit, None),
+        ]
 
         for label, style, command, argument in buttons_property:
             button = Button(
@@ -132,24 +152,25 @@ class View(Parent):
         else:
             self.index = index
 
-        for button in self.buttons[0:-1]:
+        for button in self.buttons[:-1]:
             button.disabled = False
 
-        if self.index == len(self.options)-1:
+        if self.index == len(self.options) - 1:
             for button in self.buttons[2:4]:
                 button.disabled = True
 
         if self.index == 0:
             embed = self.home_embed
-            for button in self.buttons[0:2]:
+            for button in self.buttons[:2]:
                 button.disabled = True
         else:
             cog = self.cogs[self.index]
-            embed = await self.help_class.send_cog_help(cog, view_invoked=True) # need override 
+            assert cog is not None
+            embed = await self.help_class.build_cog_embed(cog)
 
         await interaction.response.edit_message(embed=embed, view=self)
 
-    async def quit(self, interaction: discord.Interaction, *args: Any) -> None:
+    async def quit(self, interaction: discord.Interaction, *_args: Any) -> None:
         await interaction.response.defer()
         await interaction.delete_original_response()
         self.stop()
