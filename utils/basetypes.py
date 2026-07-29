@@ -1,3 +1,5 @@
+from typing import Protocol, runtime_checkable
+
 from discord import (
     Guild,
     Member,
@@ -18,3 +20,7 @@ class GuildContext(commands.Context):
 
 CommandLike = commands.Command | app_commands.Command | commands.HybridCommand
 GroupLike = commands.Group | app_commands.Group | commands.HybridGroup
+
+@runtime_checkable
+class HasHelpCustom(Protocol):
+    def help_custom(self) -> tuple[str, str, str]: ...

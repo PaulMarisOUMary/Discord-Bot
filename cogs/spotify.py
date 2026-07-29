@@ -22,8 +22,10 @@ class Spotify(commands.Cog, name="spotify"):
         self.bot = bot
 
     @bot_has_permissions(send_messages=True)
-    @app_commands.command(name="spotify")
-    @app_commands.describe(user="The user to get spotify informations from.")
+    @app_commands.command(
+        name="spotify", description="Display the current Spotify status."
+    )
+    @app_commands.describe(user="The user to get Spotify information from.")
     @app_commands.guild_only()
     async def spotify_activity(
         self, interaction: Interaction, user: Member | User | None
