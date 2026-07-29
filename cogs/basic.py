@@ -21,6 +21,9 @@ class Basic(commands.Cog, name="basic"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
+    def help_custom(self) -> tuple[str, str, str]:
+        return '📙', "Basic", "Basic commands, like ping."
+
     @bot_has_permissions(send_messages=True)
     @commands.hybrid_command(name="ping", description="Ping the bot.")
     @commands.cooldown(1, 5, commands.BucketType.user)

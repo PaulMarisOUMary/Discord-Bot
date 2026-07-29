@@ -33,6 +33,9 @@ class Admin(commands.Cog, name="admin"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
+    def help_custom(self) -> tuple[str, str, str]:
+        return '⚙️', "Admin", "Show the list of admin commands."
+
     @bot_has_permissions(send_messages=True)
     @commands.command("load")
     @commands.is_owner()

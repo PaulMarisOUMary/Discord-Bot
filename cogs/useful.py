@@ -23,6 +23,9 @@ class Useful(commands.Cog, name="useful"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
+    def help_custom(self) -> tuple[str, str, str]:
+        return '🚩', "Useful", "Useful commands."
+
     @bot_has_permissions(send_messages=True)
     @commands.command(name="emojilist", aliases=["ce", "el"])
     @commands.cooldown(1, 10, commands.BucketType.user)

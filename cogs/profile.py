@@ -24,6 +24,9 @@ class Profile(commands.Cog, name="profile"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
+    def help_custom(self) -> tuple[str, str, str]:
+        return '👤', "Profile", "Utils profile commands."
+
     @bot_has_permissions(send_messages=True)
     @app_commands.command(name="avatar", description="Display the avatar.")
     @app_commands.describe(
