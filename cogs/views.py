@@ -1,12 +1,11 @@
-import discord
-
+from discord import Interaction
 from discord.ext import commands
 
-from utils.basebot import DiscordBot
 from utils.basetypes import GuildContext
-
+from utils.bot import DiscordBot
+from utils.checks import bot_has_permissions
 from views import dropdown
-from views import modal
+
 
 class Views(commands.Cog, name="views"):
 	"""Experimental cog, new features such buttons, dropdown or whispering."""
@@ -14,23 +13,14 @@ class Views(commands.Cog, name="views"):
 		self.bot = bot
 
 	def help_custom(self) -> tuple[str, str, str]:
-		emoji = '🔘'
-		label = "Views"
-		description = "Demo : New discord features."
-		return emoji, label, description
-	
-	@commands.command(name="modal")
-	@commands.guild_only()
-	async def moda(self, ctx: GuildContext) -> None:
-		"""Discover button link with this feature."""
-		view = modal.View(invoke=ctx)
-		await ctx.send(view=view)
+		return '🔘', "Views", "Demo : New discord features."
 
+	@bot_has_permissions(send_messages=True)
 	@commands.command(name="dropdown")
 	@commands.guild_only()
 	async def drop(self, ctx: GuildContext) -> None:
 		"""Discover select menu feature with this command."""
-		async def when_callback(_class, interaction: discord.Interaction) -> None:
+		async def when_callback(_class, interaction: Interaction) -> None:
 			if _class.view.invoke.author == interaction.user:
 				message = "Selected languages : "
 				for value in _class.values:
