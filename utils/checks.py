@@ -73,7 +73,9 @@ def require_database(require: bool = True) -> Callable[[Decoratable], Decoratabl
     return decorator
 
 
-def bot_has_permissions(**perms: Unpack[_PermissionsKwargs]) -> Callable[[Decoratable], Decoratable]:
+def bot_has_permissions(
+    **perms: Unpack[_PermissionsKwargs],
+) -> Callable[[Decoratable], Decoratable]:
     invalid = set(perms) - set(discord.Permissions.VALID_FLAGS)
     if invalid:
         raise TypeError(f"Invalid permission(s): {', '.join(invalid)}")
@@ -82,7 +84,9 @@ def bot_has_permissions(**perms: Unpack[_PermissionsKwargs]) -> Callable[[Decora
 
     def record_extras(target: CommandLike) -> None:
         existing = target.extras.setdefault("bot_permissions", [])
-        target.extras["bot_permissions"] = list(dict.fromkeys([*existing, *required_perms]))
+        target.extras["bot_permissions"] = list(
+            dict.fromkeys([*existing, *required_perms])
+        )
 
     def decorator(command: Decoratable) -> Decoratable:
         # already a built command object

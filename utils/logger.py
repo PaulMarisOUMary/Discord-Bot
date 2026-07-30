@@ -5,7 +5,9 @@ from pathlib import Path
 from discord.utils import setup_logging as d_logging
 
 
-def setup_logging(log_dir: Path = Path("logs"), file_level: int = INFO, stream_level: int = INFO) -> None:
+def setup_logging(
+    log_dir: Path = Path("logs"), file_level: int = INFO, stream_level: int = INFO
+) -> None:
     log_dir.mkdir(parents=True, exist_ok=True)
 
     d_logging(level=DEBUG)

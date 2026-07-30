@@ -15,7 +15,9 @@ class Database:
         self.engine: AsyncEngine | None = None
         self._sessionmaker: async_sessionmaker[AsyncSession] | None = None
 
-    async def connect(self, user: str, password: str, database: str, *, echo: bool = False) -> None:
+    async def connect(
+        self, user: str, password: str, database: str, *, echo: bool = False
+    ) -> None:
         url = f"mysql+asyncmy://{user}:{password}@{self.host}:{self.port}/{database}"
 
         self.engine = create_async_engine(
@@ -24,7 +26,9 @@ class Database:
             pool_pre_ping=True,
             pool_recycle=1800,
         )
-        self._sessionmaker = async_sessionmaker(self.engine, expire_on_commit=False, class_=AsyncSession)
+        self._sessionmaker = async_sessionmaker(
+            self.engine, expire_on_commit=False, class_=AsyncSession
+        )
 
         _log.info(f"Connected to database '{database}' at {self.host}:{self.port}.")
 

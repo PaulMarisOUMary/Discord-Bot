@@ -30,14 +30,18 @@ class ErrorDispatcher:
                 self.handlers[e] = func
 
             return func
+
         return decorator
 
-    def with_responder_kwargs(self, **kwargs: Any) -> Callable[[ErrorHandler[E]], ErrorHandler[E]]:
+    def with_responder_kwargs(
+        self, **kwargs: Any
+    ) -> Callable[[ErrorHandler[E]], ErrorHandler[E]]:
         def decorator(func: ErrorHandler[E]) -> ErrorHandler[E]:
             existing = self.responders_kwargs.get(func, {})
             self.responders_kwargs[func] = {**existing, **kwargs}
 
             return func
+
         return decorator
 
     def report_bug(self) -> Callable[[ErrorHandler[E]], ErrorHandler[E]]:

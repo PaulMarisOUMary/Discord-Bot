@@ -12,6 +12,7 @@ _log = getLogger(__name__)
 def cog_to_path(cog: str) -> Path:
     return root_dir / f"{cog.replace('.', '/')}.py"
 
+
 def sort_cogs(cogs: list[str], reverse: bool = False) -> list[str]:
     def sortlatest(cog: str) -> tuple[float, str]:
         try:
@@ -20,6 +21,7 @@ def sort_cogs(cogs: list[str], reverse: bool = False) -> list[str]:
             return (0.0, cog)
 
     return sorted(cogs, key=sortlatest, reverse=reverse)
+
 
 def get_cogs(cogs_dir: Path, disabled: list[str]) -> list[str]:
     cogs = []
@@ -35,7 +37,10 @@ def get_cogs(cogs_dir: Path, disabled: list[str]) -> list[str]:
 
     return cogs
 
-async def cogs_manager(bot: commands.Bot, action: Literal["load", "unload", "reload"], *cogs: str) -> None:
+
+async def cogs_manager(
+    bot: commands.Bot, action: Literal["load", "unload", "reload"], *cogs: str
+) -> None:
     actions = {
         "load": bot.load_extension,
         "unload": bot.unload_extension,

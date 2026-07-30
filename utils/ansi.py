@@ -4,6 +4,7 @@ from enum import Enum
 
 ESCAPE = '\u001b'
 
+
 class BaseANSI:
     @property
     def codes(self) -> tuple[int, ...]:
@@ -18,6 +19,7 @@ class BaseANSI:
         unique_codes = dict.fromkeys(str(c) for c in self.codes)
         return f"{ESCAPE}[{';'.join(unique_codes)}m"
 
+
 class StackANSI(BaseANSI):
     def __init__(self, *codes: int) -> None:
         self._codes = codes
@@ -25,6 +27,7 @@ class StackANSI(BaseANSI):
     @property
     def codes(self) -> tuple[int, ...]:
         return self._codes
+
 
 class SingleANSI(BaseANSI, Enum):
     value: int
@@ -36,13 +39,16 @@ class SingleANSI(BaseANSI, Enum):
 
 class Format(SingleANSI):
     """Formating codes."""
+
     RESET = 0
     NORMAL = RESET
     BOLD = 1
     UNDERLINE = 4
 
+
 class Foreground(SingleANSI):
     """Foreground color codes."""
+
     GRAY = 30
     GREY = GRAY
     RED = 31
@@ -53,8 +59,10 @@ class Foreground(SingleANSI):
     CYAN = 36
     WHITE = 37
 
+
 class Background(SingleANSI):
     """Background color codes."""
+
     FIREFLY_DARK_BLUE = 40
     ORANGE = 41
     MARBLE_BLUE = 42

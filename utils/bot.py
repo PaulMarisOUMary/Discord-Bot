@@ -16,6 +16,7 @@ from utils.paths import root_dir
 
 _log = getLogger(__name__)
 
+
 class DiscordBot(commands.Bot):
     appinfo: AppInfo
     config: Config
@@ -49,7 +50,9 @@ class DiscordBot(commands.Bot):
         return [prefix]
 
     async def on_ready(self) -> None:
-        _log.info(f"Logged in as {self.user} (UID: {self.appinfo.id}) | discord.py{d_version} | Guilds: {len(self.guilds)} Users: {len(self.users)}")
+        _log.info(
+            f"Logged in as {self.user} (UID: {self.appinfo.id}) | discord.py{d_version} | Guilds: {len(self.guilds)} Users: {len(self.users)}"
+        )
 
     async def startup(self) -> None:
         await self.wait_until_ready()

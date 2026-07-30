@@ -34,7 +34,11 @@ class Dad(commands.Cog, name="dad"):
         ]
 
     def help_custom(self) -> tuple[str, str, str]:
-        return '👨‍🦳', "Dad's jokes", "Nearly collapsed from peak comedy. Call an ambulance!"
+        return (
+            '👨‍🦳',
+            "Dad's jokes",
+            "Nearly collapsed from peak comedy. Call an ambulance!",
+        )
 
     @commands.Cog.listener("on_message")
     async def on_receive_message(self, message: discord.Message) -> None:

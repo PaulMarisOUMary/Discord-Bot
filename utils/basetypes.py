@@ -18,8 +18,10 @@ class GuildContext(commands.Context):
     channel: Thread | TextChannel | VoiceChannel | StageChannel
     me: Member
 
+
 CommandLike = commands.Command | app_commands.Command | commands.HybridCommand
 GroupLike = commands.Group | app_commands.Group | commands.HybridGroup
+
 
 @runtime_checkable
 class HasHelpCustom(Protocol):
