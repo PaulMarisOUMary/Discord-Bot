@@ -1,7 +1,7 @@
 from random import random
 from re import IGNORECASE, VERBOSE, compile
 
-import discord
+from discord import Message
 from discord.ext import commands
 
 from utils.bot import DiscordBot
@@ -41,7 +41,7 @@ class Dad(commands.Cog, name="dad"):
         )
 
     @commands.Cog.listener("on_message")
-    async def on_receive_message(self, message: discord.Message) -> None:
+    async def on_receive_message(self, message: Message) -> None:
         if message.author.bot:
             return
 

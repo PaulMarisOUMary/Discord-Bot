@@ -3,8 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable, Coroutine
 from typing import TYPE_CHECKING, Any, TypeVar, cast
 
-import discord
-from discord import app_commands
+from discord import Interaction, Permissions, app_commands
 from discord.ext import commands
 
 from utils.bot import DiscordBot
@@ -34,7 +33,7 @@ def require_database(require: bool = True) -> Callable[[Decoratable], Decoratabl
             raise DatabaseRequirementNotMet(require)
         return True
 
-    def app_predicate(interaction: discord.Interaction) -> bool:
+    def app_predicate(interaction: Interaction) -> bool:
         client = interaction.client
         assert isinstance(client, DiscordBot)
 
@@ -76,7 +75,7 @@ def require_database(require: bool = True) -> Callable[[Decoratable], Decoratabl
 def bot_has_permissions(
     **perms: Unpack[_PermissionsKwargs],
 ) -> Callable[[Decoratable], Decoratable]:
-    invalid = set(perms) - set(discord.Permissions.VALID_FLAGS)
+    invalid = set(perms) - set(Permissions.VALID_FLAGS)
     if invalid:
         raise TypeError(f"Invalid permission(s): {', '.join(invalid)}")
 

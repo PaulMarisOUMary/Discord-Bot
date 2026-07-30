@@ -4,9 +4,9 @@ import operator
 from collections.abc import Callable, Coroutine
 from typing import Any
 
-import discord
-from discord import ButtonStyle
+from discord import ButtonStyle, Embed, Interaction
 from discord.ext import commands
+from discord.ui import Button as dButton
 
 from utils.basetypes import CommandLike, HasHelpCustom
 from utils.helpengine import HelpEngine
@@ -14,12 +14,12 @@ from views.dropdown import CustomDropdown
 from views.view import View as Parent
 
 
-class Button(discord.ui.Button):
+class Button(dButton):
     def __init__(
         self,
         context: commands.Context,
         label: str,
-        style: discord.ButtonStyle,
+        style: ButtonStyle,
         when_callback: Callable[..., Coroutine[Any, Any, None]],
         argument: Any | None,
     ) -> None:
@@ -31,7 +31,7 @@ class Button(discord.ui.Button):
 
         super().__init__(style=style, label=label, disabled=disabled)
 
-    async def callback(self, interaction: discord.Interaction) -> None:
+    async def callback(self, interaction: Interaction) -> None:
         if self.invoker.id == interaction.user.id:
             await self.when_callback(interaction, self.argument)
         else:
@@ -47,7 +47,7 @@ class View(Parent):
         timeout: float | None = 300,
         mapping: dict[commands.Cog | None, list[CommandLike]],
         engine: HelpEngine,
-        home_embed: discord.Embed,
+        home_embed: Embed,
     ) -> None:
         super().__init__(timeout=timeout)
 
@@ -57,7 +57,7 @@ class View(Parent):
         self.engine = engine
         self.cogs: list[commands.Cog | None] = [None]
         self.index = 0
-        self.buttons: list[discord.ui.Button] = []
+        self.buttons: list[dButton] = []
         self.options: list[dict[str, str]] = [
             {
                 "label": "Home",
@@ -77,9 +77,7 @@ class View(Parent):
         self.add_buttons()
 
     def add_dropdown(self) -> None:
-        async def on_select(
-            dropdown: CustomDropdown, interaction: discord.Interaction
-        ) -> None:
+        async def on_select(dropdown: CustomDropdown, interaction: Interaction) -> None:
             if self.context.author.id != interaction.user.id:
                 await interaction.response.send_message(
                     ":x: Hey it's not your session !", ephemeral=True
@@ -139,7 +137,7 @@ class View(Parent):
             self.buttons.append(button)
             self.add_item(button)
 
-    async def to_embed(self, interaction: discord.Interaction, index: int) -> None:
+    async def to_embed(self, interaction: Interaction, index: int) -> None:
         if index == -1:
             self.index += index
         elif index == -2:
@@ -165,7 +163,7 @@ class View(Parent):
 
         await interaction.response.edit_message(embed=embed, view=self)
 
-    async def quit(self, interaction: discord.Interaction, *_args: Any) -> None:
+    async def quit(self, interaction: Interaction, *_args: Any) -> None:
         await interaction.response.defer()
         await interaction.delete_original_response()
         self.stop()

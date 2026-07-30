@@ -40,6 +40,7 @@ class Admin(commands.Cog, name="admin"):
     @commands.command("load")
     @commands.is_owner()
     async def load_cog(self, ctx: commands.Context, cog: str) -> None:
+        """Load a cog: cogs.<cogname>"""
         await cogs_manager(self.bot, "load", cog)
         await ctx.send(f":point_right: Cog `{cog}` loaded!")
 
@@ -47,6 +48,7 @@ class Admin(commands.Cog, name="admin"):
     @commands.command("unload")
     @commands.is_owner()
     async def unload_cog(self, ctx: commands.Context, cog: str) -> None:
+        """Unload a cog: cogs.<cogname>"""
         await cogs_manager(self.bot, "unload", cog)
         await ctx.send(f":point_left: Cog `{cog}` unloaded!")
 
@@ -54,6 +56,7 @@ class Admin(commands.Cog, name="admin"):
     @commands.command("reload")
     @commands.is_owner()
     async def reload_cogs(self, ctx: commands.Context, *cogs: str) -> None:
+        """Reload cog(s): *cogs.<cogname>"""
         reload_cogs = {f"cogs.{cog}" for cog in cogs}
         await cogs_manager(self.bot, "reload", *reload_cogs)
         await ctx.send(f":thumbsup: `{'` `'.join(cogs)}` reloaded!")
@@ -62,6 +65,7 @@ class Admin(commands.Cog, name="admin"):
     @commands.command("reloadlatest", aliases=["rl"])
     @commands.is_owner()
     async def reload_latest_cogs(self, ctx: commands.Context, n_cogs: int = 1) -> None:
+        """Reload latest n specified cogs."""
         reload_cogs = sort_cogs(list(self.bot.extensions.keys()), True)[:n_cogs]
         await cogs_manager(self.bot, "reload", *reload_cogs)
         await ctx.send(f":point_down: `{'` `'.join(reload_cogs)}` reloaded!")
@@ -70,6 +74,7 @@ class Admin(commands.Cog, name="admin"):
     @commands.command("reloadall", aliases=["rll"])
     @commands.is_owner()
     async def reload_all_cogs(self, ctx: commands.Context) -> None:
+        """Reload all loaded cogs."""
         reload_cogs = set(self.bot.extensions.keys())
         await cogs_manager(self.bot, "reload", *reload_cogs)
         await ctx.send(f":muscle: All cogs reloaded: `{len(reload_cogs)}`!")
@@ -78,6 +83,7 @@ class Admin(commands.Cog, name="admin"):
     @commands.command("reloadconfig", aliases=["rc"])
     @commands.is_owner()
     async def reload_configs(self, ctx: commands.Context) -> None:
+        """Reload each .toml and the .env."""
         self.bot.config = load_config(config_dir, env_path)
         await ctx.send(":handshake: Config files reloaded!")
 
@@ -87,6 +93,7 @@ class Admin(commands.Cog, name="admin"):
     async def sync_tree(
         self, ctx: commands.Context, guild_id: str | None = None
     ) -> None:
+        """Sync manually application commands."""
         if guild_id:
             if ctx.guild and (guild_id == "guild" or guild_id == "~"):
                 guild_id = str(ctx.guild.id)
@@ -102,12 +109,14 @@ class Admin(commands.Cog, name="admin"):
     @commands.command(name="shutdown")
     @commands.is_owner()
     async def shutdown_bot(self, ctx: commands.Context) -> None:
+        """Shutdown the bot."""
         await ctx.send(f":wave: `{self.bot.user}` is shutting down...")
         await self.bot.close()
 
     @bot_has_permissions(send_messages=True)
     @commands.command("uptime")
     async def uptime(self, ctx: commands.Context) -> None:
+        """Show the bot uptime."""
         start_time = datetime.now(timezone.utc) - timedelta(seconds=self.bot.uptime)
         await ctx.send(f":clock1: {format_dt(start_time, 'R')} ||`{start_time}`||")
 
@@ -117,6 +126,7 @@ class Admin(commands.Cog, name="admin"):
     @commands.has_guild_permissions(administrator=True)
     @commands.guild_only()
     async def change_guild_prefix(self, ctx: GuildContext, prefix: str) -> None:
+        """Change your guild prefix."""
         guild_id = ctx.guild.id
 
         async with self.bot.database.session() as session:

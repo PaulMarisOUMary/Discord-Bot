@@ -31,6 +31,7 @@ class Useful(commands.Cog, name="useful"):
     @commands.cooldown(1, 10, commands.BucketType.user)
     @commands.guild_only()
     async def getcustomemojis(self, ctx: GuildContext) -> None:
+        """List all custom emojis in the guild."""
         emojis = ctx.guild.emojis
         if not emojis:
             await ctx.send("This server does not have custom emoji.")
@@ -60,6 +61,7 @@ class Useful(commands.Cog, name="useful"):
     @commands.command(name="colors")
     @commands.cooldown(1, 10, commands.BucketType.user)
     async def codeblock_colors(self, ctx: commands.Context) -> None:
+        """List all different ANSI colors."""
         codeblock = "```ansi\n"
 
         for item, text in [
@@ -77,6 +79,7 @@ class Useful(commands.Cog, name="useful"):
     @commands.command(name="cleanup")
     @commands.guild_only()
     async def cleanup(self, ctx: GuildContext, n_message: int) -> None:
+        """Cleanup your n bot's commands invocation."""
         if n_message < 1 or n_message > 150:
             raise ValueError("Invalid number of messages to delete.")
 

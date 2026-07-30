@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import discord
+from discord import AppCommandType, app_commands
 from discord.ext import commands
 
 from utils.basetypes import CommandLike
@@ -68,14 +68,9 @@ class Help(commands.Cog, name="help"):
                 if cmd.name == potential_command
             ]
 
-        def from_group(potential_group: str) -> discord.app_commands.Group | None:
-            for cmd in ctx.bot.tree.walk_commands(
-                type=discord.AppCommandType.chat_input
-            ):
-                if (
-                    isinstance(cmd, discord.app_commands.Group)
-                    and cmd.name == potential_group
-                ):
+        def from_group(potential_group: str) -> app_commands.Group | None:
+            for cmd in ctx.bot.tree.walk_commands(type=AppCommandType.chat_input):
+                if isinstance(cmd, app_commands.Group) and cmd.name == potential_group:
                     return cmd
             return None
 

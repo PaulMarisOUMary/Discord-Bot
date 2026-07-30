@@ -30,6 +30,7 @@ class Spotify(commands.Cog, name="spotify"):
     async def spotify_activity(
         self, interaction: Interaction, user: Member | User | None
     ) -> None:
+        """Show the current Spotify song."""
         target = user or interaction.user
 
         member = interaction.guild.get_member(target.id)  # type: ignore

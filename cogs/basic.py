@@ -28,6 +28,7 @@ class Basic(commands.Cog, name="basic"):
     @commands.hybrid_command(name="ping", description="Ping the bot.")
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def ping(self, ctx: commands.Context) -> None:
+        """Show Bot & WebSocket latency."""
         ws_latency = round(self.bot.latency * 1000)
 
         text = ":ping_pong: Pong !"

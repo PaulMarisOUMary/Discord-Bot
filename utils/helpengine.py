@@ -3,11 +3,12 @@ from __future__ import annotations
 from datetime import datetime, timedelta
 from typing import Any
 
-import discord
-from discord import app_commands
+from discord import AppCommandType, Color, Embed, app_commands
 from discord.ext import commands
 
-from utils.ansi import Foreground as fg, Format as fmt
+from utils.ansi import Background as bg
+from utils.ansi import Foreground as fg
+from utils.ansi import Format as fmt
 from utils.basetypes import CommandLike, GroupLike, HasHelpCustom
 
 REPO_URL = "https://github.com/PaulMarisOUMary/Discord-Bot"
@@ -27,7 +28,7 @@ class HelpEngine:
         self, target: app_commands.Command
     ) -> app_commands.AppCommand | app_commands.AppCommandGroup | None:
         for command in await self._contexted_app_commands():
-            if command.type != discord.AppCommandType.chat_input:
+            if command.type != AppCommandType.chat_input:
                 continue
 
             for option in command.options:
@@ -39,6 +40,20 @@ class HelpEngine:
 
             if command.name == target.qualified_name:
                 return command
+
+        return None
+
+    @staticmethod
+    def get_description(command: CommandLike | Any) -> str | None:
+        description = getattr(command, "description", None)
+        if description:
+            return description
+
+        if hasattr(command, "help") and isinstance(command.help, str):
+            return command.help
+
+        if hasattr(command, "callback") and command.callback.__doc__:
+            return command.callback.__doc__
 
         return None
 
@@ -84,7 +99,7 @@ class HelpEngine:
         return cls.list_to_block(permissions, block="")
 
     async def add_field(
-        self, embed: discord.Embed, command: CommandLike, show_permissions: bool = True
+        self, embed: Embed, command: CommandLike, show_permissions: bool = True
     ) -> None:
         details = f"```ansi\n{fg.BLUE + fmt.UNDERLINE}Description{fmt.RESET}:\n"
 
@@ -93,17 +108,15 @@ class HelpEngine:
             if not contexted:
                 return
             command_mention = f"{contexted.mention} {self.list_to_block(list(command._params.keys()))}"
-            details += (
-                f"{fg.WHITE}{self.return_none_if_not(contexted.description)}{fmt.RESET}"
-            )
+            desc = self.get_description(contexted) or self.get_description(command)
+            details += f"{fg.WHITE}{self.return_none_if_not(desc)}{fmt.RESET}"
         else:
             command_mention = f"{self.ctx.clean_prefix}{command.qualified_name} {self.list_to_block(list(command.clean_params.keys()))}"
-            details += (
-                f"{fg.WHITE}{self.return_none_if_not(command.description)}{fmt.RESET}"
-            )
+            desc = self.get_description(command)
+            details += f"{fg.WHITE}{self.return_none_if_not(desc)}{fmt.RESET}"
 
         if show_permissions:
-            details += f"\n{fg.CYAN + fmt.UNDERLINE}Required permissions{fmt.RESET}:\n{fg.GREY}{self.format_permissions(command.extras)}{fmt.RESET}\n"
+            details += f"\n{fg.RED + fmt.UNDERLINE}Required permissions{fmt.RESET}:\n{bg.FIREFLY_DARK_BLUE}{self.format_permissions(command.extras)}{fmt.RESET}\n"
 
         embed.add_field(name=command_mention, value=f"{details}\n```", inline=False)
 
@@ -114,7 +127,7 @@ class HelpEngine:
         }
         mapping[None] = [command for command in bot.commands if command.cog is None]
 
-        for command in bot.tree.walk_commands(type=discord.AppCommandType.chat_input):
+        for command in bot.tree.walk_commands(type=AppCommandType.chat_input):
             if isinstance(command, app_commands.Group):
                 continue
 
@@ -123,15 +136,15 @@ class HelpEngine:
 
         return {cog: cmds for cog, cmds in mapping.items() if cmds}
 
-    async def build_home_embed(self) -> discord.Embed:
+    async def build_home_embed(self) -> Embed:
         ctx = self.ctx
         allowed = 5
         close_in = round(
             datetime.timestamp(datetime.now() + timedelta(minutes=allowed))
         )
 
-        embed = discord.Embed(
-            color=discord.Color.dark_grey(),
+        embed = Embed(
+            color=Color.dark_grey(),
             title="👋 Help \xb7 Home",
             description=(
                 "`Welcome to the help page.`\n\n"
@@ -150,15 +163,13 @@ class HelpEngine:
         )
         embed.add_field(
             name="Who am I ?",
-            value="I'm a bot made by *WarriorMachine*.\nI have a lot of features !\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Discord-Bot) !",
+            value="I'm a bot made by [@WarriorMachine](https://discord.com/users/265148938091233293).\nI have a lot of features !\n\nI'm open source, you can see my code on [Github](https://github.com/PaulMarisOUMary/Discord-Bot) !",
         )
         return embed
 
-    async def build_command_embed(
-        self, commands_list: list[CommandLike]
-    ) -> discord.Embed:
-        embed = discord.Embed(
-            color=discord.Color.dark_grey(),
+    async def build_command_embed(self, commands_list: list[CommandLike]) -> Embed:
+        embed = Embed(
+            color=Color.dark_grey(),
             title="👋 Help \xb7 Commands",
             url=REPO_URL,
         )
@@ -166,13 +177,13 @@ class HelpEngine:
             await self.add_field(embed, command)
         return embed
 
-    async def build_cog_embed(self, cog: commands.Cog) -> discord.Embed:
+    async def build_cog_embed(self, cog: commands.Cog) -> Embed:
         emoji, label, description = '👋', cog.qualified_name, cog.description
         if isinstance(cog, HasHelpCustom):
             emoji, label, description = cog.help_custom()
 
-        embed = discord.Embed(
-            color=discord.Color.dark_grey(),
+        embed = Embed(
+            color=Color.dark_grey(),
             title=f"{emoji} Help \xb7 Cog",
             description=f"\xb7 **{label}**\n{description}",
             url=REPO_URL,
@@ -190,9 +201,9 @@ class HelpEngine:
 
         return embed
 
-    async def build_group_embed(self, group: GroupLike) -> discord.Embed:
-        embed = discord.Embed(
-            color=discord.Color.dark_grey(),
+    async def build_group_embed(self, group: GroupLike) -> Embed:
+        embed = Embed(
+            color=Color.dark_grey(),
             title="👋 Help \xb7 Group",
             url=REPO_URL,
         )
