@@ -89,7 +89,7 @@ async def handle_user_input_error(error: commands.UserInputError, responder) -> 
 
 @dispatcher.register(commands.CommandNotFound)
 async def handle_command_not_found(error: commands.CommandNotFound, responder) -> None:
-    await responder(content=f":hole: Command `{str(error).split(' ')[0]}` not found !")
+    await responder(content=f":hole: Command `{str(error).split(' ')[1]}` not found !")
 
 
 @dispatcher.register(commands.CheckFailure)

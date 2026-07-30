@@ -2,21 +2,16 @@ from __future__ import annotations
 
 import operator
 from collections.abc import Callable, Coroutine
-from typing import Any, Protocol
+from typing import Any
 
 import discord
 from discord import ButtonStyle
 from discord.ext import commands
 
 from utils.basetypes import CommandLike, HasHelpCustom
+from utils.helpengine import HelpEngine
 from views.dropdown import CustomDropdown
 from views.view import View as Parent
-
-
-class HelpObjectProtocol(Protocol):
-    context: commands.Context
-
-    async def build_cog_embed(self, cog: commands.Cog) -> discord.Embed: ...
 
 
 class Button(discord.ui.Button):
@@ -51,15 +46,15 @@ class View(Parent):
         *,
         timeout: float | None = 300,
         mapping: dict[commands.Cog | None, list[CommandLike]],
-        help_object: HelpObjectProtocol,
+        engine: HelpEngine,
         home_embed: discord.Embed,
     ) -> None:
         super().__init__(timeout=timeout)
 
-        self.context = help_object.context
+        self.context = engine.ctx
         self.bot = self.context.bot
         self.home_embed = home_embed
-        self.help_class = help_object
+        self.engine = engine
         self.cogs: list[commands.Cog | None] = [None]
         self.index = 0
         self.buttons: list[discord.ui.Button] = []
@@ -166,7 +161,7 @@ class View(Parent):
         else:
             cog = self.cogs[self.index]
             assert cog is not None
-            embed = await self.help_class.build_cog_embed(cog)
+            embed = await self.engine.build_cog_embed(cog)
 
         await interaction.response.edit_message(embed=embed, view=self)
 
