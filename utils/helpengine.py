@@ -116,7 +116,7 @@ class HelpEngine:
             details += f"{fg.WHITE}{self.return_none_if_not(desc)}{fmt.RESET}"
 
         if show_permissions:
-            details += f"\n{fg.RED + fmt.UNDERLINE}Required permissions{fmt.RESET}:\n{bg.FIREFLY_DARK_BLUE}{self.format_permissions(command.extras)}{fmt.RESET}\n"
+            details += f"\n{fg.RED + fmt.UNDERLINE}Required permissions{fmt.RESET}:\n{bg.BLACK}{self.format_permissions(command.extras)}{fmt.RESET}\n"
 
         embed.add_field(name=command_mention, value=f"{details}\n```", inline=False)
 

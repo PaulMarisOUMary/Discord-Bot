@@ -11,8 +11,10 @@ from discord import (
 )
 from discord.ext import commands
 
+from utils.bot import DiscordBot
 
-class GuildContext(commands.Context):
+
+class GuildContext(commands.Context[DiscordBot]):
     author: Member
     guild: Guild
     channel: Thread | TextChannel | VoiceChannel | StageChannel

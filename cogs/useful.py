@@ -69,7 +69,7 @@ class Useful(commands.Cog, name="useful"):
             (fg._member_map_, "Foreground"),
             (bg._member_map_, "Background"),
         ]:
-            codeblock += f"{fmt.UNDERLINE + fg.GRAY + bg.WHITE}{text}{fmt.RESET}:\n"
+            codeblock += f"{fmt.UNDERLINE + fg.BLUE + bg.WHITE}{text}{fmt.RESET}:\n"
             for key, value in item.items():
                 codeblock += f"ESC[{value.value}m {value}{key}{fmt.RESET}\n"
 
