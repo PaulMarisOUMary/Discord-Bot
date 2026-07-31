@@ -11,18 +11,21 @@ from utils.database import crud
 
 class Metrics(commands.Cog, name="metrics"):
     """
-        Store bot's metrics in the database.
-        For statistics and analytics.
+    Store bot's metrics in the database.
+    For statistics and analytics.
 
-        Require intents:
+    Require intents:
             - None
 
-        Require bot permission:
+    Require bot permission:
             - None
     """
+
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
-        self.subconfig: dict[str, Any] = self.bot.config.cogs.cogs[self.__cog_name__.lower()]
+        self.subconfig: dict[str, Any] = self.bot.config.cogs.cogs[
+            self.__cog_name__.lower()
+        ]
 
     def help_custom(self) -> tuple[str, str, str]:
         return '📈', "Metrics", "All metrics related to the bot."
@@ -33,21 +36,38 @@ class Metrics(commands.Cog, name="metrics"):
             return
 
         if isinstance(context.command, commands.HybridCommand):
-            await self.add_metrics(context.command.qualified_name, "commands.HybridCommand", context.author)
+            await self.add_metrics(
+                context.command.qualified_name, "commands.HybridCommand", context.author
+            )
         elif isinstance(context.command, commands.Command):
-            await self.add_metrics(context.command.qualified_name, "commands.Command", context.author)
+            await self.add_metrics(
+                context.command.qualified_name, "commands.Command", context.author
+            )
 
     @commands.Cog.listener("on_interaction")
     async def on_interaction(self, interaction: Interaction) -> None:
-        if interaction.type != InteractionType.application_command or interaction.command is None:
+        if (
+            interaction.type != InteractionType.application_command
+            or interaction.command is None
+        ):
             return
 
         if isinstance(interaction.command, HybridAppCommand):
-            await self.add_metrics(interaction.command.qualified_name, "commands.HybridCommand", interaction.user)
+            await self.add_metrics(
+                interaction.command.qualified_name,
+                "commands.HybridCommand",
+                interaction.user,
+            )
         elif isinstance(interaction.command, app_commands.Command):
-            await self.add_metrics(interaction.command.qualified_name, "application_commands.Command", interaction.user)
+            await self.add_metrics(
+                interaction.command.qualified_name,
+                "application_commands.Command",
+                interaction.user,
+            )
 
-    async def add_metrics(self, command_name: str, command_type: str, invoker: Member | User) -> None:
+    async def add_metrics(
+        self, command_name: str, command_type: str, invoker: Member | User
+    ) -> None:
         """Add a metric to the database."""
         if self.bot.database is None:
             return
