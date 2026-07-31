@@ -2,7 +2,7 @@ disabled = [
 ]
 
 [cogs.croissants]
-cooldown = 300
+cooldown = 600
 
 [[cogs.dad.jokes]]
 regex = '''(?i)\bcan\s+i\s+(?P<value>[^.!?]+)'''
