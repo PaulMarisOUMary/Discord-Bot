@@ -1,6 +1,21 @@
 disabled = [
 ]
 
+[cogs.birthday]
+post_hour = 9
+images = [
+    "https://c.tenor.com/RtKfb25Sw8sAAAAd/tenor.gif",
+    "https://c.tenor.com/xuSL2MVpZYkAAAAd/tenor.gif",
+    "https://c.tenor.com/XPg8ZOfh4tgAAAAd/tenor.gif",
+    "https://c.tenor.com/_T5kHIFvAtwAAAAd/tenor.gif",
+    "https://c.tenor.com/p2f7TmEmZSEAAAAd/tenor.gif",
+    "https://c.tenor.com/8727b0rzPdcAAAAd/tenor.gif",
+    "https://c.tenor.com/TlgtrAEILgIAAAAd/tenor.gif",
+    "https://c.tenor.com/WRC3yQm1UC4AAAAd/tenor.gif",
+    "https://c.tenor.com/HRuOBcJTbHEAAAAd/tenor.gif",
+    "https://c.tenor.com/3_YaI0zEfz4AAAAd/tenor.gif",
+]
+
 [cogs.croissants]
 cooldown = 600
 

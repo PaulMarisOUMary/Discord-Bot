@@ -33,9 +33,8 @@ def require_database(require: bool = True) -> Callable[[Decoratable], Decoratabl
             raise DatabaseRequirementNotMet(require)
         return True
 
-    def app_predicate(interaction: Interaction) -> bool:
+    def app_predicate(interaction: Interaction[DiscordBot]) -> bool:
         client = interaction.client
-        assert isinstance(client, DiscordBot)
 
         if client.config.bot.use_database != require:
             raise DatabaseRequirementNotMet(require)

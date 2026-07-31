@@ -2,6 +2,7 @@ from typing import Protocol, runtime_checkable
 
 from discord import (
     Guild,
+    Interaction,
     Member,
     StageChannel,
     TextChannel,
@@ -19,6 +20,11 @@ class GuildContext(commands.Context[DiscordBot]):
     guild: Guild
     channel: Thread | TextChannel | VoiceChannel | StageChannel
     me: Member
+
+
+class GuildInteraction(Interaction[DiscordBot]):
+    user: Member
+    guild: Guild
 
 
 CommandLike = commands.Command | app_commands.Command | commands.HybridCommand
