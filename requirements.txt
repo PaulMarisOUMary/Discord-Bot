@@ -1,4 +1,5 @@
 discord.py[speed]==2.7.1
+requests>=2.34,<3.0
 
 python-dotenv>=1.2,<2.0
 
@@ -7,3 +8,6 @@ msgspec[toml]>=0.21.1,<1.0
 sqlmodel>=0.0.39,<0.1.0
 sqlalchemy[asyncio]>=2.0,<3.0
 asyncmy>=0.2,<0.3,
+
+pillow>=12.3,<13.0
+pilmoji>=2.0,<3.0

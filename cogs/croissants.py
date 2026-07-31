@@ -137,9 +137,7 @@ class Croissants(
         await interaction.response.send_message(embed=embed)
 
     async def __send_croissants(self, message: Message) -> None:
-        screenshot_file = await to_thread(
-            self.__get_screenshot, message
-        )
+        screenshot_file = await to_thread(self.__get_screenshot, message)
 
         answer_message = await message.reply(
             content=f"{message.author.mention} took out the credit card! {self.EMOJI}",
@@ -227,7 +225,11 @@ class Croissants(
 
             with Pilmoji(img) as pilmoji:
                 pilmoji.text(
-                    (72, 38), content, fill=content_color, font=self.font_text, spacing=5
+                    (72, 38),
+                    content,
+                    fill=content_color,
+                    font=self.font_text,
+                    spacing=5,
                 )
 
             images_sequence.append(img.convert("P", palette=Image.Palette.ADAPTIVE))
