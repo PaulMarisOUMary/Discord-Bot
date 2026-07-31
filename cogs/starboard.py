@@ -36,9 +36,6 @@ class Starboard(commands.Cog, name="starboard"):
 
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
-        self.subconfig: dict[str, Any] = self.bot.config.cogs.cogs[
-            self.__cog_name__.lower()
-        ]
 
         self.star_emoji = '⭐'
         self.stars_emojis = ['⭐', '🌟', '✨', '💫', '☄️', '🎇', '🎆', '🌠', '💖', '🪄']

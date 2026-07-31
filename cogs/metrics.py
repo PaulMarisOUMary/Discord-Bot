@@ -1,5 +1,3 @@
-from typing import Any
-
 from discord import Interaction, InteractionType, Member, User, app_commands
 from discord.ext import commands
 from discord.ext.commands.hybrid import HybridAppCommand
@@ -23,9 +21,6 @@ class Metrics(commands.Cog, name="metrics"):
 
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
-        self.subconfig: dict[str, Any] = self.bot.config.cogs.cogs[
-            self.__cog_name__.lower()
-        ]
 
     def help_custom(self) -> tuple[str, str, str]:
         return '📈', "Metrics", "All metrics related to the bot."

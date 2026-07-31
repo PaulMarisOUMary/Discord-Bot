@@ -76,12 +76,3 @@ name = "I'm open source !"
 main_channel_name = "➕"
 channel_name = "Vocal: @{user.name}"
 cooldown = 30
-
-[cogs.reddit.client]
-client_id = "**********************"
-client_secret = "******************************"
-user_agent = "git/PaulMarisOUMary/Discord-Bot"
-
-[[cogs.reddit.connections]]
-subreddit = "ProgrammerHumor"
-channel = "reddit"
