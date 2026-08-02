@@ -12,8 +12,6 @@ if TYPE_CHECKING:
     from discord.permissions import _PermissionsKwargs
     from typing_extensions import Unpack
 
-T = TypeVar('T')
-
 CommandLike = commands.Command[Any, ..., Any] | app_commands.Command[Any, ..., Any]
 RawCallback = Callable[..., Coroutine[Any, Any, Any]]
 Decoratable = TypeVar("Decoratable", bound=CommandLike | RawCallback)

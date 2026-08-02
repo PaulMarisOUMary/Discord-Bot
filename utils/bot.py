@@ -20,7 +20,7 @@ _log = getLogger(__name__)
 class DiscordBot(commands.Bot):
     appinfo: AppInfo
     config: Config
-    database: Database
+    database: Database | None
     logger: Logger
     prefixes_cache: dict[int, str]
 
@@ -32,17 +32,29 @@ class DiscordBot(commands.Bot):
         self._start_time = monotonic()
 
         self.config = config
+        self.database = None
 
         self.prefixes_cache = {}
         self._prefix_default = self.config.bot.prefix.default
 
         super().__init__(command_prefix=self._get_prefix, **kwargs)
 
+    def get_database(self) -> Database:
+        if self.database is None:
+            raise RuntimeError(
+                "The database is not enabled (bot.config.bot.use_database is False)."
+            )
+
+        return self.database
+
+    def get_guild_prefix(self, guild_id: int | None) -> str:
+        if guild_id is None or not self.config.bot.use_database:
+            return self._prefix_default
+
+        return self.prefixes_cache.get(guild_id, self._prefix_default)
+
     def _get_prefix(self, client: DiscordBot, message: Message) -> list[str]:
-        if message.guild is None or not self.config.bot.use_database:
-            prefix = self._prefix_default
-        else:
-            prefix = self.prefixes_cache.get(message.guild.id, self._prefix_default)
+        prefix = self.get_guild_prefix(message.guild.id if message.guild else None)
 
         if self.config.bot.prefix.mentionable:
             return commands.when_mentioned_or(prefix)(client, message)
@@ -91,7 +103,7 @@ class DiscordBot(commands.Bot):
         self.loop.create_task(self.startup())
 
     async def close(self) -> None:
-        if self.config.bot.use_database and self.database is not None:
+        if self.database is not None:
             await self.database.close()
             _log.info("Database connection closed.")
 

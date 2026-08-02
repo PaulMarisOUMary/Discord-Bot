@@ -37,9 +37,9 @@ class Me(
         return '🤙', "Me", "Set and show a brief description of yourself."
 
     @require_database(True)
-    @app_commands.command(
+    @app_commands.command(  # type: ignore
         name="set", description="Set your own brief description of yourself !"
-    )  # type: ignore
+    )
     @app_commands.describe(description="Your brief description of yourself.")
     @app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
     @app_commands.guild_only()
@@ -52,7 +52,7 @@ class Me(
                 f"The max-length of your *me* is set to: __{max_length}__ (yours is {len(description)})."
             )
 
-        async with self.bot.database.session() as session:
+        async with self.bot.get_database().session() as session:
             await crud.upsert(
                 session,
                 MeModel(

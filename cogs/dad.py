@@ -1,5 +1,6 @@
 from random import random
 from re import IGNORECASE, VERBOSE, compile
+from typing import Any
 
 from discord import Message
 from discord.ext import commands
@@ -22,9 +23,11 @@ class Dad(commands.Cog, name="dad"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
-        self.subconfig = self.bot.config.cogs.cogs[self.__cog_name__.lower()]
+        self.subconfig: dict[str, Any] = self.bot.config.cogs.cogs[
+            self.__cog_name__.lower()
+        ]
 
-        self.jokes: list[dict] = [
+        self.jokes: list[dict[str, Any]] = [
             {
                 "pattern": compile(joke["regex"], VERBOSE + IGNORECASE),
                 "message": joke["message"],

@@ -129,7 +129,7 @@ class Admin(commands.Cog, name="admin"):
         """Change your guild prefix."""
         guild_id = ctx.guild.id
 
-        async with self.bot.database.session() as session:
+        async with self.bot.get_database().session() as session:
             statement = (
                 update(Prefix)
                 .where(col(Prefix.guild_id) == guild_id)

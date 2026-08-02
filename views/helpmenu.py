@@ -55,7 +55,7 @@ class View(Parent):
         self.bot = self.context.bot
         self.home_embed = home_embed
         self.engine = engine
-        self.cogs: list[commands.Cog | None] = [None]
+        self.cogs: list[commands.Cog] = []
         self.index = 0
         self.buttons: list[dButton] = []
         self.options: list[dict[str, str]] = [
@@ -71,7 +71,7 @@ class View(Parent):
             if isinstance(cog, HasHelpCustom):
                 self.cogs.append(cog)
 
-        self.cogs[1:] = sorted(self.cogs[1:], key=operator.attrgetter("qualified_name"))
+        self.cogs.sort(key=operator.attrgetter("qualified_name"))
 
         self.add_dropdown()
         self.add_buttons()
@@ -90,10 +90,12 @@ class View(Parent):
                 return
 
             cog = self.bot.get_cog(cog_name)
-            index = self.cogs.index(cog, 1)
-            await self.to_embed(interaction, index)
+            if cog is None:
+                return
 
-        for cog in self.cogs[1:]:
+            await self.to_embed(interaction, self.cogs.index(cog) + 1)
+
+        for cog in self.cogs:
             if not isinstance(cog, HasHelpCustom):
                 continue
 
@@ -157,8 +159,7 @@ class View(Parent):
             for button in self.buttons[:2]:
                 button.disabled = True
         else:
-            cog = self.cogs[self.index]
-            assert cog is not None
+            cog = self.cogs[self.index - 1]
             embed = await self.engine.build_cog_embed(cog)
 
         await interaction.response.edit_message(embed=embed, view=self)

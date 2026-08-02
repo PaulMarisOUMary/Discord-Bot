@@ -1,5 +1,4 @@
 from math import log
-from typing import Any
 
 from discord import (
     Embed,

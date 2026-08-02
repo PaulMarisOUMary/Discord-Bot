@@ -1,8 +1,9 @@
-from discord import Embed, Interaction, Member, User, app_commands
+from discord import Embed, Member, User, app_commands
 from discord import Spotify as dSpotify
 from discord.ext import commands
 from discord.utils import utcnow
 
+from utils.basetypes import GuildInteraction
 from utils.bot import DiscordBot
 from utils.checks import bot_has_permissions
 
@@ -22,18 +23,18 @@ class Spotify(commands.Cog, name="spotify"):
         self.bot = bot
 
     @bot_has_permissions(send_messages=True)
-    @app_commands.command(
+    @app_commands.command(  # type: ignore
         name="spotify", description="Display the current Spotify status."
     )
     @app_commands.describe(user="The user to get Spotify information from.")
     @app_commands.guild_only()
     async def spotify_activity(
-        self, interaction: Interaction, user: Member | User | None
+        self, interaction: GuildInteraction, user: Member | User | None
     ) -> None:
         """Show the current Spotify song."""
         target = user or interaction.user
 
-        member = interaction.guild.get_member(target.id)  # type: ignore
+        member = interaction.guild.get_member(target.id)
 
         if not member:
             await interaction.response.send_message(

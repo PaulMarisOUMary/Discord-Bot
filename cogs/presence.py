@@ -1,7 +1,17 @@
+from typing import Any
+
 from discord import CustomActivity, Status
 from discord.ext import commands, tasks
 
 from utils.bot import DiscordBot
+
+STATUS_MATCH = {
+    "online": Status.online,
+    "idle": Status.idle,
+    "dnd": Status.dnd,
+    "invisible": Status.invisible,
+    "offline": Status.offline,
+}
 
 
 class Presence(commands.Cog, name="presence"):
@@ -9,17 +19,11 @@ class Presence(commands.Cog, name="presence"):
 
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
-        self.subconfig = self.bot.config.cogs.cogs[self.__cog_name__.lower()]
+        self.subconfig: dict[str, Any] = self.bot.config.cogs.cogs[
+            self.__cog_name__.lower()
+        ]
 
         self.count = 0
-
-        self.status_match = {
-            "online": Status.online,
-            "idle": Status.idle,
-            "dnd": Status.dnd,
-            "invisible": Status.invisible,
-            "offline": Status.offline,
-        }
 
     async def cog_load(self) -> None:
         raw_cooldown = self.subconfig.get("cooldown", 30)
@@ -40,7 +44,7 @@ class Presence(commands.Cog, name="presence"):
         current = statuses[self.count % len(statuses)]
 
         raw_status = str(current.get("status", "online")).lower()
-        status = self.status_match.get(raw_status, Status.online)
+        status = STATUS_MATCH.get(raw_status, Status.online)
 
         name = current.get("name")
         activity = CustomActivity(name) if name else None

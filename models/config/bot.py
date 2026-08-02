@@ -3,7 +3,6 @@ from msgspec import Struct
 
 class PrefixConfig(Struct):
     default: str
-    table: str
     mentionable: bool
 
 

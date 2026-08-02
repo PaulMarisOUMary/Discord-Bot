@@ -65,9 +65,9 @@ class Useful(commands.Cog, name="useful"):
         codeblock = "```ansi\n"
 
         for item, text in [
-            (fmt._member_map_, "Format"),
-            (fg._member_map_, "Foreground"),
-            (bg._member_map_, "Background"),
+            (fmt.__members__, "Format"),
+            (fg.__members__, "Foreground"),
+            (bg.__members__, "Background"),
         ]:
             codeblock += f"{fmt.UNDERLINE + fg.BLUE + bg.WHITE}{text}{fmt.RESET}:\n"
             for key, value in item.items():
@@ -83,12 +83,9 @@ class Useful(commands.Cog, name="useful"):
         if n_message < 1 or n_message > 150:
             raise ValueError("Invalid number of messages to delete.")
 
-        if self.bot.config.bot.use_database and ctx.guild:
-            prefix = self.bot.prefixes_cache[ctx.guild.id]
-        else:
-            prefix = self.bot._prefix_default
+        prefix = self.bot.get_guild_prefix(ctx.guild.id)
 
-        def check(message: Message):
+        def check(message: Message) -> bool:
             return (
                 message.author == ctx.me or message.content.startswith(prefix)
             ) and not (message.mentions or message.role_mentions)

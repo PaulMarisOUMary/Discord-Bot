@@ -22,14 +22,19 @@ class Views(commands.Cog, name="views"):
     async def drop(self, ctx: GuildContext) -> None:
         """Discover select menu feature with this command."""
 
-        async def when_callback(_class, interaction: Interaction) -> None:
-            if _class.view.invoke.author == interaction.user:
+        async def when_callback(
+            select: dropdown.CustomDropdown, interaction: Interaction
+        ) -> None:
+            if select.view is None:
+                return
+
+            if select.view.invoke.author == interaction.user:
                 message = "Selected languages : "
-                for value in _class.values:
+                for value in select.values:
                     message += f"`{value}` "
                 await interaction.response.defer()
                 await interaction.delete_original_response()
-                await _class.view.invoke.reply(message)
+                await select.view.invoke.reply(message)
             else:
                 await interaction.response.send_message(
                     "❌ Hey it's not your session !", ephemeral=True

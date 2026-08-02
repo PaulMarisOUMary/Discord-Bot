@@ -39,9 +39,6 @@ regex = '''(?i)\bquoi\s*[^a-zA-Z0-9_]*$'''
 message = "Feur."
 probability = 0.25
 
-[cogs.fridaycake]
-seed = 2
-
 [cogs.invite]
 default_message = """
 {invite.inviter.mention} invited {member.mention} to <#{invite.channel.id}>

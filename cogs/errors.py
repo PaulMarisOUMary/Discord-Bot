@@ -18,7 +18,7 @@ dispatcher = ErrorDispatcher()
 async def handle_command_invoke_error(
     error: app_commands.CommandInvokeError | commands.CommandInvokeError, responder
 ) -> None:
-    await responder(content=f":hole: Error: {error.original}")
+    await responder(content=f"🕳️ Error: {error.original}")
 
 
 @dispatcher.report_bug()
@@ -26,23 +26,21 @@ async def handle_command_invoke_error(
 async def handle_translation_error(
     error: app_commands.TranslationError, responder
 ) -> None:
-    await responder(content=f":hole: Translation error: {error}")
+    await responder(content=f"🕳️ Translation error: {error}")
 
 
 @dispatcher.register(app_commands.NoPrivateMessage, commands.NoPrivateMessage)
 async def handle_no_private_message(
     error: app_commands.NoPrivateMessage | commands.NoPrivateMessage, responder
 ) -> None:
-    await responder(content=":hole: This command cannot be used in DMs.")
+    await responder(content="🕳️ This command cannot be used in DMs.")
 
 
 @dispatcher.register(app_commands.MissingRole, commands.MissingRole)
 async def handle_missing_role(
     error: app_commands.MissingRole | commands.MissingRole, responder
 ) -> None:
-    await responder(
-        content=":hole: You are missing a required role to use this command."
-    )
+    await responder(content="🕳️ You are missing a required role to use this command.")
 
 
 @dispatcher.register(app_commands.MissingAnyRole, commands.MissingAnyRole)
@@ -50,7 +48,7 @@ async def handle_missing_any_role(
     error: app_commands.MissingAnyRole | commands.MissingAnyRole, responder
 ) -> None:
     await responder(
-        content=":hole: You are missing at least one of the required roles to use this command."
+        content="🕳️ You are missing at least one of the required roles to use this command."
     )
 
 
@@ -59,7 +57,7 @@ async def handle_missing_permissions(
     error: app_commands.MissingPermissions | commands.MissingPermissions, responder
 ) -> None:
     await responder(
-        content=":hole: You are missing required permissions to use this command."
+        content="🕳️ You are missing required permissions to use this command."
     )
 
 
@@ -69,7 +67,7 @@ async def handle_bot_missing_permissions(
     responder,
 ) -> None:
     await responder(
-        content=":hole: I am missing required permissions to execute this command."
+        content="🕳️ I am missing required permissions to execute this command."
     )
 
 
@@ -78,28 +76,28 @@ async def handle_command_on_cooldown(
     error: app_commands.CommandOnCooldown | commands.CommandOnCooldown, responder
 ) -> None:
     await responder(
-        content=f":hole: This command is on cooldown. Try again in {error.retry_after:.2f} seconds."
+        content=f"🕳️ This command is on cooldown. Try again in {error.retry_after:.2f} seconds."
     )
 
 
 @dispatcher.register(commands.UserInputError)
 async def handle_user_input_error(error: commands.UserInputError, responder) -> None:
-    await responder(content=f":hole: {error}")
+    await responder(content=f"🕳️ {error}")
 
 
 @dispatcher.register(commands.CommandNotFound)
 async def handle_command_not_found(error: commands.CommandNotFound, responder) -> None:
-    await responder(content=f":hole: Command `{str(error).split(' ')[1]}` not found !")
+    await responder(content=f"🕳️ Command `{str(error).split(' ')[1]}` not found !")
 
 
 @dispatcher.register(commands.CheckFailure)
 async def handle_check_failure(error: commands.CheckFailure, responder) -> None:
-    await responder(content=f":hole: {error}")
+    await responder(content=f"🕳️ {error}")
 
 
 @dispatcher.register(commands.DisabledCommand)
 async def handle_disabled_command(error: commands.DisabledCommand, responder) -> None:
-    await responder(content=":hole: Sorry this command is disabled.")
+    await responder(content="🕳️ Sorry this command is disabled.")
 
 
 @dispatcher.register(commands.MaxConcurrencyReached)
@@ -107,7 +105,7 @@ async def handle_max_concurrency_reached(
     error: commands.MaxConcurrencyReached, responder
 ) -> None:
     await responder(
-        content=f":hole: This command is already being used. Please wait until it is finished. {error.number}/{error.per}"
+        content=f"🕳️ This command is already being used. Please wait until it is finished. {error.number}/{error.per}"
     )
 
 

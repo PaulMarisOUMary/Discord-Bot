@@ -19,6 +19,7 @@ from discord.utils import get
 from sqlmodel import select
 
 from models.sql import Invite as InviteModel
+from utils.basetypes import GuildContext
 from utils.bot import DiscordBot
 from utils.checks import bot_has_permissions
 from utils.database import crud
@@ -47,7 +48,7 @@ class Invite(commands.Cog, name="invite"):
         self.granted_guilds: dict[int, tuple[TextChannel | None, str | None]] = {}
 
     def help_custom(self) -> tuple[str, str, str]:
-        return "\U0001f4e8", "Invite Tracker", "Log each invite in the system channel."
+        return "📨", "Invite Tracker", "Log each invite in the system channel."
 
     def __is_guild_granted(self, guild: Guild) -> bool:
         return guild.id in self.granted_guilds
@@ -156,7 +157,7 @@ class Invite(commands.Cog, name="invite"):
                 expires_at_timestamp=round(invite.expires_at.timestamp())
                 if invite.expires_at
                 else 33197904000,
-                max_uses="\u267e\ufe0f" if invite.max_uses == 0 else invite.max_uses,
+                max_uses="♾️" if invite.max_uses == 0 else invite.max_uses,
             )
 
             embed = Embed(
@@ -184,12 +185,8 @@ class Invite(commands.Cog, name="invite"):
     @commands.has_permissions(administrator=True)
     @commands.cooldown(1, 25, commands.BucketType.guild)
     @commands.guild_only()
-    async def config_invite_logs(
-        self, ctx: commands.Context, channel: TextChannel
-    ) -> None:
+    async def config_invite_logs(self, ctx: GuildContext, channel: TextChannel) -> None:
         """Set the invite tracker channel."""
-        assert ctx.guild is not None  # guaranteed by @commands.guild_only()
-
         if self.bot.database is None:
             await ctx.send(
                 ":warning: The database isn't available, the invite tracker can't be configured."
@@ -213,7 +210,7 @@ class Invite(commands.Cog, name="invite"):
     @commands.cooldown(1, 25, commands.BucketType.guild)
     @commands.guild_only()
     async def config_invite_logs_custom_message(
-        self, ctx: commands.Context, *, message: str | None = None
+        self, ctx: GuildContext, *, message: str | None = None
     ) -> None:
         """Set a custom message for the invite tracker.
 
@@ -223,8 +220,6 @@ class Invite(commands.Cog, name="invite"):
         {created_at_timestamp} - The timestamp of the invite creation (int).
         {expires_at_timestamp} - The timestamp of the invite expiration (int).
         {max_uses} - The max uses of the invite."""
-        assert ctx.guild is not None  # guaranteed by @commands.guild_only()
-
         if not self.__is_guild_granted(ctx.guild):
             return
 
@@ -287,9 +282,7 @@ class Invite(commands.Cog, name="invite"):
                 expires_at_timestamp=round(fake_invite.expires_at.timestamp())
                 if fake_invite.expires_at
                 else 33197904000,
-                max_uses="\u267e\ufe0f"
-                if fake_invite.max_uses == 0
-                else fake_invite.max_uses,
+                max_uses="♾️" if fake_invite.max_uses == 0 else fake_invite.max_uses,
             )
 
             embed = Embed(

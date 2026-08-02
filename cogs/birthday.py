@@ -71,8 +71,8 @@ class Birthday(
 
         async with self.bot.database.session() as session:
             statement = select(BirthdayModel).where(
-                extract("day", BirthdayModel.user_birth) == datetime.now().day,  # ty: ignore[invalid-argument-type]
-                extract("month", BirthdayModel.user_birth) == datetime.now().month,  # ty: ignore[invalid-argument-type]
+                extract("day", BirthdayModel.user_birth) == datetime.now().day,  # type: ignore
+                extract("month", BirthdayModel.user_birth) == datetime.now().month,  # type: ignore
             )
             todays_birthdays = (await session.exec(statement)).all()
 
@@ -142,7 +142,7 @@ class Birthday(
         except ValueError:
             raise commands.CommandError("Please provide a real date of birth.")
 
-        async with self.bot.database.session() as session:
+        async with self.bot.get_database().session() as session:
             await crud.upsert(
                 session,
                 BirthdayModel(

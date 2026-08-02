@@ -12,7 +12,7 @@ def load_env(*files: Path) -> dict[str, str | None]:
     env: dict[str, str | None] = dict(environ)
 
     for file in files:
-        if file.exists:
+        if file.exists():
             file_env = {k.lower(): v for k, v in dotenv_values(file).items()}
             env.update(file_env)
 

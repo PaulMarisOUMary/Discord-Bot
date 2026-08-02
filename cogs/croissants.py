@@ -106,7 +106,7 @@ class Croissants(
     @app_commands.describe(user="The user to show the croissants of.")
     @app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
     async def croissants_show(self, interaction: Interaction, user: Member) -> None:
-        async with self.bot.database.session() as session:
+        async with self.bot.get_database().session() as session:
             croissant = await session.get(Croissant, user.id)
 
         if croissant:
@@ -120,7 +120,7 @@ class Croissants(
     @app_commands.command(name="rank", description="Get the global croissants rank.")
     @app_commands.checks.cooldown(1, 10.0, key=lambda i: (i.guild_id, i.user.id))
     async def croissants_rank(self, interaction: Interaction) -> None:
-        async with self.bot.database.session() as session:
+        async with self.bot.get_database().session() as session:
             statement = (
                 select(Croissant).order_by(Croissant.user_count.desc()).limit(10)  # type: ignore
             )

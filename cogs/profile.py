@@ -34,7 +34,7 @@ class Profile(commands.Cog, name="profile"):
     )
     async def avatar(
         self, interaction: Interaction, user: Member | User | None, main: bool = False
-    ):
+    ) -> None:
         target = user or interaction.user
 
         avatar = (
@@ -44,13 +44,13 @@ class Profile(commands.Cog, name="profile"):
         await interaction.response.send_message(avatar.url)
 
     @bot_has_permissions(send_messages=True)
-    @app_commands.command(name="banner", description="Display the avatar.")
+    @app_commands.command(name="banner", description="Display the banner.")
     @app_commands.describe(
         user="The user to get the banner from.", main="If true, shows the main banner."
     )
     async def banner(
         self, interaction: Interaction, user: Member | User | None, main: bool = False
-    ):
+    ) -> None:
         target = user or interaction.user
 
         banner = (

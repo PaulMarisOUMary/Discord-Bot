@@ -33,7 +33,9 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
     def __init__(self, bot: DiscordBot) -> None:
         self.bot = bot
 
-        self.subconfig: dict = self.bot.config.cogs.cogs[self.__cog_name__.lower()]
+        self.subconfig: dict[str, Any] = self.bot.config.cogs.cogs[
+            self.__cog_name__.lower()
+        ]
 
         self.tracker: dict[int, dict[str, dict[int, Any]]] = {}
         self.MAIN_CHANNEL_NAME = self.subconfig["main_channel_name"]
@@ -107,10 +109,10 @@ class PrivateVocal(commands.Cog, name="privatevocal"):
                     await before.channel.delete()
 
     @bot_has_permissions(send_messages=True)
-    @commands.hybrid_command(
+    @commands.hybrid_command(  # type: ignore
         name="userlimit",
         description="Limit the number of user(s) in your private channel.",
-    )  # type: ignore
+    )
     @commands.cooldown(1, 10, commands.BucketType.user)
     @app_commands.describe(limit="The number of max user(s) in your private channel.")
     @app_commands.guild_only()
