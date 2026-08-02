@@ -12,11 +12,11 @@ setup_logging(log_dir, INFO, INFO)
 
 if __name__ == "__main__":
     bot = DiscordBot(
-        config = load_config(config_dir, env_path),
-        activity = CustomActivity(name="Booting...", emoji='⚙️'),
-        allowed_mentions = AllowedMentions(everyone=False),
-        case_insensitive = True,
-        intents = Intents(
+        config=load_config(config_dir, env_path),
+        activity=CustomActivity(name="Booting...", emoji='⚙️'),
+        allowed_mentions=AllowedMentions(everyone=False),
+        case_insensitive=True,
+        intents=Intents(
             emojis=True,
             guilds=True,
             invites=True,
@@ -27,12 +27,12 @@ if __name__ == "__main__":
             reactions=True,
             voice_states=True,
         ),
-        max_messages = 2500,
-        status = Status.idle,
+        max_messages=2500,
+        status=Status.idle,
     )
 
     bot.run(
         bot.config.env.bot_token,
-        reconnect = True,
-        log_handler = None,
+        reconnect=True,
+        log_handler=None,
     )

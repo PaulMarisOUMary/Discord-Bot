@@ -1,69 +1,132 @@
+from asyncio import to_thread
+from typing import Final
+
+from deep_translator import GoogleTranslator
 from discord import Locale
-from discord.enums import _UNICODE_LANG_MAP
+from langcodes import Language
+from langdetect import LangDetectException
+from langdetect import detect as _detect_langcode
 
-from googletrans import Translator as GGTranslator
-from googletrans.constants import LANGUAGES
+_UNKNOWN_FLAG: Final = '🏳️'
+_REGIONAL_INDICATOR_OFFSET: Final = 0x1F1E6
 
-translator = GGTranslator()
+_FLAG_REGION_FALLBACK: Final[dict[str, str]] = {
+    "bg": "BG",
+    "cs": "CZ",
+    "da": "DK",
+    "de": "DE",
+    "el": "GR",
+    "es": "ES",
+    "fi": "FI",
+    "fr": "FR",
+    "hi": "IN",
+    "hr": "HR",
+    "hu": "HU",
+    "id": "ID",
+    "it": "IT",
+    "ja": "JP",
+    "ko": "KR",
+    "lt": "LT",
+    "nl": "NL",
+    "no": "NO",
+    "pl": "PL",
+    "ro": "RO",
+    "ru": "RU",
+    "th": "TH",
+    "tr": "TR",
+    "uk": "UA",
+    "vi": "VN",
+}
+
+_TRANSLATION_KEEPS_REGION: Final = {"zh"}
+
+
+def region_to_flag(region: str) -> str:
+    if len(region) != 2 or not region.isalpha():
+        return _UNKNOWN_FLAG
+
+    return "".join(
+        chr(_REGIONAL_INDICATOR_OFFSET + ord(letter) - ord("A"))
+        for letter in region.upper()
+    )
+
+
+def _require_language(parsed: Language) -> str:
+    if parsed.language is None:
+        raise ValueError(f"{parsed} has no language subtag.")
+
+    return parsed.language
+
+
+def locale_to_flag(locale: Locale) -> str:
+    parsed = Language.get(locale.value)
+    region = parsed.territory
+
+    if region is None or len(region) != 2 or not region.isalpha():
+        region = _FLAG_REGION_FALLBACK.get(_require_language(parsed))
+
+    return region_to_flag(region) if region else _UNKNOWN_FLAG
+
+
+def locale_to_langcode(locale: Locale) -> str:
+    parsed = Language.get(locale.value)
+    language = _require_language(parsed)
+
+    if language in _TRANSLATION_KEEPS_REGION and parsed.territory:
+        return f"{language}-{parsed.territory}"
+
+    return language
+
+
+_LOCALE_BY_LANGCODE: Final[dict[str, Locale]] = {
+    locale_to_langcode(locale): locale for locale in Locale
+}
+
+_locales_without_flag = [
+    locale for locale in Locale if locale_to_flag(locale) == _UNKNOWN_FLAG
+]
+if _locales_without_flag:
+    raise RuntimeError(
+        f"_FLAG_REGION_FALLBACK is missing an entry for: {', '.join(locale.name for locale in _locales_without_flag)}"
+    )
+
+
+def langcode_to_locale(code: str) -> Locale | None:
+    parsed = Language.get(code)
+    language = _require_language(parsed)
+
+    if language in _TRANSLATION_KEEPS_REGION and parsed.territory:
+        regional = _LOCALE_BY_LANGCODE.get(f"{language}-{parsed.territory}")
+        if regional:
+            return regional
+
+    return _LOCALE_BY_LANGCODE.get(language)
+
+
+def display_name(locale: Locale, in_locale: Locale | None = None) -> str:
+    language = Language.get(locale.value)
+
+    if in_locale is None:
+        return language.display_name()
+
+    target = _require_language(Language.get(in_locale.value))
+    return language.display_name(target)
+
 
 class Translator:
-    """Supported languages are correlated to supported discord.Locale."""
+    @staticmethod
+    async def detect(text: str) -> Locale | None:
+        try:
+            code = await to_thread(_detect_langcode, text)
+        except LangDetectException:
+            return None
 
-    # Locale (key) -> GGLang code (value) 
-    LOCALE_TO_LANGCODE = {
-        code: code.split('-')[0] 
-        for code in _UNICODE_LANG_MAP.keys()
-        if code.split('-')[0] in LANGUAGES
-    }
-
-    LANG_TO_COUNTRY = {
-        "en": "gb",
-        "sv": "se",
-        "zh": "cn",
-        "zh-cn": "cn",
-        "zh-tw": "tw",
-        "ja": "jp",
-        "ko": "kr",
-        "hi": "in",
-        "el": "gr",
-        "vi": "vn",
-        "cs": "cz",
-        "da": "dk",
-        "uk": "ua",
-    }
+        return langcode_to_locale(code)
 
     @staticmethod
-    async def detect(text: str) -> str:
-        detect = await translator.detect(text)
-        if detect:
-            return detect.lang
-        raise RuntimeError("Language not detected.")
+    async def translate(text: str, dest: Locale, src: Locale | None = None) -> str:
+        source = locale_to_langcode(src) if src else "auto"
+        target = locale_to_langcode(dest)
 
-    @staticmethod
-    async def translate(text: str, dest: str = "en", src: str = "auto") -> str:
-        translation = await translator.translate(text, dest=dest, src=src)
-        if translation:
-            return translation.text
-        raise RuntimeError("Translation failed.")
-    
-    @staticmethod
-    async def translate_to_locale(text: str, locale: Locale, src: str = "auto") -> str:
-        dest = Translator.LOCALE_TO_LANGCODE.get(locale.language_code, None)
-        return await Translator.translate(text, dest=dest, src=src)
-    
-    @staticmethod
-    def code_to_flag(code: str) -> str:
-        code = Translator.LANG_TO_COUNTRY.get(code.lower(), code)
-
-        if len(code) != 2:
-            return '🏳️'
-
-        OFFSET = 0x1F1E6
-        return ''.join(chr(OFFSET + ord(c.upper()) - ord('A')) for c in code)
-
-    @staticmethod
-    def locale_to_flag(locale: Locale) -> str:
-        code = locale.language_code
-        region = code.split('-')[-1] if '-' in code else code
-
-        return Translator.code_to_flag(region)
+        translator = GoogleTranslator(source=source, target=target)
+        return await to_thread(translator.translate, text)
