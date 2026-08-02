@@ -1,13 +1,16 @@
-import asyncio
-import argparse
+from argparse import ArgumentParser, Namespace
+from asyncio import BaseTransport, Protocol, Transport, get_running_loop, run
+from typing import cast
 
-class ClientProtocol(asyncio.Protocol):
+
+class ClientProtocol(Protocol):
     def __init__(self, message, on_con_lost) -> None:
         self.message = message
         self.on_con_lost = on_con_lost
 
-    def connection_made(self, transport: asyncio.Transport) -> None:
-        transport.write(self.message.encode())
+    def connection_made(self, transport: BaseTransport) -> None:
+        transport_cast = cast(Transport, transport)
+        transport_cast.write(self.message.encode())
 
     def data_received(self, data: bytes) -> None:
         if not data == bytes(self.message, encoding="utf-8"):
@@ -16,16 +19,17 @@ class ClientProtocol(asyncio.Protocol):
     def connection_lost(self, exc) -> None:
         self.on_con_lost.set_result(True)
 
-async def main(args: argparse.Namespace) -> None:
-    loop = asyncio.get_running_loop()
+
+async def main(args: Namespace) -> None:
+    loop = get_running_loop()
 
     on_con_lost = loop.create_future()
     message = args.message
 
     transport, _ = await loop.create_connection(
-        protocol_factory = lambda: ClientProtocol(message, on_con_lost),
-        host = args.host, 
-        port = args.port
+        protocol_factory=lambda: ClientProtocol(message, on_con_lost),
+        host=args.host,
+        port=args.port,
     )
 
     try:
@@ -33,12 +37,23 @@ async def main(args: argparse.Namespace) -> None:
     finally:
         transport.close()
 
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Client for discord socket transport cog.")
-    parser.add_argument("--host", dest="host", type=str, default="127.0.0.1", help="Host to connect to.")
-    parser.add_argument("--port", dest="port", type=int, default=50000, help="Port to connect to.")
-    parser.add_argument("--message", dest="message", type=str, default="ping", help="Message to send to the socket server.")
+    parser = ArgumentParser(description="Client for discord socket transport cog.")
+    parser.add_argument(
+        "--host", dest="host", type=str, default="127.0.0.1", help="Host to connect to."
+    )
+    parser.add_argument(
+        "--port", dest="port", type=int, default=50000, help="Port to connect to."
+    )
+    parser.add_argument(
+        "--message",
+        dest="message",
+        type=str,
+        default="ping",
+        help="Message to send to the socket server.",
+    )
 
     args = parser.parse_args()
 
-    asyncio.run(main(args))
+    run(main(args))

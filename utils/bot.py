@@ -12,7 +12,7 @@ from sqlmodel import select
 from models.config import Config
 from utils.cogs import cogs_manager, get_cogs
 from utils.database import Database
-from utils.paths import root_dir
+from utils.paths import cogs_dir
 
 _log = getLogger(__name__)
 
@@ -97,7 +97,7 @@ class DiscordBot(commands.Bot):
 
         self.appinfo = await self.application_info()
 
-        cogs = get_cogs(root_dir / "cogs", self.config.cogs.disabled)
+        cogs = get_cogs(cogs_dir, self.config.cogs.disabled)
         await cogs_manager(self, "load", *cogs)
 
         self.loop.create_task(self.startup())
