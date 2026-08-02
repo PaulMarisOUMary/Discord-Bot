@@ -102,23 +102,35 @@ class HelpEngine:
         self, embed: Embed, command: CommandLike, show_permissions: bool = True
     ) -> None:
         details = f"```ansi\n{fg.BLUE + fmt.UNDERLINE}Description{fmt.RESET}:\n"
+        mentions: list[str] = []
 
         if isinstance(command, app_commands.Command):
             contexted = await self._get_contexted_app_command(command)
             if not contexted:
                 return
-            command_mention = f"{contexted.mention} {self.list_to_block(list(command._params.keys()))}"
+            mentions.append(
+                f"{contexted.mention} {self.list_to_block(list(command._params.keys()))}"
+            )
             desc = self.get_description(contexted) or self.get_description(command)
             details += f"{fg.WHITE}{self.return_none_if_not(desc)}{fmt.RESET}"
         else:
-            command_mention = f"{self.ctx.clean_prefix}{command.qualified_name} {self.list_to_block(list(command.clean_params.keys()))}"
+            mentions.append(
+                f"{self.ctx.clean_prefix}{command.qualified_name} {self.list_to_block(list(command.clean_params.keys()))}"
+            )
             desc = self.get_description(command)
             details += f"{fg.WHITE}{self.return_none_if_not(desc)}{fmt.RESET}"
+
+            if isinstance(command, commands.HybridCommand) and command.app_command:
+                contexted = await self._get_contexted_app_command(command.app_command)
+                if contexted:
+                    mentions.append(
+                        f"{contexted.mention} {self.list_to_block(list(command.app_command._params.keys()))}"
+                    )
 
         if show_permissions:
             details += f"\n{fg.RED + fmt.UNDERLINE}Required permissions{fmt.RESET}:\n{bg.BLACK}{self.format_permissions(command.extras)}{fmt.RESET}\n"
 
-        embed.add_field(name=command_mention, value=f"{details}\n```", inline=False)
+        embed.add_field(name='\n'.join(mentions), value=f"{details}\n```", inline=False)
 
     def get_compound_mapping(self) -> dict[commands.Cog | None, list[CommandLike]]:
         bot = self.ctx.bot
@@ -127,8 +139,17 @@ class HelpEngine:
         }
         mapping[None] = [command for command in bot.commands if command.cog is None]
 
+        hybrid_qualified_names = {
+            command.qualified_name
+            for commands_list in mapping.values()
+            for command in commands_list
+            if isinstance(command, commands.HybridCommand)
+        }
+
         for command in bot.tree.walk_commands(type=AppCommandType.chat_input):
             if isinstance(command, app_commands.Group):
+                continue
+            if command.qualified_name in hybrid_qualified_names:
                 continue
 
             mapping.setdefault(command.binding, [])
@@ -191,8 +212,6 @@ class HelpEngine:
 
         for command in cog.get_commands():
             await self.add_field(embed, command, False)
-            if isinstance(command, commands.HybridCommand) and command.app_command:
-                await self.add_field(embed, command.app_command, False)
 
         for app_command in cog.__cog_app_commands__:
             if isinstance(app_command, app_commands.Group):
