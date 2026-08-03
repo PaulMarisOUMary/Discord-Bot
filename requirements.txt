@@ -14,4 +14,4 @@ pilmoji>=2.0,<3.0
 
 langcodes>=3.5,<4.0
 langdetect>=1.0,<2.0
-deep-translator>=1.11,<2.0
+deep-translator>=1.11.4,<2.0
