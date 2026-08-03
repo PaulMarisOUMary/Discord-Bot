@@ -10,7 +10,7 @@ sqlalchemy[asyncio]>=2.0,<3.0
 asyncmy>=0.2,<0.3
 
 pillow>=12.3,<13.0
-pilmoji>=2.0,<3.0
+pilmoji>=2.0.5,<3.0
 
 langcodes>=3.5,<4.0
 langdetect>=1.0,<2.0
