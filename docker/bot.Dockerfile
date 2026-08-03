@@ -1,20 +1,57 @@
 # syntax=docker/dockerfile:1
 
 ARG PYTHON_VERSION=3.13
-FROM python:${PYTHON_VERSION}-slim AS base
+FROM python:${PYTHON_VERSION}-slim AS builder
 
-# Prevents Python from writing pyc files.
-ENV PYTHONDONTWRITEBYTECODE=1
+ARG DEBIAN_FRONTEND=noninteractive
+ARG TARGETPLATFORM
 
-# Keeps Python from buffering stdout and stderr to avoid situations where
-# the application crashes without emitting any logs due to buffering.
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN apt-get update && apt-get -q -y --no-install-recommends install \
+    build-essential \
+    cmake \
+    pkg-config \
+    libffi-dev \
+    zlib1g-dev \
+    libjpeg-dev \
+    libopenjp2-7-dev \
+    libtiff-dev \
+    libfreetype6-dev \
+    libwebp-dev \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-# Create a non-privileged user that the app will run under.
-# See https://docs.docker.com/go/dockerfile-user-best-practices/
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+RUN --mount=type=cache,target=/root/.cache/pip,id=pip-${TARGETPLATFORM} \
+    --mount=type=bind,source=requirements.txt,target=requirements.txt \
+    python -m pip install -r requirements.txt
+
+
+FROM python:${PYTHON_VERSION}-slim AS runtime
+
 ARG UID=10001
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PATH="/opt/venv/bin:$PATH"
+
+RUN apt-get update && apt-get -q -y --no-install-recommends install \
+    libtiff6 \
+    libjpeg62-turbo \
+    libopenjp2-7 \
+    libfreetype6 \
+    libwebp7 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
 RUN adduser \
     --disabled-password \
     --gecos "" \
@@ -24,22 +61,10 @@ RUN adduser \
     --uid "${UID}" \
     appuser
 
-# Copy the source code into the container.
-COPY . .
+COPY --from=builder /opt/venv /opt/venv
 
-# Ensure the user owns /app and has read-write permissions
-RUN chown -R appuser:appuser /app && chmod -R 770 /app
+COPY --chown=appuser:appuser . .
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.cache/pip to speed up subsequent builds.
-# Leverage a bind mount to requirements.txt to avoid having to copy them into
-# into this layer.
-RUN --mount=type=cache,target=/root/.cache/pip \
-    --mount=type=bind,source=requirements.txt,target=requirements.txt \
-    python -m pip install -r requirements.txt
-
-# Switch to the non-privileged user to run the application.
 USER appuser
 
-# Run the application.
 CMD ["python", "main.py"]
