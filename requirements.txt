@@ -12,6 +12,6 @@ asyncmy>=0.2,<0.3
 pillow>=12.3,<13.0
 pilmoji>=2.0,<3.0
 
-langcodes>=3.5,<4.0
+langcodes>=3.5.1,<4.0
 langdetect>=1.0,<2.0
 deep-translator>=1.11,<2.0
