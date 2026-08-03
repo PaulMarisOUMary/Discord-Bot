@@ -1,0 +1,75 @@
+disabled = [
+]
+
+[cogs.birthday]
+post_hour = 9
+images = [
+    "https://c.tenor.com/RtKfb25Sw8sAAAAd/tenor.gif",
+    "https://c.tenor.com/xuSL2MVpZYkAAAAd/tenor.gif",
+    "https://c.tenor.com/XPg8ZOfh4tgAAAAd/tenor.gif",
+    "https://c.tenor.com/_T5kHIFvAtwAAAAd/tenor.gif",
+    "https://c.tenor.com/p2f7TmEmZSEAAAAd/tenor.gif",
+    "https://c.tenor.com/8727b0rzPdcAAAAd/tenor.gif",
+    "https://c.tenor.com/TlgtrAEILgIAAAAd/tenor.gif",
+    "https://c.tenor.com/WRC3yQm1UC4AAAAd/tenor.gif",
+    "https://c.tenor.com/HRuOBcJTbHEAAAAd/tenor.gif",
+    "https://c.tenor.com/3_YaI0zEfz4AAAAd/tenor.gif",
+]
+
+[cogs.croissants]
+cooldown = 600
+
+[[cogs.dad.jokes]]
+regex = '''(?i)\bcan\s+i\s+(?P<value>[^.!?]+)'''
+message = "I don't know, *can* you {value}?"
+probability = 0.15
+
+[[cogs.dad.jokes]]
+regex = '''(?i)\b(?:im|i\ am|i'm)\s+(?P<value>[^.!?]+)'''
+message = "Hi {value}, I'm {bot.user.mention}"
+probability = 0.1
+
+[[cogs.dad.jokes]]
+regex = '''(?i)\b(?:je\s+suis|j'ai)\s+(?P<value>[^.!?]+)'''
+message = "Enchanté {value}, moi c'est {bot.user.mention} !"
+probability = 0.1
+
+[[cogs.dad.jokes]]
+regex = '''(?i)\bquoi\s*[^a-zA-Z0-9_]*$'''
+message = "Feur."
+probability = 0.25
+
+[cogs.invite]
+default_message = """
+{invite.inviter.mention} invited {member.mention} to <#{invite.channel.id}>
+
+Created: <t:{created_at_timestamp}:R>
+Uses: **{invite.uses}** out of **{max_uses}**
+Code: *{invite.id}*"""
+
+[cogs.me]
+max_length = 255
+
+[cogs.presence]
+cooldown = 25
+
+[[cogs.presence.status]]
+status = "dnd"
+name = "Use slash-commands !"
+
+[[cogs.presence.status]]
+status = "dnd"
+name = "/help"
+
+[[cogs.presence.status]]
+status = "dnd"
+name = "🎉V3 is out !"
+
+[[cogs.presence.status]]
+status = "dnd"
+name = "I'm open source !"
+
+[cogs.privatevocal]
+main_channel_name = "➕"
+channel_name = "Vocal: @{user.name}"
+cooldown = 30

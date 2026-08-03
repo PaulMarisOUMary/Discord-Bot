@@ -27,14 +27,14 @@ jobs:
 
       - name: Dependencies Update
         id: dependencies-update
-        if: steps.last-commit.outputs.last-commit == ${{ github.sha }}
+        if: steps.last-commit.outputs.last-commit == github.sha
         run: |
           pip3.11 install -r requirements.txt
           echo "Dependencies Update: Success"
 
       - name: Setup Credentials
         id: setup-credentials
-        if: steps.last-commit.outputs.last-commit == ${{ github.sha }}
+        if: steps.last-commit.outputs.last-commit == github.sha
         run: |
           apt-get install jq -y
           jq '.token = "${{ secrets.DISCORD_TOKEN }}"' config/bot.json > tmp.$$.json && mv tmp.$$.json config/bot.json
@@ -44,7 +44,7 @@ jobs:
 
       - name: Reload Bot
         id: reload-bot
-        if: steps.last-commit.outputs.last-commit == ${{ github.sha }} && success()
+        if: steps.last-commit.outputs.last-commit == github.sha && success()
         run: |
           python3.11 classes/client.py --message "reload"
           echo "Reload Bot: Success"

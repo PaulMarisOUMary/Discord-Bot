@@ -56,7 +56,6 @@ cover/
 *.pot
 
 # Django stuff:
-*.log
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
@@ -148,9 +147,9 @@ cython_debug/
 # Recommended: Configure a global .gitignore on your local machine
 .vscode/
 
-# Project
-# Untrack tracked config files: git update-index --assume-unchanged ./config/*.json
-config
-
 # MacOS (should be included in your local .gitignore)
 .DS_Store
+
+# logs
+logs
+*.log

@@ -1,13 +1,17 @@
-python-dotenv>=1.2,<2.0
-pytz>=2026.2,<2027.0
-requests>=2.34.2,<2.35.0
-
 discord.py[speed]==2.7.1
+requests>=2.34,<3.0
 
-aiomysql>=0.2.0,<0.4.0
+python-dotenv>=1.2,<2.0
 
-pillow>=12.3.0,<13.0
+msgspec[toml]>=0.21.1,<1.0
 
-googletrans==4.0.2
+sqlmodel>=0.0.39,<0.1.0
+sqlalchemy[asyncio]>=2.0,<3.0
+asyncmy>=0.2,<0.3
 
-asyncpraw>=7.8.1,<7.9.0
+pillow>=12.3,<13.0
+pilmoji>=2.0,<3.0
+
+langcodes>=3.5,<4.0
+langdetect>=1.0,<2.0
+deep-translator>=1.11,<2.0

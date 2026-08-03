@@ -1,47 +1,68 @@
-import discord
+from __future__ import annotations
 
-from typing import Callable, Union
+from collections.abc import Callable, Coroutine
+from typing import Any
 
+from discord import Interaction, SelectOption
 from discord.ext import commands
+from discord.ui import Select
+from discord.utils import MISSING
 
 from views.view import View as Parent
 
-class CustomDropdown(discord.ui.Select):
-    def __init__(self, placeholder : str, min_val : int, max_val : int, options: list[dict[str, str]], when_callback: Callable) -> None:
+
+class CustomDropdown(Select):
+    def __init__(
+        self,
+        placeholder: str,
+        min_val: int,
+        max_val: int,
+        options: list[dict[str, str]],
+        when_callback: Callable[..., Coroutine[Any, Any, None]],
+    ) -> None:
         super().__init__(
             placeholder=placeholder,
             min_values=min_val,
             max_values=max_val,
-            options = 
-                [
-                    discord.SelectOption(
-                        label=option["label"],
-                        value=option.get("value", discord.utils.MISSING),
-                        description=option.get("description", None),
-                        emoji=option.get("emoji", None),
-                        default=bool(option.get("default", False)),
-                    ) 
-                    for option in options
-                ]
+            options=[
+                SelectOption(
+                    label=option["label"],
+                    value=option.get("value", MISSING),
+                    description=option.get("description"),
+                    emoji=option.get("emoji"),
+                    default=bool(option.get("default", False)),
+                )
+                for option in options
+            ],
         )
         self.when_callback = when_callback
 
-    async def callback(self, interaction: discord.Interaction) -> None:
+    async def callback(self, interaction: Interaction) -> None:
         await self.when_callback(self, interaction)
 
+
 class View(Parent):
-    """Dropdown View"""
-    def __init__(self, invoke: Union[commands.Context, discord.Interaction, None], placeholder : str, min_val : int, max_val : int, options: list[dict[str, str]], when_callback) -> None:
+    """Standalone dropdown-only view."""
+
+    def __init__(
+        self,
+        invoke: commands.Context | Interaction | None,
+        placeholder: str,
+        min_val: int,
+        max_val: int,
+        options: list[dict[str, str]],
+        when_callback: Callable[..., Coroutine[Any, Any, None]],
+    ) -> None:
         super().__init__()
 
         self.invoke = invoke
 
         self.add_item(
             CustomDropdown(
-                placeholder=placeholder, 
+                placeholder=placeholder,
                 min_val=min_val,
                 max_val=max_val,
                 options=options,
-                when_callback=when_callback
+                when_callback=when_callback,
             )
         )

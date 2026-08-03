@@ -1,42 +1,55 @@
 from __future__ import annotations
 
-from enum import IntEnum
+from enum import Enum
 
 ESCAPE = '\u001b'
 
-def _to_color(*colors_code: str) -> str:
-    """Color code to ANSI escape sequence."""
-    return f"{ESCAPE}[{';'.join(colors_code)}m"
 
-class StackANSI():
-    def __init__(self, num: int) -> None:
-        self.series: list[int] = [num]
+class BaseANSI:
+    @property
+    def codes(self) -> tuple[int, ...]:
+        raise NotImplementedError
 
-    def __add__(self, __x: SingleANSI) -> StackANSI:
-        self.series.append(__x.value)
-        return self
-
-    def __str__(self) -> str:
-        return _to_color(*set([str(x) for x in self.series]))
-
-class SingleANSI(IntEnum):
-    def __add__(self, __x: SingleANSI) -> StackANSI: # type: ignore[override]
-        return StackANSI(self.value) + __x
+    def __add__(self, other: BaseANSI) -> StackANSI:
+        if isinstance(other, BaseANSI):
+            return StackANSI(*self.codes, *other.codes)
+        raise NotImplementedError
 
     def __str__(self) -> str:
-        return _to_color(str(self.value))
+        unique_codes = dict.fromkeys(str(c) for c in self.codes)
+        return f"{ESCAPE}[{';'.join(unique_codes)}m"
+
+
+class StackANSI(BaseANSI):
+    def __init__(self, *codes: int) -> None:
+        self._codes = codes
+
+    @property
+    def codes(self) -> tuple[int, ...]:
+        return self._codes
+
+
+class SingleANSI(BaseANSI, Enum):
+    value: int
+
+    @property
+    def codes(self) -> tuple[int, ...]:
+        return (self.value,)
+
 
 class Format(SingleANSI):
     """Formating codes."""
+
     RESET = 0
     NORMAL = RESET
     BOLD = 1
     UNDERLINE = 4
 
+
 class Foreground(SingleANSI):
     """Foreground color codes."""
-    GRAY = 30
-    GREY = GRAY
+
+    BLACK = 30
     RED = 31
     GREEN = 32
     YELLOW = 33
@@ -45,15 +58,15 @@ class Foreground(SingleANSI):
     CYAN = 36
     WHITE = 37
 
+
 class Background(SingleANSI):
     """Background color codes."""
-    FIREFLY_DARK_BLUE = 40
+
+    BLACK = 40
     ORANGE = 41
-    MARBLE_BLUE = 42
-    GREYISH_TURQUOISE = 43
-    GRAY = 44
-    GREY = GRAY
-    INDIGO = 45
-    LIGHT_GRAY = 46
-    LIGHT_GREY = LIGHT_GRAY
+    GREEN = 42
+    YELLOW = 43
+    BLUE = 44
+    PINK = 45
+    CYAN = 46
     WHITE = 47

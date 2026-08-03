@@ -1,0 +1,13 @@
+from pathlib import Path
+
+utils_dir = Path(__file__).resolve().parent
+
+root_dir = utils_dir.parent
+
+cogs_dir = root_dir / "cogs"
+config_dir = root_dir / "config"
+env_path = config_dir / ".env"
+log_dir = root_dir / "logs"
+
+font_dir = root_dir / "fonts"
+dmsans_path = font_dir / "DMSans-VariableFont.ttf"

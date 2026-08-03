@@ -1,9 +1,0 @@
-{
-    "prefix": {
-        "default": "$",
-        "mentionable": true,
-
-        "table": "table_prefix"
-    },
-    "use_database": true
-}

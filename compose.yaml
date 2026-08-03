@@ -17,6 +17,19 @@ services:
       - config/.env
     depends_on: *depends-mariadb
 
+  bot-dev:
+    image: python:3.13-slim
+    container_name: bot-dev
+    restart: unless-stopped
+    working_dir: /app
+    depends_on: *depends-mariadb
+    volumes:
+      - .:/app
+    command: >
+      sh -c "pip install --no-cache-dir -r requirements.txt && python main.py"
+    stdin_open: true
+    tty: true
+
   mariadb:
     image: mariadb:12
     hostname: ${MARIADB_HOST}

@@ -1,109 +1,142 @@
-import discord
+from contextlib import suppress
+from time import monotonic
+from typing import Any
 
-from datetime import datetime
+from discord import (
+    HTTPException,
+    Member,
+    StageChannel,
+    VoiceChannel,
+    VoiceState,
+    app_commands,
+)
 from discord.ext import commands
-from discord import app_commands
-from discord.app_commands import Choice
-from typing import Union
 
-from utils.basebot import DiscordBot
 from utils.basetypes import GuildContext
-from utils.helper import bot_has_permissions
+from utils.bot import DiscordBot
+from utils.checks import bot_has_permissions
+
 
 class PrivateVocal(commands.Cog, name="privatevocal"):
-	"""
-		Create and manage private vocal channels.
-	
-		Require intents:
-			- voice_states
-		
-		Require bot permission:
-			- manage_channels
-			- manage_permissions
-			- move_members
-	"""
-	def __init__(self, bot: DiscordBot) -> None:
-		self.bot = bot
-		
-		self.subconfig_data: dict = self.bot.config["cogs"][self.__cog_name__.lower()]
+    """
+    Create and manage private vocal channels.
 
-		self.tracker: dict[int, dict] = dict()
-		self.MAIN_CHANNEL_NAME = self.subconfig_data["main_channel_name"]
-		self.CHANNEL_NAME = self.subconfig_data["channel_name"]
+    Require intents:
+            - voice_states
 
-	def help_custom(self) -> tuple[str, str, str]:
-		emoji = '💭'
-		label = "Private Vocal"
-		description = "Create a private vocal channel."
-		return emoji, label, description
+    Require bot permission:
+            - manage_channels
+            - manage_permissions
+            - move_members
+    """
 
-	def __guild_in(self, member: discord.Member) -> None:
-		if member.guild.id not in self.tracker: 
-			self.tracker[member.guild.id] = dict()
-			self.tracker[member.guild.id]["cooldown"] = dict()
-			self.tracker[member.guild.id]["channels"] = dict()
+    def __init__(self, bot: DiscordBot) -> None:
+        self.bot = bot
 
-	def __is_private_vocal(self, channel: discord.VoiceChannel, guild_channels: dict[int, int]) -> bool:
-		return channel.id in guild_channels
+        self.subconfig: dict[str, Any] = self.bot.config.cogs.cogs[
+            self.__cog_name__.lower()
+        ]
 
-	def __is_join_channel(self, channel: Union[discord.VoiceChannel, discord.StageChannel]) -> bool:
-		return channel.user_limit == 1 and channel.name == self.MAIN_CHANNEL_NAME
-	
-	def __is_user_on_cooldown(self, user: discord.Member, guild_cooldown: dict) -> bool:
-		return (user.id in guild_cooldown) and datetime.now().timestamp() - guild_cooldown[user.id].timestamp() < self.subconfig_data["cooldown"]
+        self.tracker: dict[int, dict[str, dict[int, Any]]] = {}
+        self.MAIN_CHANNEL_NAME = self.subconfig["main_channel_name"]
+        self.CHANNEL_NAME = self.subconfig["channel_name"]
+        self.COOLDOWN_TIME = self.subconfig["cooldown"]
 
-	@commands.Cog.listener("on_voice_state_update")
-	async def on_voice_state_update(self, member: discord.Member, before: discord.VoiceState, after: discord.VoiceState) -> None:
-		self.__guild_in(member)
-		guild_id = self.tracker[member.guild.id]
-		guild_cooldown = guild_id["cooldown"]
-		guild_channels = guild_id["channels"]
+    def help_custom(self) -> tuple[str, str, str]:
+        return '💭', "Private Vocal", "Create a private vocal channel."
 
-		if after.channel is not None and self.__is_join_channel(after.channel):
-			if self.__is_user_on_cooldown(member, guild_cooldown):
-				await member.move_to(None)
-				remaining = self.subconfig_data["cooldown"] - (datetime.now() - guild_cooldown[member.id]).total_seconds()
-				await member.send(f"Sorry you're on cooldown, time remaining: `{round(remaining)}` seconds.")
-			
-			else:
-				private_vocal = await member.guild.create_voice_channel(self.CHANNEL_NAME.format(user = member), category=after.channel.category)
-				await member.move_to(private_vocal)
-				guild_cooldown[member.id] = datetime.now()
-				guild_channels[private_vocal.id] = member.id
+    def _get_guild_data(self, guild_id: int) -> dict[str, dict[int, Any]]:
+        if guild_id not in self.tracker:
+            self.tracker[guild_id] = {"cooldown": {}, "channels": {}}
+        return self.tracker[guild_id]
 
-		if before.channel is not None and before.channel.id in guild_channels:
-			if members := before.channel.members:
-				user = members[0]
-				guild_channels[before.channel.id] = user.id
-				await before.channel.edit(name=self.CHANNEL_NAME.format(user = user))
-			
-			else:
-				del guild_id["channels"][before.channel.id]
-				await before.channel.delete()
+    def _is_private_vocal(
+        self, channel_id: int, guild_channels: dict[int, int]
+    ) -> bool:
+        return channel_id in guild_channels
 
-	@bot_has_permissions(send_messages=True)
-	@commands.hybrid_command(name="userlimit", description="Limit the number of user(s) in your private channel.")
-	@commands.cooldown(1, 10, commands.BucketType.user)
-	@app_commands.choices(limit=[Choice(name=str(i), value=i) for i in range(1, 26)])
-	@app_commands.describe(limit="The number of max user(s) in your private channel.")
-	@app_commands.guild_only()
-	async def lock_private_vocal(self, ctx: GuildContext, limit: int = -1) -> None:
-		"""Limit the number of user(s) in your private channel."""
-		voice = ctx.author.voice
-		if not voice or not voice.channel:
-			await ctx.send("You're not in a voice channel.", ephemeral=True)
-			return
-		elif voice.channel and not isinstance(voice.channel, discord.StageChannel) and not self.__is_private_vocal(voice.channel, self.tracker[ctx.guild.id]["channels"]):
-			await ctx.send("You're not in a private vocal channel.", ephemeral=True)
-			return
-		
-		if limit < 1 or limit > 99:
-			limit = len(voice.channel.members)
+    def _is_join_channel(self, channel: VoiceChannel | StageChannel) -> bool:
+        return channel.user_limit == 1 and channel.name == self.MAIN_CHANNEL_NAME
 
-		await voice.channel.edit(user_limit=limit)
-		await ctx.send(f"Vocal user-limit set to `{limit}`.", ephemeral=True)
+    def _get_remaining_cooldown(
+        self, user_id: int, guild_cooldown: dict[int, float]
+    ) -> float:
+        if user_id not in guild_cooldown:
+            return 0
+        remaining = self.COOLDOWN_TIME - (monotonic() - guild_cooldown[user_id])
+        return max(0, remaining)
 
+    @commands.Cog.listener("on_voice_state_update")
+    async def on_voice_state_update(
+        self, member: Member, before: VoiceState, after: VoiceState
+    ) -> None:
+        guild_data = self._get_guild_data(member.guild.id)
+        guild_cooldown = guild_data["cooldown"]
+        guild_channels = guild_data["channels"]
+
+        if after.channel is not None and self._is_join_channel(after.channel):
+            remaining = self._get_remaining_cooldown(member.id, guild_cooldown)
+
+            if remaining > 0:
+                with suppress(HTTPException):
+                    await member.move_to(None)
+                    await member.send(
+                        f"Sorry you're on cooldown, time remaining: `{round(remaining)}` seconds."
+                    )
+            else:
+                try:
+                    private_vocal = await member.guild.create_voice_channel(
+                        self.CHANNEL_NAME.format(user=member),
+                        category=after.channel.category,
+                    )
+                    await member.move_to(private_vocal)
+                    guild_cooldown[member.id] = monotonic()
+                    guild_channels[private_vocal.id] = member.id
+                except HTTPException:
+                    pass
+
+        if before.channel is not None and before.channel.id in guild_channels:
+            if members := before.channel.members:
+                new_owner = members[0]
+                guild_channels[before.channel.id] = new_owner.id
+                with suppress(HTTPException):
+                    await before.channel.edit(
+                        name=self.CHANNEL_NAME.format(user=new_owner)
+                    )
+            else:
+                del guild_channels[before.channel.id]
+                with suppress(HTTPException):
+                    await before.channel.delete()
+
+    @bot_has_permissions(send_messages=True)
+    @commands.hybrid_command(  # type: ignore
+        name="userlimit",
+        description="Limit the number of user(s) in your private channel.",
+    )
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @app_commands.describe(limit="The number of max user(s) in your private channel.")
+    @app_commands.guild_only()
+    async def lock_private_vocal(
+        self, ctx: GuildContext, limit: app_commands.Range[int, 1, 99] | None = None
+    ) -> None:
+        """Limit the number of user(s) in your private channel."""
+        voice = ctx.author.voice
+        if not voice or not voice.channel:
+            await ctx.send("You're not in a voice channel.", ephemeral=True)
+            return
+
+        channel = voice.channel
+        guild_channels = self._get_guild_data(ctx.guild.id)["channels"]
+
+        if channel and not self._is_private_vocal(channel.id, guild_channels):
+            await ctx.send("You're not in a private vocal channel.", ephemeral=True)
+            return
+
+        target_limit = limit if limit is not None else len(channel.members)
+
+        await voice.channel.edit(user_limit=target_limit)
+        await ctx.send(f"Vocal user-limit set to `{target_limit}`.", ephemeral=True)
 
 
 async def setup(bot: DiscordBot) -> None:
-	await bot.add_cog(PrivateVocal(bot))
+    await bot.add_cog(PrivateVocal(bot))

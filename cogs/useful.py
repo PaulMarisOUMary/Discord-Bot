@@ -1,87 +1,105 @@
-import discord
-
+from discord import Embed, Message
 from discord.ext import commands
 
-from utils.ansi import Format as fmt, Foreground as fg, Background as bg
-from utils.basebot import DiscordBot
-from utils.helper import bot_has_permissions
+from utils.ansi import Background as bg
+from utils.ansi import Foreground as fg
+from utils.ansi import Format as fmt
 from utils.basetypes import GuildContext
+from utils.bot import DiscordBot
+from utils.checks import bot_has_permissions
 
 
 class Useful(commands.Cog, name="useful"):
-	"""
-		Usefull commands for Devs & more.
+    """
+    Usefull commands for Devs & more.
 
-		Require intents:
-			- message_content
-		
-		Require bot permission:
-			- send_messages
-	"""
-	def __init__(self, bot: DiscordBot) -> None:
-		self.bot = bot
+    Require intents:
+        - message_content
 
-	def help_custom(self) -> tuple[str, str, str]:
-		emoji = '🚩'
-		label = "Useful"
-		description = "Useful commands."
-		return emoji, label, description
+    Require bot permission:
+        - send_messages
+    """
 
-	@commands.command(name="emojilist", aliases=["ce", "el"])
-	@commands.cooldown(1, 10, commands.BucketType.user)
-	@commands.guild_only()
-	async def getcustomemojis(self, ctx: GuildContext) -> None:
-		"""Return a list of each custom emojis from the current server."""
-		embed_list, embed = [], discord.Embed(title=f"Custom Emojis List ({len(ctx.guild.emojis)}) :")
-		for i, emoji in enumerate(ctx.guild.emojis, start=1):
-			if i == 0 : 
-				i += 1
-			value = f"`<:{emoji.name}:{emoji.id}>`" if not emoji.animated else f"`<a:{emoji.name}:{emoji.id}>`"
-			embed.add_field(name=f"{self.bot.get_emoji(emoji.id)} - **:{emoji.name}:** - (*{i}*)",value=value)
-			if len(embed.fields) == 25:
-				embed_list.append(embed)
-				embed = discord.Embed()
-		if len(embed.fields) > 0: 
-			embed_list.append(embed)
+    def __init__(self, bot: DiscordBot) -> None:
+        self.bot = bot
 
-		for message in embed_list:
-			await ctx.send(embed=message)
+    def help_custom(self) -> tuple[str, str, str]:
+        return '🚩', "Useful", "Useful commands."
 
-	@commands.command(name="colors")
-	@commands.cooldown(1, 10, commands.BucketType.user)
-	async def codeblock_colors(self, ctx: commands.Context) -> None:
-		codeblock = "```ansi\n"
+    @bot_has_permissions(send_messages=True)
+    @commands.command(name="emojilist", aliases=["ce", "el"])
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    @commands.guild_only()
+    async def getcustomemojis(self, ctx: GuildContext) -> None:
+        """List all custom emojis in the guild."""
+        emojis = ctx.guild.emojis
+        if not emojis:
+            await ctx.send("This server does not have custom emoji.")
+            return
 
-		for item, text in [
-			(fmt._member_map_, "Format"),
-			(fg._member_map_, "Foreground"),
-			(bg._member_map_, "Background")
-		]:
-			codeblock += f"{fmt.UNDERLINE + fg.GRAY + bg.WHITE}{text}{fmt.RESET}:\n"
-			for key, value in item.items():
-				codeblock += f"ESC[{value.value}m {value}{key}{fmt.RESET}\n"
+        lines = [
+            f"{i}. {emoji} - :\u200b{emoji.name}: - `{emoji}`"
+            for i, emoji in enumerate(emojis, start=1)
+        ]
 
-		await ctx.send(f"{codeblock}```")
+        chunk_size = 15
+        chunks = [lines[i : i + chunk_size] for i in range(0, len(lines), chunk_size)]
 
-	@bot_has_permissions(manage_messages=True, read_message_history=True)
-	@commands.command(name="cleanup")
-	@commands.guild_only()
-	async def cleanup(self, ctx: GuildContext, n_message: int) -> None:
-		if n_message < 1 or n_message > 150:
-			raise ValueError("Invalid number of messages to delete.")
+        total_pages = len(chunks)
 
-		if self.bot.use_database:
-			prefix = self.bot.prefixes[ctx.guild.id]
-		else:
-			prefix = self.bot.__prefix_default
+        for page, chunk in enumerate(chunks, start=1):
+            embed = Embed(
+                title=f"Custom emojis list ({len(emojis)})",
+                description="\n".join(chunk),
+            )
+            if total_pages > 1:
+                embed.set_footer(text=f"Page {page}/{total_pages}")
 
-		def check(message: discord.Message):
-			return (message.author == ctx.me or message.content.startswith(prefix)) and not (message.mentions or message.role_mentions)
+            await ctx.send(embed=embed)
 
-		deleted = await ctx.channel.purge(limit=n_message, check=check, before=ctx.message)
-		
-		await ctx.message.reply(content=f"🗑️ Deleted {len(deleted)} messages.", delete_after=5, mention_author=False)
+    @bot_has_permissions(send_messages=True)
+    @commands.command(name="colors")
+    @commands.cooldown(1, 10, commands.BucketType.user)
+    async def codeblock_colors(self, ctx: commands.Context) -> None:
+        """List all different ANSI colors."""
+        codeblock = "```ansi\n"
+
+        for item, text in [
+            (fmt.__members__, "Format"),
+            (fg.__members__, "Foreground"),
+            (bg.__members__, "Background"),
+        ]:
+            codeblock += f"{fmt.UNDERLINE + fg.BLUE + bg.WHITE}{text}{fmt.RESET}:\n"
+            for key, value in item.items():
+                codeblock += f"ESC[{value.value}m {value}{key}{fmt.RESET}\n"
+
+        await ctx.send(f"{codeblock}```")
+
+    @bot_has_permissions(send_messages=True)
+    @commands.command(name="cleanup")
+    @commands.guild_only()
+    async def cleanup(self, ctx: GuildContext, n_message: int) -> None:
+        """Cleanup your n bot's commands invocation."""
+        if n_message < 1 or n_message > 150:
+            raise ValueError("Invalid number of messages to delete.")
+
+        prefix = self.bot.get_guild_prefix(ctx.guild.id)
+
+        def check(message: Message) -> bool:
+            return (
+                message.author == ctx.me or message.content.startswith(prefix)
+            ) and not (message.mentions or message.role_mentions)
+
+        deleted = await ctx.channel.purge(
+            limit=n_message, check=check, before=ctx.message
+        )
+
+        await ctx.message.reply(
+            content=f"🗑️ Deleted {len(deleted)} messages.",
+            delete_after=5,
+            mention_author=False,
+        )
 
 
 async def setup(bot: DiscordBot) -> None:
-	await bot.add_cog(Useful(bot))
+    await bot.add_cog(Useful(bot))

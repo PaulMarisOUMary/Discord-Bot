@@ -1,0 +1,5 @@
+use_database = true
+
+[prefix]
+default = "$"
+mentionable = true
