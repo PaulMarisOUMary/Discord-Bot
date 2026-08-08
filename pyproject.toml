@@ -1,7 +1,7 @@
 [project]
 name = "discord-bot"
 description = "A Python Discord Bot."
-version = "2.1.0b"
+version = "3.0.0"
 readme = { file = ".github/README.md" }
 authors = [{ name = "PaulMarisOUMary" }]
 license = { file = "LICENSE" }
