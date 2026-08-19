@@ -1,7 +1,7 @@
 discord.py[speed]==2.7.1
 requests>=2.34,<3.0
 
-python-dotenv>=1.2,<2.0
+python-dotenv>=1.2.3,<2.0
 
 msgspec[toml]>=0.21.1,<1.0
 
