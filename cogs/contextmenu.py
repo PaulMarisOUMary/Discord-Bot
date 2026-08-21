@@ -1,8 +1,15 @@
-from discord import AppCommandType, Interaction, Locale, Message, app_commands
+from discord import (
+    AppCommandType,
+    Interaction,
+    Locale,
+    Message,
+    app_commands,
+)
 from discord.ext import commands
 
 from utils.bot import DiscordBot
 from utils.translator import Translator, locale_to_flag
+from views.forward import Forward
 
 
 class ContextMenu(commands.Cog):
@@ -18,6 +25,11 @@ class ContextMenu(commands.Cog):
             app_commands.ContextMenu(
                 name="Translate",
                 callback=self.translate_to_your_language,
+                type=AppCommandType.message,
+            ),
+            app_commands.ContextMenu(
+                name="Forward",
+                callback=self.forward,
                 type=AppCommandType.message,
             ),
         ]
@@ -62,6 +74,9 @@ class ContextMenu(commands.Cog):
         self, interaction: Interaction, message: Message
     ) -> None:
         await self.translate(interaction, message, interaction.locale)
+
+    async def forward(self, interaction: Interaction, message: Message) -> None:
+        await interaction.response.send_modal(Forward(message))
 
 
 async def setup(bot: DiscordBot) -> None:
