@@ -9,7 +9,7 @@ sqlmodel>=0.0.48,<0.1.0
 sqlalchemy[asyncio]>=2.0,<3.0
 asyncmy>=0.2,<0.3
 
-pillow>=12.3,<13.0
+pillow>=12.3.0,<13.0
 pilmoji>=2.0,<3.0
 
 langcodes>=3.5,<4.0
